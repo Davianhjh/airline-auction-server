@@ -1,4 +1,7 @@
 package com.airline.member;
 
-public class passengerFlightRes {
+import com.airline.baseRestfulResponse;
+
+public class passengerFlightRes extends baseRestfulResponse {
+
 }

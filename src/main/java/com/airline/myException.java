@@ -1,4 +1,11 @@
 package com.airline;
 
-public class myException {
+public class myException extends Exception {
+    public myException(){
+        super();
+    }
+
+    public myException(String msg){
+        super(msg);
+    }
 }
