@@ -1,5 +1,7 @@
 package com.airline;
 
+import com.alibaba.fastjson.annotation.JSONField;
+
 import java.util.ArrayList;
 
 public class baseTicketData {

@@ -1,9 +1,16 @@
 package com.test;
 
+import com.airline.baseAuctionData;
 import com.airline.tools.httpRequestUtil;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
+import java.io.*;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -24,14 +31,50 @@ public class restfulTest {
     @Produces(MediaType.TEXT_PLAIN)
     public String printTesting() {
         /*
-        String urlPath = "http://localhost:8000/member/passengerFlight";
-        String token = "d16677b4b097d4ea2d6ac77a042eb7d7214abe636a7fc4a21b2248461027a3d2c00e4984074a96d5193b8103d9f74cd4";
-        String resStr = httpRequestUtil.postRequest(urlPath, token, null);
-        System.out.println(resStr);
+        String urlPath = "http://192.168.1.233:9000/auction/flights";
+        ArrayList<String> flightArray = new ArrayList<String>();
+        flightArray.add("2018-02-26-MU5186");
+        JSONObject body = new JSONObject();
+        body.put("flights", flightArray);
+        String resStr = httpRequestUtil.postRequest(urlPath, null, body.toJSONString());
         JSONObject response = JSONObject.parseObject(resStr);
-        System.out.println(response.get("tickets"));
-        System.out.println(response.get("tickets").getClass().toString());   // JSONArray
+        for(String flightID: flightArray){
+            JSONArray fa = response.getJSONArray(flightID);
+            if(fa != null){
+                System.out.println(flightID + ":");
+                System.out.println(fa.toJSONString());
+                for(int i=0; i<fa.size(); i++){
+                    JSONObject auction = fa.getJSONObject(i);
+                    System.out.println(auction.getString("id"));
+                    System.out.println(auction.getString("type"));
+                    System.out.println(auction.getString("status"));
+                    System.out.println(auction.getBigInteger("start"));
+                    System.out.println(auction.getBigInteger("end"));
+                    System.out.println(auction.getIntValue("startCountDown"));
+                    System.out.println(auction.getIntValue("endCountDown"));
+                    System.out.println(auction.getString("description"));
+                    System.out.println("*************************************");
+                }
+                System.out.println();
+                System.out.println();
+            }
+        }
         */
+        /*
+        try {
+            Properties property = new Properties();
+            InputStream in = getClass().getResourceAsStream("/serverAddress.properties");
+            property.load(in);
+            System.out.println(property.getProperty("airlineMiddlewareServer"));
+            System.out.println(property.getProperty("auctionServiceServer"));
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        */
+        System.out.println("Default Charset=" + Charset.defaultCharset());
+        System.out.println("file.encoding=" + System.getProperty("file.encoding"));
+        System.out.println("Default Charset in Use=" + getDefaultCharSet());
+
         return "testing Jersey Restful API";
     }
 
@@ -63,5 +106,11 @@ public class restfulTest {
         System.out.println(user.getName());
         System.out.println(token);
         return 0;
+    }
+
+    private static String getDefaultCharSet(){
+        OutputStreamWriter writer = new OutputStreamWriter(new ByteArrayOutputStream());
+        String enc = writer.getEncoding();
+        return enc;
     }
 }

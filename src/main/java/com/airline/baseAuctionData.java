@@ -1,11 +1,13 @@
 package com.airline;
 
+import java.math.BigInteger;
+
 public class baseAuctionData {
     private String auctionID;
     private String auctionType;
     private String auctionState;
-    private String startTime;
-    private String endTime;
+    private BigInteger startTime;
+    private BigInteger endTime;
     private int startCountDown;
     private int endCountDown;
     private String description;
@@ -38,19 +40,19 @@ public class baseAuctionData {
         this.auctionState = auctionState;
     }
 
-    public String getStartTime(){
+    public BigInteger getStartTime(){
         return startTime;
     }
 
-    public void setStartTime(String startTime){
+    public void setStartTime(BigInteger startTime){
         this.startTime = startTime;
     }
 
-    public String getEndTime() {
+    public BigInteger getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(String endTime){
+    public void setEndTime(BigInteger endTime){
         this.endTime = endTime;
     }
 
