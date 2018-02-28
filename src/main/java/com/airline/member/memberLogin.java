@@ -8,10 +8,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -22,9 +19,7 @@ public class memberLogin {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public memberLoginRes login (@Context HttpHeaders hh, memberLoginParam ml){
-        //MultivaluedMap<String, String> header = hh.getRequestHeaders();
-        //String AgiToken = header.getFirst("token");
+    public memberLoginRes login (memberLoginParam ml){
         memberLoginRes res = new memberLoginRes();
         Connection conn;
         PreparedStatement pst;
@@ -52,8 +47,8 @@ public class memberLogin {
             } else {
                 String searchSql = "SELECT id, password, username, cnid_name FROM customerAccount WHERE tel_country=? AND tel=?;";
                 pst = conn.prepareStatement(searchSql);
-                pst.setString(1, ml.getTel());
-                pst.setString(2, ml.getTelCountry());
+                pst.setString(1, ml.getTelCountry());
+                pst.setString(2, ml.getTel());
                 ret = pst.executeQuery();
             }
             if (ret.next()) {
@@ -121,8 +116,7 @@ public class memberLogin {
 
     private boolean verifyEmail(memberLoginParam ml){
         try {
-            String email = ml.getEmail();
-            return true;
+            return ml.getEmail() != null;
         } catch (RuntimeException e){
             return false;
         }
@@ -130,9 +124,7 @@ public class memberLogin {
 
     private boolean verifyTel(memberLoginParam ml){
         try {
-            String tel = ml.getTel();
-            String telCountry = ml.getTelCountry();
-            return true;
+            return ml.getTel() != null && ml.getTelCountry() != null;
         } catch (RuntimeException e){
             return false;
         }
@@ -140,9 +132,7 @@ public class memberLogin {
 
     private boolean verifyPassword(memberLoginParam ml){
         try {
-            String password = ml.getPassword();
-            String platform = ml.getPlatform();
-            return true;
+            return ml.getPassword() != null && ml.getPlatform() != null;
         } catch (RuntimeException e){
             return false;
         }

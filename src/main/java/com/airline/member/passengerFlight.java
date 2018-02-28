@@ -171,7 +171,7 @@ public class passengerFlight {
         }
     }
 
-    private boolean getLocalAddedTickets(Connection conn, int uid, String utcTimeStr, ArrayList<baseTicketData> tickets) throws SQLException {
+    public static boolean getLocalAddedTickets(Connection conn, int uid, String utcTimeStr, ArrayList<baseTicketData> tickets) throws SQLException {
         PreparedStatement pst;
         ResultSet ret;
         ArrayList<String> flightArray = new ArrayList<String>();
@@ -204,7 +204,7 @@ public class passengerFlight {
         }
         if(flightArray.size() != 0){
             try {
-                InputStream in = getClass().getResourceAsStream("/serverAddress.properties");
+                InputStream in = passengerFlight.class.getResourceAsStream("/serverAddress.properties");
                 serverProp.load(in);
                 String urlStr = serverProp.getProperty("auctionServiceServer") + "/auction/flights";
                 JSONObject body = new JSONObject();
@@ -239,7 +239,7 @@ public class passengerFlight {
         return true;
     }
 
-    private int getRemoteTickets(Connection conn, int uid, String cnid_name, String cnid, ArrayList<baseTicketData> tickets, String savedEdgeTime) throws SQLException {
+    public static int getRemoteTickets(Connection conn, int uid, String cnid_name, String cnid, ArrayList<baseTicketData> tickets, String savedEdgeTime) throws SQLException {
         PreparedStatement pst, pst2;
         String sql = "INSERT INTO passengerFlight (passengerName, flightNo, flightDate, ticketNo, certificateType, certificateNo, carbinClass, dptAirport, dptAptCode, arvAirport, arvAptCode, depTime, arrTime, addedByUid, timeStamp) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
         pst = conn.prepareStatement(sql);
@@ -257,7 +257,7 @@ public class passengerFlight {
         }
 
         try {
-            InputStream in = getClass().getResourceAsStream("/serverAddress.properties");
+            InputStream in = passengerFlight.class.getResourceAsStream("/serverAddress.properties");
             serverProp.load(in);
             String urlStr1 = serverProp.getProperty("airlineMiddlewareServer") + "/rest/ticketList";
             JSONObject body1 = new JSONObject();

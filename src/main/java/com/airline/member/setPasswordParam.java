@@ -1,30 +1,14 @@
 package com.airline.member;
 
-public class memberLoginParam {
-    private String email;
-    private String tel;
+public class setPasswordParam {
+
     private String telCountry;
+    private String tel;
     private String password;
     private String platform;
 
-    public memberLoginParam(){
+    public setPasswordParam(){
         super();
-    }
-
-    public String getEmail(){
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getTel(){
-        return tel;
-    }
-
-    public void setTel(String tel) {
-        this.tel = tel;
     }
 
     public String getTelCountry(){
@@ -33,6 +17,14 @@ public class memberLoginParam {
 
     public void setTelCountry(String telCountry) {
         this.telCountry = telCountry;
+    }
+
+    public String getTel(){
+        return tel;
+    }
+
+    public void setTel(String tel) {
+        this.tel = tel;
     }
 
     public String getPassword(){
