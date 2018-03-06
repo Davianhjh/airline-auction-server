@@ -28,12 +28,12 @@ public class authentication  {
         Connection conn;
         PreparedStatement pst;
         ResultSet ret, ret2;
-        if (AgiToken == null) {
+        boolean verifyResult = verifyAuthenticationParams(ap);
+        if (AgiToken == null || !verifyResult) {
             res.setAuth(-1);
             res.setCode(1000);                               // parameters not correct
             return res;
         }
-        boolean verifyResult = verifyAuthenticationParams(ap);
 
         try {
             conn = HiKariCPHandler.getConn();
@@ -44,49 +44,43 @@ public class authentication  {
             return res;
         }
         try {
-            if (!verifyResult) {
-                res.setAuth(-1);
-                res.setCode(1000);                               // parameters not correct
-                return res;
-            } else {
-                String utcTimeStr = UTCTimeUtil.getUTCTimeStr();
-                String verifySql = "SELECT id FROM customerToken INNER JOIN customerAccount ON customerToken.uid = customerAccount.id WHERE token = ? and expire > ?;";
-                pst = conn.prepareStatement(verifySql);
-                pst.setString(1, AgiToken);
-                pst.setString(2, utcTimeStr);
-                ret = pst.executeQuery();
-                if (ret.next()) {
-                    int uid = ret.getInt(1);
-                    String searchSql = "SELECT id FROM customerAccount WHERE cnid=?;";
-                    pst = conn.prepareStatement(searchSql);
-                    pst.setString(1, ap.getIdcard());
-                    ret2 = pst.executeQuery();
-                    if (ret2.next()) {
-                        conn.close();
-                        res.setAuth(-1);
-                        res.setCode(1010);                          // idcard has been authenticated
-                        return res;
-                    } else {
-                        String sql = "UPDATE customerAccount set cnid=?, cnid_name=?, gender=?, birthday=? WHERE id=?;";
-                        pst = conn.prepareStatement(sql);
-                        pst.setString(1, ap.getIdcard());
-                        pst.setString(2, ap.getName());
-                        pst.setString(3, ap.getGender());
-                        pst.setString(4, ap.getBirthday());
-                        pst.setInt(5, uid);
-                        pst.executeUpdate();
-                        conn.close();
-                        res.setAuth(1);
-                        res.setCode(0);
-                        res.setAuthentication(true);
-                        return res;
-                    }
-                } else {
+            String utcTimeStr = UTCTimeUtil.getUTCTimeStr();
+            String verifySql = "SELECT id FROM customerToken INNER JOIN customerAccount ON customerToken.uid = customerAccount.id WHERE token = ? and expire > ?;";
+            pst = conn.prepareStatement(verifySql);
+            pst.setString(1, AgiToken);
+            pst.setString(2, utcTimeStr);
+            ret = pst.executeQuery();
+            if (ret.next()) {
+                int uid = ret.getInt(1);
+                String searchSql = "SELECT id FROM customerAccount WHERE cnid=?;";
+                pst = conn.prepareStatement(searchSql);
+                pst.setString(1, ap.getIdcard());
+                ret2 = pst.executeQuery();
+                if (ret2.next()) {
                     conn.close();
                     res.setAuth(-1);
-                    res.setCode(1020);                              // user not found
+                    res.setCode(1010);                          // idcard has been authenticated
+                    return res;
+                } else {
+                    String sql = "UPDATE customerAccount set cnid=?, cnid_name=?, gender=?, birthday=? WHERE id=?;";
+                    pst = conn.prepareStatement(sql);
+                    pst.setString(1, ap.getIdcard());
+                    pst.setString(2, ap.getName());
+                    pst.setString(3, ap.getGender());
+                    pst.setString(4, ap.getBirthday());
+                    pst.setInt(5, uid);
+                    pst.executeUpdate();
+                    conn.close();
+                    res.setAuth(1);
+                    res.setCode(0);
+                    res.setAuthentication(true);
                     return res;
                 }
+            } else {
+                conn.close();
+                res.setAuth(-1);
+                res.setCode(1020);                              // user not found
+                return res;
             }
         } catch (SQLException e) {
             e.printStackTrace();

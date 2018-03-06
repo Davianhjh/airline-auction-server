@@ -36,6 +36,7 @@ public class memberLogin {
         }
         try {
             if (verifyResult == 0) {
+                conn.close();
                 res.setAuth(-1);
                 res.setCode(1000);                               // parameters not correct
                 return res;

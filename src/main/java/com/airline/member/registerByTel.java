@@ -25,8 +25,13 @@ public class registerByTel {
         Connection conn;
         PreparedStatement pst;
         ResultSet ret;
-
         boolean verifyResult = verifyRegisterByTelParams(rt);
+        if (!verifyResult) {
+            res.setAuth(-1);
+            res.setCode(1000);                               // parameters not correct
+            return res;
+        }
+
         try {
             conn = HiKariCPHandler.getConn();
         } catch (SQLException e){
@@ -36,47 +41,40 @@ public class registerByTel {
             return res;
         }
         try {
-            if (!verifyResult) {
+            String searchSql = "SELECT id, password FROM customerAccount WHERE tel_country=? AND tel=?;";
+            pst = conn.prepareStatement(searchSql);
+            pst.setString(1, rt.getPlatform());
+            pst.setString(2, rt.getTel());
+            ret = pst.executeQuery();
+            if (ret.next()) {
                 conn.close();
                 res.setAuth(-1);
-                res.setCode(1000);                               // parameters not correct
+                res.setCode(1010);                           // tel has been registered
                 return res;
             } else {
-                String searchSql = "SELECT id, password FROM customerAccount WHERE tel_country=? AND tel=?;";
-                pst = conn.prepareStatement(searchSql);
-                pst.setString(1, rt.getPlatform());
-                pst.setString(2, rt.getTel());
-                ret = pst.executeQuery();
-                if (ret.next()) {
-                    conn.close();
-                    res.setAuth(-1);
-                    res.setCode(1010);                           // tel has been registered
-                    return res;
-                } else {
-                    StringBuffer verifyCode = new StringBuffer("");
-                    for(int i=0; i<6; i++){
-                        int tmp = (int)Math.floor(Math.random()*10);
-                        verifyCode.append(tmp);
-                    }
-                    String sql = "INSERT INTO preRegister (tel_country, tel, platform, verifyCode, expire) VALUES (?,?,?,?,ADDTIME(utc_timestamp(), '0 00:02:00'));";
-                    pst = conn.prepareStatement(sql);
-                    pst.setString(1, rt.getTelCountry());
-                    pst.setString(2, rt.getTel());
-                    pst.setString(3, rt.getPlatform());
-                    pst.setString(4, verifyCode.toString());
-                    pst.executeUpdate();
-                    // TODO
-                    // sending msg module
-                    //
-                    conn.close();
-                    res.setAuth(1);
-                    res.setCode(0);
-                    res.setRegister(true);
-                    if (TEXTSWITCH) {
-                        res.setVerifyCode(verifyCode.toString());
-                    }
-                    return res;
+                StringBuffer verifyCode = new StringBuffer("");
+                for(int i=0; i<6; i++){
+                    int tmp = (int)Math.floor(Math.random()*10);
+                    verifyCode.append(tmp);
                 }
+                String sql = "INSERT INTO preRegister (tel_country, tel, platform, verifyCode, expire) VALUES (?,?,?,?,ADDTIME(utc_timestamp(), '0 00:02:00'));";
+                pst = conn.prepareStatement(sql);
+                pst.setString(1, rt.getTelCountry());
+                pst.setString(2, rt.getTel());
+                pst.setString(3, rt.getPlatform());
+                pst.setString(4, verifyCode.toString());
+                pst.executeUpdate();
+                // TODO
+                // sending msg module
+                //
+                conn.close();
+                res.setAuth(1);
+                res.setCode(0);
+                res.setRegister(true);
+                if (TEXTSWITCH) {
+                    res.setVerifyCode(verifyCode.toString());
+                }
+                return res;
             }
         } catch (SQLException e){
             e.printStackTrace();
