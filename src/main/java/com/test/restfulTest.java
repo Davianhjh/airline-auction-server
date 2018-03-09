@@ -5,13 +5,16 @@ import com.airline.tools.httpRequestUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import org.omg.CORBA.OBJ_ADAPTER;
 
 import java.io.*;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -27,9 +30,12 @@ import javax.ws.rs.core.Response;
 
 @Path("/test")
 public class restfulTest {
-    @GET
+    @POST
     @Produces(MediaType.TEXT_PLAIN)
-    public String printTesting() {
+    //@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public String printTesting(@Context HttpServletRequest request) {
+        Map requestParams = request.getParameterMap();
+        System.out.println(request.getParameterMap());
         /*
         String urlPath = "http://192.168.1.233:9000/auction/flights";
         ArrayList<String> flightArray = new ArrayList<String>();
@@ -60,21 +66,12 @@ public class restfulTest {
             }
         }
         */
+
         /*
-        try {
-            Properties property = new Properties();
-            InputStream in = getClass().getResourceAsStream("/serverAddress.properties");
-            property.load(in);
-            System.out.println(property.getProperty("airlineMiddlewareServer"));
-            System.out.println(property.getProperty("auctionServiceServer"));
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-        */
         System.out.println("Default Charset=" + Charset.defaultCharset());
         System.out.println("file.encoding=" + System.getProperty("file.encoding"));
         System.out.println("Default Charset in Use=" + getDefaultCharSet());
-
+        */
         return "testing Jersey Restful API";
     }
 

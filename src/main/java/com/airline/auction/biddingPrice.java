@@ -16,6 +16,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.NumberFormat;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Path("/biddingPrice")
 public class biddingPrice {
@@ -63,11 +66,12 @@ public class biddingPrice {
                     int userStatus = ret.getInt(1);
                     if (userStatus == 1) {
                         if (getAuctionUtil.bidForPrice(uid, bp.getAuctionID(), bp.getCertificateNo(), bp.getPrice())) {
-                            String updateSql = "UPDATE userState set userStatus=2 WHERE auctionID=? AND uid=? AND certificateNo=?;";
+                            String updateSql = "UPDATE userState set userStatus=2, timeStamp=? WHERE auctionID=? AND uid=? AND certificateNo=?;";
                             pst = conn.prepareStatement(updateSql);
-                            pst.setString(1, bp.getAuctionID());
-                            pst.setInt(2, uid);
-                            pst.setString(3, bp.getCertificateNo());
+                            pst.setString(1, utcTimeStr);
+                            pst.setString(2, bp.getAuctionID());
+                            pst.setInt(3, uid);
+                            pst.setString(4, bp.getCertificateNo());
                             pst.executeUpdate();
                             conn.close();
                             res.setAuth(1);
@@ -108,7 +112,16 @@ public class biddingPrice {
 
     private boolean verifyBiddingPriceParam (biddingPriceParam bp) {
         try {
-            return (bp.getAuctionID() != null) && (bp.getCertificateNo() != null) && (bp.getPrice() != 0);
+            Pattern pattern= Pattern.compile("^(([1-9]{1}\\d*)|([0]{1}))(\\.(\\d){0,2})?$");
+            if((bp.getAuctionID() == null) || (bp.getCertificateNo() == null) || (bp.getPrice() <= 0))
+                return false;
+            else  {
+                NumberFormat nf = NumberFormat.getInstance();
+                nf.setGroupingUsed(false);
+                String priceStr = nf.format(bp.getPrice());
+                Matcher match = pattern.matcher(priceStr);
+                return match.matches();
+            }
         } catch (RuntimeException e) {
             return false;
         }

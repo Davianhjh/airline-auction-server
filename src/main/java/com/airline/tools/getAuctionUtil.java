@@ -26,7 +26,7 @@ public class getAuctionUtil {
         return response.getString("status");
     }
 
-    public static boolean bidForPrice (int uid, String auctionID, String certificateNo, int price) {
+    public static boolean bidForPrice (int uid, String auctionID, String certificateNo, double price) {
         String resStr;
         Properties serverProp = new Properties();
         try {
@@ -62,14 +62,14 @@ public class getAuctionUtil {
         passengerResult pRes = new passengerResult();
         pRes.setAuctionState(response.getString("status"));
         pRes.setAuctionType(response.getString("type"));
-        pRes.setBiddingPrice(response.getIntValue("price") == 0 ? -1:response.getIntValue("price"));
+        pRes.setBiddingPrice(response.getDoubleValue("price") == 0 ? -1:response.getDoubleValue("price"));
         pRes.setBiddingTime(response.getString("time") == null ? "-1":response.getString("time"));
         pRes.setHit(response.getString("hit") == null ? "o":response.getString("hit"));
         pRes.setPaymentPrice(-1);
         if (pRes.getHit().equals("Y")) {
             pRes.setPaymentPrice(pRes.getBiddingPrice());
             if (pRes.getAuctionType().equals("2")) {
-                pRes.setPaymentPrice(response.getInteger("type2_price"));
+                pRes.setPaymentPrice(response.getDoubleValue("type2_price"));
             }
         }
         return pRes;

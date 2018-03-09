@@ -1,11 +1,10 @@
 package com.airline.auction;
 
-public class biddingPriceParam {
+public class createAlipayBillParam {
     private String auctionID;
     private String certificateNo;
-    private double price;
 
-    public biddingPriceParam(){
+    public createAlipayBillParam () {
         super();
     }
 
@@ -23,13 +22,5 @@ public class biddingPriceParam {
 
     public void setCertificateNo(String certificateNo) {
         this.certificateNo = certificateNo;
-    }
-
-    public double getPrice() {
-        return price;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
     }
 }

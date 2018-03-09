@@ -80,6 +80,13 @@ public class passengerState {
                 }
                 try {
                     res = getAuctionUtil.getBiddingResult(uid, ps.getAuctionID(), ps.getCertificateNo());
+                    if (res.getAuctionType() == null || res.getAuctionState() == null) {
+                        conn.close();
+                        res.setAuth(-1);                                // auction not found
+                        res.setCode(1040);
+                        return res;
+                    }
+
                     if (biddingTag == 0) {                              // agreed and not bid by someone else
                         conn.close();
                         res.setAuth(1);

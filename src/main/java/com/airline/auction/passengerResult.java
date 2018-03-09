@@ -6,10 +6,10 @@ public class passengerResult extends baseRestfulResponse {
     private String auctionState;
     private String auctionType;
     private int userStatus;
-    private int biddingPrice;
+    private double biddingPrice;
     private String biddingTime;
     private String hit;
-    private int paymentPrice;
+    private double paymentPrice;
     private boolean paymentState;
 
     public passengerResult() {
@@ -40,11 +40,11 @@ public class passengerResult extends baseRestfulResponse {
         this.userStatus = userStatus;
     }
 
-    public int getBiddingPrice() {
+    public double getBiddingPrice() {
         return biddingPrice;
     }
 
-    public void setBiddingPrice(int biddingPrice) {
+    public void setBiddingPrice(double biddingPrice) {
         this.biddingPrice = biddingPrice;
     }
 
@@ -64,11 +64,11 @@ public class passengerResult extends baseRestfulResponse {
         this.hit = hit;
     }
 
-    public int getPaymentPrice() {
+    public double getPaymentPrice() {
         return paymentPrice;
     }
 
-    public void setPaymentPrice(int paymentPrice) {
+    public void setPaymentPrice(double paymentPrice) {
         this.paymentPrice = paymentPrice;
     }
 
