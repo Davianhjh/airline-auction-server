@@ -1,9 +1,6 @@
 package com.airline.auction;
 
-import com.airline.tools.AlipayUtil;
-import com.airline.tools.HiKariCPHandler;
-import com.airline.tools.UTCTimeUtil;
-import com.airline.tools.getAuctionUtil;
+import com.airline.tools.*;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -71,11 +68,12 @@ public class createAlipayBill {
                     res.setCode(1030);                                  // error auctionState
                     return res;
                 }
-                DecimalFormat df = new DecimalFormat("#.00");
+                DecimalFormat df = new DecimalFormat("0.00");
                 String biddingPrice = df.format(result.getBiddingPrice());
                 String tranStr = ca.getAuctionID() + System.currentTimeMillis();
                 String transactionID = getTransID(tranStr);
-                String alipayStr = AlipayUtil.alipayStr(transactionID, "彩球购买", "幸运升舱", biddingPrice);
+                String notify_url = "http://220.202.15.42:10020/auction/alipay_notify";
+                String alipayStr = AlipayAPPUtil.alipayStr(transactionID, "lottery", "chance for upgrade", biddingPrice, notify_url);
 
                 String sql2 = "INSERT INTO tradeRecord (transactionNo, uid, auctionID, certificateNo, totalAmount, paymentState, timeStamp) VALUES (?,?,?,?,?,?,?);";
                 pst = conn.prepareStatement(sql2);

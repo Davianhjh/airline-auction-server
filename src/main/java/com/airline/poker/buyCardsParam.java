@@ -1,10 +1,11 @@
-package com.airline.auction;
+package com.airline.poker;
 
-public class createAlipayBillParam {
+public class buyCardsParam {
     private String auctionID;
     private String certificateNo;
+    private String cards;
 
-    public createAlipayBillParam() {
+    public buyCardsParam() {
         super();
     }
 
@@ -22,5 +23,13 @@ public class createAlipayBillParam {
 
     public void setCertificateNo(String certificateNo) {
         this.certificateNo = certificateNo;
+    }
+
+    public String getCards() {
+        return cards;
+    }
+
+    public void setCards(String cards) {
+        this.cards = cards;
     }
 }

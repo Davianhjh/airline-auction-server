@@ -2,6 +2,7 @@ package com.airline.auction;
 
 import com.airline.tools.HiKariCPHandler;
 import com.airline.tools.UTCTimeUtil;
+import com.airline.tools.auctionInfo;
 import com.airline.tools.getAuctionUtil;
 
 import javax.ws.rs.Consumes;
@@ -53,13 +54,13 @@ public class biddingAgree {
             ret = pst.executeQuery();
             if (ret.next()) {
                 int uid = ret.getInt(1);
-                String auctionState = getAuctionUtil.getAuctionStatus(ba.getAuctionID());
-                if (auctionState == null) {
+                auctionInfo ai = getAuctionUtil.getAuctionStatus(ba.getAuctionID());
+                if (ai == null) {
                     conn.close();
                     res.setAuth(-2);
-                    res.setCode(1060);                       // auction service error OR auction not found
+                    res.setCode(1060);                       // auction server error
                     return res;
-                } else if (auctionState.equals("active")) {
+                } else if (ai.getAuctionState().equals("active") && (ai.getAuctionType().equals("1") || ai.getAuctionType().equals("2"))) {
                     String searchSql = "SELECT userStatus FROM userState WHERE auctionID=? AND uid=? AND certificateNo=?;";
                     pst = conn.prepareStatement(searchSql);
                     pst.setString(1, ba.getAuctionID());

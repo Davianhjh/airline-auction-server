@@ -3,6 +3,7 @@ package com.airline.tools;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.domain.AlipayTradeAppPayModel;
+import com.alipay.api.internal.util.AlipaySignature;
 import com.alipay.api.request.AlipayTradeAppPayRequest;
 import com.alipay.api.response.AlipayTradeAppPayResponse;
 
@@ -10,18 +11,19 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.Map;
 import java.util.Properties;
 
-public class AlipayUtil {
+public class AlipayAPPUtil {
 
-    public static String alipayStr (String outTradeNo, String body, String subject, String totalAmount) {
+    public static String alipayStr (String outTradeNo, String body, String subject, String totalAmount, String notify_url) {
         try {
             Properties property = new Properties();
-            InputStream in = AlipayUtil.class.getResourceAsStream("/paymentManage.properties");
+            InputStream in = AlipayAPPUtil.class.getResourceAsStream("/paymentManage.properties");
             property.load(in);
             String APP_ID = property.getProperty("appid");
-            String APP_PRIVATE_KEY = RSAPrivateKeyFormat(readRSAKey("AgiviewKey"));
-            String ALIPAY_PUBLIC_KEY = RSAPublicKeyFormat(readRSAKey("AlipayPub"));
+            String APP_PRIVATE_KEY = readRSAKey("AgiviewKey");
+            String ALIPAY_PUBLIC_KEY = readRSAKey("AlipayPub");
             if (APP_ID == null || ALIPAY_PUBLIC_KEY == null || APP_PRIVATE_KEY == null) {
                 return null;
             } else {
@@ -35,7 +37,7 @@ public class AlipayUtil {
                 model.setTotalAmount(totalAmount);
                 model.setProductCode("lucky balls");
                 request.setBizModel(model);
-                request.setNotifyUrl("http://220.202.15.42:10020/auction/receive_notify");
+                request.setNotifyUrl(notify_url);
                 AlipayTradeAppPayResponse response = alipayClient.sdkExecute(request);
                 return response.getBody();
             }
@@ -45,10 +47,19 @@ public class AlipayUtil {
         }
     }
 
+    public static boolean verifyPayment (Map<String, String> params, String charSet) {
+        try {
+            String ALIPAY_PUBLIC_KEY = readRSAKey("AlipayPub");
+            return AlipaySignature.rsaCheckV1(params, ALIPAY_PUBLIC_KEY, charSet, "RSA2");
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     private static String readRSAKey (String keyName) {
         try {
             Properties property = new Properties();
-            InputStream in = AlipayUtil.class.getResourceAsStream("/paymentManage.properties");
+            InputStream in = AlipayAPPUtil.class.getResourceAsStream("/paymentManage.properties");
             property.load(in);
             File file = new File(property.getProperty(keyName));
             long fileLength = file.length();
@@ -62,7 +73,7 @@ public class AlipayUtil {
             return null;
         }
     }
-
+/*
     private static String RSAPrivateKeyFormat (String keyStr) {
         if (keyStr == null)
             return null;
@@ -88,5 +99,5 @@ public class AlipayUtil {
         }
         return new String (buffer);
     }
-
+*/
 }

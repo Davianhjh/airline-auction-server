@@ -50,7 +50,6 @@ public class verifyTel {
                 String telCountry = ret.getString(2);
                 String sql1 = "INSERT INTO customerAccount (tel, tel_country, username, platform) VALUES (?,?,?,?);";
                 String userName = MD5Util.getMD5(tel);
-                System.out.println(userName);
                 if (userName == null) {
                     res.setAuth(-2);
                     res.setCode(2000);                                     // MD5 error

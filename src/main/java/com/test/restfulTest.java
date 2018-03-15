@@ -9,33 +9,33 @@ import org.omg.CORBA.OBJ_ADAPTER;
 
 import java.io.*;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
 @Path("/test")
 public class restfulTest {
-    @POST
+    @GET
     @Produces(MediaType.TEXT_PLAIN)
-    //@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public String printTesting(@Context HttpServletRequest request) {
-        Map requestParams = request.getParameterMap();
-        System.out.println(request.getParameterMap());
+    public String printTesting() {
+        /*
+        MultivaluedMap<String, String> body = form.asMap();
+        System.out.println(body.size());
+        System.out.println(body.getFirst("key1"));
+        System.out.println(body.getFirst("key2"));
+        Map<String, String> params = new HashMap<>();
+        for (Map.Entry<String, List<String>> entry : body.entrySet()) {
+            System.out.println(entry.getKey());
+            System.out.println(entry.getValue().get(0));
+        }
+        */
         /*
         String urlPath = "http://192.168.1.233:9000/auction/flights";
         ArrayList<String> flightArray = new ArrayList<String>();
@@ -65,9 +65,6 @@ public class restfulTest {
                 System.out.println();
             }
         }
-        */
-
-        /*
         System.out.println("Default Charset=" + Charset.defaultCharset());
         System.out.println("file.encoding=" + System.getProperty("file.encoding"));
         System.out.println("Default Charset in Use=" + getDefaultCharSet());

@@ -1,10 +1,10 @@
-package com.airline.auction;
+package com.airline.poker;
 
-public class createAlipayBillParam {
+public class getCardResultParam {
     private String auctionID;
     private String certificateNo;
 
-    public createAlipayBillParam() {
+    public getCardResultParam () {
         super();
     }
 

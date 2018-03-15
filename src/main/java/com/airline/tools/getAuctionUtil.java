@@ -8,7 +8,7 @@ import java.util.Properties;
 
 public class getAuctionUtil {
 
-    public static String getAuctionStatus (String auctionID) {
+    public static auctionInfo getAuctionStatus (String auctionID) {
         String resStr;
         Properties serverProp = new Properties();
         try {
@@ -23,7 +23,10 @@ public class getAuctionUtil {
             return null;                                 // request failed OR bad response
         }
         JSONObject response = JSONObject.parseObject(resStr);
-        return response.getString("status");
+        auctionInfo auctionInfo = new auctionInfo();
+        auctionInfo.setAuctionState(response.getString("status"));
+        auctionInfo.setAuctionType(response.getString("type"));
+        return auctionInfo;
     }
 
     public static boolean bidForPrice (int uid, String auctionID, String certificateNo, double price) {
