@@ -171,6 +171,7 @@ public class buyCards {
             Properties property = new Properties();
             InputStream in = AlipayAPPUtil.class.getResourceAsStream("/cardPrice.properties");
             property.load(in);
+            in.close();
             double sum = 0.0;
             DecimalFormat df = new DecimalFormat("0.00");
             for (String card: cards) {

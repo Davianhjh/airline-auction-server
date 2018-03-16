@@ -130,6 +130,7 @@ public class deliverCards {
             Properties serverProp = new Properties();
             InputStream in = deliverCards.class.getResourceAsStream("/serverAddress.properties");
             serverProp.load(in);
+            in.close();
             JSONObject body = new JSONObject();
             String urlStr =  serverProp.getProperty("auctionServiceServer") + "/poker/request_card";
             body.put("auction", auctionID);

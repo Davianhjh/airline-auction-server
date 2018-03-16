@@ -70,6 +70,7 @@ public class alipayAPPNotify {
                         Properties paymentProp = new Properties();
                         InputStream in = passengerFlight.class.getResourceAsStream("/paymentManage.properties");
                         paymentProp.load(in);
+                        in.close();
                         if (app_id.equals(paymentProp.getProperty("appid")) && seller_id.equals(paymentProp.getProperty("sellerid")) && Double.parseDouble(total_Amount) == totalAmount) {
                             String updateSql = "UPDATE tradeRecord SET paymentState=1 WHERE transactionNo=?;";
                             pst = conn.prepareStatement(updateSql);

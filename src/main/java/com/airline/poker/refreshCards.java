@@ -123,6 +123,7 @@ public class refreshCards {
             Properties serverProp = new Properties();
             InputStream in = refreshCards.class.getResourceAsStream("/serverAddress.properties");
             serverProp.load(in);
+            in.close();
             JSONObject body = new JSONObject();
             String urlStr =  serverProp.getProperty("auctionServiceServer") + "/poker/cards";
             body.put("auction", auctionID);

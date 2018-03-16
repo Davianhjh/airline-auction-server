@@ -14,6 +14,7 @@ public class getAuctionUtil {
         try {
             InputStream in = getAuctionUtil.class.getResourceAsStream("/serverAddress.properties");
             serverProp.load(in);
+            in.close();
             String urlStr = serverProp.getProperty("auctionServiceServer") + "/auction/status";
             JSONObject body = new JSONObject();
             body.put("auction", auctionID);
@@ -35,6 +36,7 @@ public class getAuctionUtil {
         try {
             InputStream in = getAuctionUtil.class.getResourceAsStream("/serverAddress.properties");
             serverProp.load(in);
+            in.close();
             String urlStr = serverProp.getProperty("auctionServiceServer") + "/auction/bid";
             JSONObject body = new JSONObject();
             body.put("auction", auctionID);
@@ -55,6 +57,7 @@ public class getAuctionUtil {
         Properties serverProp = new Properties();
             InputStream in = getAuctionUtil.class.getResourceAsStream("/serverAddress.properties");
             serverProp.load(in);
+            in.close();
             String urlStr = serverProp.getProperty("auctionServiceServer") + "/auction/passenger_result";
             JSONObject body = new JSONObject();
             body.put("auction", auctionID);

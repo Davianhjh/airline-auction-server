@@ -50,6 +50,7 @@ public class getTicketsUtil {
             try {
                 InputStream in = getTicketsUtil.class.getResourceAsStream("/serverAddress.properties");
                 serverProp.load(in);
+                in.close();
                 String urlStr = serverProp.getProperty("auctionServiceServer") + "/auction/flights";
                 JSONObject body = new JSONObject();
                 body.put("flights", flightArray);
@@ -103,6 +104,7 @@ public class getTicketsUtil {
         try {
             InputStream in = passengerFlight.class.getResourceAsStream("/serverAddress.properties");
             serverProp.load(in);
+            in.close();
             JSONObject body1 = new JSONObject();
             String urlStr1;
             if(type == 1) {

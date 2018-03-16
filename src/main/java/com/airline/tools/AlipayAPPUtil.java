@@ -21,6 +21,7 @@ public class AlipayAPPUtil {
             Properties property = new Properties();
             InputStream in = AlipayAPPUtil.class.getResourceAsStream("/paymentManage.properties");
             property.load(in);
+            in.close();
             String APP_ID = property.getProperty("appid");
             String APP_PRIVATE_KEY = readRSAKey("AgiviewKey");
             String ALIPAY_PUBLIC_KEY = readRSAKey("AlipayPub");
@@ -61,6 +62,7 @@ public class AlipayAPPUtil {
             Properties property = new Properties();
             InputStream in = AlipayAPPUtil.class.getResourceAsStream("/paymentManage.properties");
             property.load(in);
+            in.close();
             File file = new File(property.getProperty(keyName));
             long fileLength = file.length();
             FileInputStream fis = new FileInputStream(file);
