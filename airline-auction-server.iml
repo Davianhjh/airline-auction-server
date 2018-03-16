@@ -28,6 +28,7 @@
     <orderEntry type="jdk" jdkName="1.8" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="alipay-sdk-java20180309170622" level="project" />
+    <orderEntry type="library" name="commons-logging-1.1.1" level="project" />
     <orderEntry type="library" name="Maven: org.glassfish.jersey.containers:jersey-container-servlet:2.17" level="project" />
     <orderEntry type="library" name="Maven: org.glassfish.jersey.containers:jersey-container-servlet-core:2.17" level="project" />
     <orderEntry type="library" name="Maven: org.glassfish.jersey.core:jersey-common:2.17" level="project" />
@@ -58,6 +59,7 @@
     <orderEntry type="library" name="Maven: org.mindrot:jbcrypt:0.3m" level="project" />
     <orderEntry type="library" name="Maven: com.alibaba:fastjson:1.2.46" level="project" />
     <orderEntry type="library" name="Maven: org.jetbrains:annotations:16.0.1" level="project" />
-    <orderEntry type="library" name="commons-logging-1.1.1" level="project" />
+    <orderEntry type="library" name="Maven: com.sun.mail:javax.mail:1.6.1" level="project" />
+    <orderEntry type="library" name="Maven: javax.activation:activation:1.1" level="project" />
   </component>
 </module>

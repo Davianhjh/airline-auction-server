@@ -14,12 +14,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-@Path("/member/verifyTel")
-public class verifyTel {
+@Path("/member/verifyMail")
+public class verifyMail {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public verifyTelRes verifyTel (@QueryParam("verifyCode") String verifyCode, @QueryParam("platform") String platform) {
-        verifyTelRes res = new verifyTelRes();
+    public verifyMailRes verifyTel (@QueryParam("verifyCode") String verifyCode, @QueryParam("platform") String platform) {
+        verifyMailRes res = new verifyMailRes();
         Connection conn;
         PreparedStatement pst;
         ResultSet ret, ret2;
@@ -34,24 +34,23 @@ public class verifyTel {
         } catch (SQLException e){
             e.printStackTrace();
             res.setAuth(-2);
-            res.setCode(2000);                                   // fail to get mysql connection
+            res.setCode(2000);                               // fail to get mysql connection
             return res;
         }
         try {
             String utcTimeStr = UTCTimeUtil.getUTCTimeStr();
-            String searchSql = "SELECT tel, tel_country FROM preRegister WHERE verifyCode=? AND platform=? AND expire > ?;";
+            String searchSql = "SELECT email, password FROM preRegister WHERE verifyCode=? AND platform=? AND expire > ?;";
             pst = conn.prepareStatement(searchSql);
             pst.setString(1, verifyCode);
             pst.setString(2, platform);
             pst.setString(3, utcTimeStr);
             ret = pst.executeQuery();
             if (ret.next()) {
-                String tel = ret.getString(1);
-                String telCountry = ret.getString(2);
-                String sql1 = "SELECT id FROM customerAccount WHERE tel=? AND tel_country=?";
+                String email = ret.getString(1);
+                String password = ret.getString(2);
+                String sql1 = "SELECT id FROM customerAccount WHERE email=?";
                 pst = conn.prepareStatement(sql1);
-                pst.setString(1, tel);
-                pst.setString(2, telCountry);
+                pst.setString(1, email);
                 ret2 = pst.executeQuery();
                 if (ret2.next()) {
                     conn.close();
@@ -60,16 +59,16 @@ public class verifyTel {
                     res.setActivated(true);
                     return res;
                 } else {
-                    String sql2 = "INSERT INTO customerAccount (tel, tel_country, username, platform) VALUES (?,?,?,?);";
-                    String userName = MD5Util.getMD5(tel);
+                    String sql2 = "INSERT INTO customerAccount (email, password, username, platform) VALUES (?,?,?,?);";
+                    String userName = MD5Util.getMD5(email);
                     if (userName == null) {
                         res.setAuth(-2);
                         res.setCode(2000);                                     // MD5 error
                         return res;
                     }
                     pst = conn.prepareStatement(sql2);
-                    pst.setString(1, tel);
-                    pst.setString(2, telCountry);
+                    pst.setString(1, email);
+                    pst.setString(2, password);
                     pst.setString(3, userName.substring(0, 10));
                     pst.setString(4, platform);
                     pst.executeUpdate();
@@ -89,14 +88,14 @@ public class verifyTel {
             } else {
                 conn.close();
                 res.setAuth(-1);
-                res.setCode(1020);                                 // verify code not correct
+                res.setCode(1020);                             // verify code not correct
                 res.setActivated(false);
                 return res;
             }
         } catch (SQLException e) {
             e.printStackTrace();
             res.setAuth(-2);
-            res.setCode(2000);                                     // mysql error
+            res.setCode(2000);                                // mysql error
             return res;
         }
     }
