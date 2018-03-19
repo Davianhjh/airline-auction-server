@@ -63,6 +63,7 @@ public class verifyTel {
                     String sql2 = "INSERT INTO customerAccount (tel, tel_country, username, platform) VALUES (?,?,?,?);";
                     String userName = MD5Util.getMD5(tel);
                     if (userName == null) {
+                        conn.close();
                         res.setAuth(-2);
                         res.setCode(2000);                                     // MD5 error
                         return res;

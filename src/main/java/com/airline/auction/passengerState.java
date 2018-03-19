@@ -104,7 +104,7 @@ public class passengerState {
                     e.printStackTrace();
                     conn.close();
                     res.setAuth(-2);
-                    res.setCode(1060);
+                    res.setCode(1060);                                  // auction service error
                     return res;
                 }
             } else {

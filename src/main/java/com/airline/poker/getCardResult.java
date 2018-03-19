@@ -122,7 +122,7 @@ public class getCardResult {
     private String getPokerResult(String auctionID, String certificateNo, int uid) {
         try {
             Properties serverProp = new Properties();
-            InputStream in = deliverCards.class.getResourceAsStream("/serverAddress.properties");
+            InputStream in = getCardResult.class.getResourceAsStream("/serverAddress.properties");
             serverProp.load(in);
             in.close();
             JSONObject body = new JSONObject();

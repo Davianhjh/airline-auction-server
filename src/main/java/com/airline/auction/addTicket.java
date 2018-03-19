@@ -45,9 +45,9 @@ public class addTicket {
             res.setCode(2000);                               // fail to get mysql connection
             return res;
         }
-        // for member add ticket
-        if (AgiToken != null) {
-            try {
+        try {
+            // for member add ticket
+            if (AgiToken != null) {
                 String utcTimeStr = UTCTimeUtil.getUTCTimeStr();
                 String verifySql = "SELECT id FROM customerToken INNER JOIN customerAccount ON customerToken.uid = customerAccount.id WHERE token = ? and expire > ?;";
                 pst = conn.prepareStatement(verifySql);
@@ -80,21 +80,15 @@ public class addTicket {
                     res.setCode(1020);                              // user not found
                     return res;
                 }
-            } catch (SQLException e) {
-                e.printStackTrace();
-                res.setAuth(-2);
-                res.setCode(2000);                                  // mysql error
-                return res;
             }
-        }
-        // for visitor add ticket
-        else {
-            if (at.getNumberType() == 1) {
-                res.setAuth(-1);
-                res.setCode(1023);                                  // visitor cannot use certificateNo search tickets
-                return res;
-            } else {
-                try {
+            // for visitor add ticket
+            else {
+                if (at.getNumberType() == 1) {
+                    conn.close();
+                    res.setAuth(-1);
+                    res.setCode(1023);                                  // visitor cannot use certificateNo search tickets
+                    return res;
+                } else {
                     result = getTicketsUtil.getRemoteTickets(conn, TAMPORARY_UID, at.getName(), at.getNumber(), at.getNumberType(), tickets, null);
                     if (result == 1) {
                         if (tickets.size() == 0) {
@@ -174,13 +168,13 @@ public class addTicket {
                         res.setCode(1060);                       // get auctionData error
                         return res;
                     }
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                    res.setAuth(-2);
-                    res.setCode(2000);                           // mysql error
-                    return res;
                 }
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            res.setAuth(-2);
+            res.setCode(2000);                           // mysql error
+            return res;
         }
     }
 

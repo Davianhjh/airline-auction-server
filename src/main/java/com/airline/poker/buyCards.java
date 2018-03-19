@@ -80,7 +80,19 @@ public class buyCards {
                             } else {
                                 String tranStr = bc.getAuctionID() + System.currentTimeMillis();
                                 String transactionID = getTransID(tranStr);
-                                String notify_url = "http://220.202.15.42:10020/poker/alipay_notify";
+                                Properties property = new Properties();
+                                try {
+                                    InputStream in = buyCards.class.getResourceAsStream("/serverAddress.properties");
+                                    property.load(in);
+                                    in.close();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                    conn.close();
+                                    res.setAuth(-2);
+                                    res.setCode(2000);                                          // properties file not found
+                                    return res;
+                                }
+                                String notify_url = property.getProperty("localhostServer") + "/poker/alipay_notify";
                                 String alipayStr = AlipayAPPUtil.alipayStr(transactionID, "poker", "flight upgrade", total_Amount, notify_url);
 
                                 String insertSql = "INSERT INTO cardTransaction (transactionNo, uid, auctionID, certificateNo, totalAmount, card, paymentState) VALUES (?,?,?,?,?,?,?);";
@@ -133,6 +145,8 @@ public class buyCards {
             res.setAuth(-2);
             res.setCode(2000);                               // mysql error
             return res;
+
+
         }
     }
 
@@ -169,7 +183,7 @@ public class buyCards {
     private String getTotalAmount(String[] cards) {
         try {
             Properties property = new Properties();
-            InputStream in = AlipayAPPUtil.class.getResourceAsStream("/cardPrice.properties");
+            InputStream in = buyCards.class.getResourceAsStream("/cardPrice.properties");
             property.load(in);
             in.close();
             double sum = 0.0;

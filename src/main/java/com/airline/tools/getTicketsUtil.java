@@ -102,7 +102,7 @@ public class getTicketsUtil {
         }
 
         try {
-            InputStream in = passengerFlight.class.getResourceAsStream("/serverAddress.properties");
+            InputStream in = getTicketsUtil.class.getResourceAsStream("/serverAddress.properties");
             serverProp.load(in);
             in.close();
             JSONObject body1 = new JSONObject();

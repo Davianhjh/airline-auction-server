@@ -55,15 +55,15 @@ public class getAuctionUtil {
     public static passengerResult getBiddingResult (int uid, String auctionID, String certificateNo) throws Exception {
         String resStr;
         Properties serverProp = new Properties();
-            InputStream in = getAuctionUtil.class.getResourceAsStream("/serverAddress.properties");
-            serverProp.load(in);
-            in.close();
-            String urlStr = serverProp.getProperty("auctionServiceServer") + "/auction/passenger_result";
-            JSONObject body = new JSONObject();
-            body.put("auction", auctionID);
-            body.put("uid", uid);
-            body.put("passenger", certificateNo);
-            resStr = httpRequestUtil.postRequest(urlStr, null, body.toJSONString());
+        InputStream in = getAuctionUtil.class.getResourceAsStream("/serverAddress.properties");
+        serverProp.load(in);
+        in.close();
+        String urlStr = serverProp.getProperty("auctionServiceServer") + "/auction/passenger_result";
+        JSONObject body = new JSONObject();
+        body.put("auction", auctionID);
+        body.put("uid", uid);
+        body.put("passenger", certificateNo);
+        resStr = httpRequestUtil.postRequest(urlStr, null, body.toJSONString());
         JSONObject response = JSONObject.parseObject(resStr);
         passengerResult pRes = new passengerResult();
         pRes.setAuctionState(response.getString("status"));

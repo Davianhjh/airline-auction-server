@@ -54,6 +54,7 @@ public class verifyAlipayBill {
             if (ret.next()) {
                 String transactionID = testBody.getString("transactionID");
                 if (transactionID == null) {                          // payment not escaped
+                    conn.close();
                     res.setAuth(1);
                     res.setCode(0);
                     res.setVerify(1);

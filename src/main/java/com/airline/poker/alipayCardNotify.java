@@ -70,7 +70,7 @@ public class alipayCardNotify {
                     if (ret.next()) {
                         double totalAmount = ret.getDouble(1);
                         Properties paymentProp = new Properties();
-                        InputStream in = passengerFlight.class.getResourceAsStream("/paymentManage.properties");
+                        InputStream in = alipayCardNotify.class.getResourceAsStream("/paymentManage.properties");
                         paymentProp.load(in);
                         in.close();
                         if (app_id.equals(paymentProp.getProperty("appid")) && seller_id.equals(paymentProp.getProperty("sellerid")) && Double.parseDouble(total_Amount) == totalAmount) {

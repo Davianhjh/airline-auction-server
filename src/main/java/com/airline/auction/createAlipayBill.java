@@ -10,12 +10,15 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.Arrays;
+import java.util.Properties;
 
 @Path("/createAlipayBill")
 public class createAlipayBill {
@@ -72,7 +75,19 @@ public class createAlipayBill {
                 String biddingPrice = df.format(result.getBiddingPrice());
                 String tranStr = ca.getAuctionID() + System.currentTimeMillis();
                 String transactionID = getTransID(tranStr);
-                String notify_url = "http://220.202.15.42:10020/auction/alipay_notify";
+                Properties property = new Properties();
+                try {
+                    InputStream in = createAlipayBill.class.getResourceAsStream("/serverAddress.properties");
+                    property.load(in);
+                    in.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    conn.close();
+                    res.setAuth(-2);
+                    res.setCode(2000);                                          // properties file not found
+                    return res;
+                }
+                String notify_url = property.getProperty("localhostServer") + "/auction/alipay_notify";
                 String alipayStr = AlipayAPPUtil.alipayStr(transactionID, "lottery", "chance for upgrade", biddingPrice, notify_url);
 
                 String sql2 = "INSERT INTO tradeRecord (transactionNo, uid, auctionID, certificateNo, totalAmount, paymentState, timeStamp) VALUES (?,?,?,?,?,?,?);";
@@ -106,7 +121,6 @@ public class createAlipayBill {
             res.setCode(2000);                                          // mysql error
             return res;
         }
-
     }
 
     private boolean verifyCreateAlipayBillParam (createAlipayBillParam ca) {

@@ -76,7 +76,7 @@ public class registerByMail {
                 String verifyUrl;
                 try {
                     Properties serverProp = new Properties();
-                    InputStream in = getAuctionUtil.class.getResourceAsStream("/serverAddress.properties");
+                    InputStream in = registerByMail.class.getResourceAsStream("/serverAddress.properties");
                     serverProp.load(in);
                     in.close();
                     verifyUrl = serverProp.getProperty("localhostServer") + "/member/verifyMail?verifyCode=" + verifyCode + "&platform=" + rm.getPlatform();
