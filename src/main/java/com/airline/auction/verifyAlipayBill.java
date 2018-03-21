@@ -29,7 +29,6 @@ public class verifyAlipayBill {
         Connection conn;
         PreparedStatement pst;
         ResultSet ret;
-
         if (AgiToken == null) {
             res.setAuth(-1);
             res.setCode(1000);                               // parameters not correct
@@ -54,7 +53,6 @@ public class verifyAlipayBill {
             if (ret.next()) {
                 String transactionID = testBody.getString("transactionID");
                 if (transactionID == null) {                          // payment not escaped
-                    conn.close();
                     res.setAuth(1);
                     res.setCode(0);
                     res.setVerify(1);
@@ -64,14 +62,12 @@ public class verifyAlipayBill {
                     pst = conn.prepareStatement(updateSql);
                     pst.setString(1, transactionID);
                     pst.executeUpdate();
-                    conn.close();
                     res.setAuth(1);
                     res.setCode(0);
                     res.setVerify(1);
                     return res;
                 }
             } else {
-                conn.close();
                 res.setAuth(-1);
                 res.setCode(1020);                                      // user not found
                 return res;
@@ -81,6 +77,12 @@ public class verifyAlipayBill {
             res.setAuth(-2);
             res.setCode(2000);                                          // mysql error
             return res;
+        } finally {
+            try {
+                conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

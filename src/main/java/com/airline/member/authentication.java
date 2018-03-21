@@ -57,7 +57,6 @@ public class authentication  {
                 pst.setString(1, ap.getIdcard());
                 ret2 = pst.executeQuery();
                 if (ret2.next()) {
-                    conn.close();
                     res.setAuth(-1);
                     res.setCode(1010);                          // idcard has been authenticated
                     return res;
@@ -70,14 +69,12 @@ public class authentication  {
                     pst.setString(4, ap.getBirthday());
                     pst.setInt(5, uid);
                     pst.executeUpdate();
-                    conn.close();
                     res.setAuth(1);
                     res.setCode(0);
                     res.setAuthentication(true);
                     return res;
                 }
             } else {
-                conn.close();
                 res.setAuth(-1);
                 res.setCode(1020);                              // user not found
                 return res;
@@ -87,6 +84,12 @@ public class authentication  {
             res.setAuth(-2);
             res.setCode(2000);                                  // mysql error
             return res;
+        } finally {
+            try {
+                conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 

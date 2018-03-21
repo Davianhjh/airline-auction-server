@@ -18,6 +18,7 @@ import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
 
 @Path("/auction/alipay_notify")
@@ -57,8 +58,9 @@ public class alipayAPPNotify {
                 return "fail";
             }
             else {
+                Connection conn = null;
                 try {
-                    Connection conn = HiKariCPHandler.getConn();
+                    conn = HiKariCPHandler.getConn();
                     PreparedStatement pst;
                     ResultSet ret;
                     String searchSql = "SELECT totalAmount FROM tradeRecord WHERE transactionNo=?;";
@@ -77,20 +79,23 @@ public class alipayAPPNotify {
                             pst.setString(1, out_trade_no);
                             pst.executeUpdate();
                             System.out.println("payment verified success!");
-                            conn.close();
                             return "success";
                         }
                         else {
-                            conn.close();
                             return "fail";
                         }
                     } else {
-                        conn.close();
                         return "fail";
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
                     return "fail";
+                } finally {
+                    try {
+                        if (conn != null) conn.close();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }

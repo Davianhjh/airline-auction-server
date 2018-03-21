@@ -1,11 +1,8 @@
 
 package com.airline.poker;
 
-import com.airline.member.passengerFlight;
 import com.airline.tools.AlipayAPPUtil;
 import com.airline.tools.HiKariCPHandler;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -19,6 +16,7 @@ import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
 
 @Path("/poker/alipay_notify")
@@ -59,8 +57,9 @@ public class alipayCardNotify {
                 return "fail";
             }
             else {
+                Connection conn = null;
                 try {
-                    Connection conn = HiKariCPHandler.getConn();
+                    conn = HiKariCPHandler.getConn();
                     PreparedStatement pst;
                     ResultSet ret;
                     String searchSql = "SELECT totalAmount FROM cardTransaction WHERE transactionNo=?;";
@@ -79,20 +78,23 @@ public class alipayCardNotify {
                             pst.setString(1, out_trade_no);
                             pst.executeUpdate();
                             System.out.println("payment verified success!");
-                            conn.close();
                             return "success";
                         }
                         else {
-                            conn.close();
                             return "fail";
                         }
                     } else {
-                        conn.close();
                         return "fail";
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
                     return "fail";
+                } finally {
+                    try {
+                        if (conn != null) conn.close();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }

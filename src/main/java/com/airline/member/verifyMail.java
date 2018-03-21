@@ -53,7 +53,6 @@ public class verifyMail {
                 pst.setString(1, email);
                 ret2 = pst.executeQuery();
                 if (ret2.next()) {
-                    conn.close();
                     res.setAuth(1);
                     res.setCode(0);
                     res.setActivated(true);
@@ -62,7 +61,6 @@ public class verifyMail {
                     String sql2 = "INSERT INTO customerAccount (email, password, username, platform) VALUES (?,?,?,?);";
                     String userName = MD5Util.getMD5(email);
                     if (userName == null) {
-                        conn.close();
                         res.setAuth(-2);
                         res.setCode(2000);                                     // MD5 error
                         return res;
@@ -80,14 +78,12 @@ public class verifyMail {
                     pst.setString(2, platform);
                     pst.executeUpdate();
 
-                    conn.close();
                     res.setAuth(1);
                     res.setCode(0);
                     res.setActivated(true);
                     return res;
                 }
             } else {
-                conn.close();
                 res.setAuth(-1);
                 res.setCode(1020);                             // verify code not correct
                 res.setActivated(false);
@@ -98,6 +94,12 @@ public class verifyMail {
             res.setAuth(-2);
             res.setCode(2000);                                // mysql error
             return res;
+        } finally {
+            try {
+                conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

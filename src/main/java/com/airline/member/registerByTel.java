@@ -81,6 +81,12 @@ public class registerByTel {
             res.setAuth(-2);
             res.setCode(2000);                                  // mysql error
             return res;
+        } finally {
+            try {
+                conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 

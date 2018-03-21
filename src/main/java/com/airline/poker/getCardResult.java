@@ -80,25 +80,21 @@ public class getCardResult {
                         }
                         cardArray.clear();
                         res.setWinner(cardArray);
-                        conn.close();
                         res.setAuth(1);
                         res.setCode(0);
                         res.setHit(response.getBoolean("win") ? 1:0);
                         return res;
                     } else {
-                        conn.close();
                         res.setAuth(-2);
                         res.setCode(1060);                   // auction server error
                         return res;
                     }
                 } else {
-                    conn.close();
                     res.setAuth(-1);
                     res.setCode(1030);                       // error auction status
                     return res;
                 }
             } else {
-                conn.close();
                 res.setAuth(-1);
                 res.setCode(1020);                           // user not found
                 return res;
@@ -108,6 +104,12 @@ public class getCardResult {
             res.setAuth(-2);
             res.setCode(2000);                               // mysql error
             return res;
+        } finally {
+            try {
+                conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 

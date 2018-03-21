@@ -82,22 +82,18 @@ public class refreshCards {
                         }
                         res.setCards(cardArray);
                         cardArray.clear();
-                        conn.close();
                         return res;
                     } else {
-                        conn.close();
                         res.setAuth(-2);
                         res.setCode(1060);                    // auction server error
                         return res;
                     }
                 } else {
-                    conn.close();
                     res.setAuth(-2);
                     res.setCode(1030);                       // error auctionState
                     return res;
                 }
             } else {
-                conn.close();
                 res.setAuth(-1);
                 res.setCode(1020);                           // user not found
                 return res;
@@ -107,6 +103,12 @@ public class refreshCards {
             res.setAuth(-2);
             res.setCode(2000);                               // mysql error
             return res;
+        } finally {
+            try {
+                conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 

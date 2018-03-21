@@ -53,7 +53,6 @@ public class passengerInfo {
                 String cnid_name = ret.getString(1);
                 String cnid = ret.getString(2);
                 String tel = ret.getString(3);
-                conn.close();
                 res.setAuth(1);
                 res.setCode(0);
                 res.setName(cnid_name);
@@ -61,7 +60,6 @@ public class passengerInfo {
                 res.setTel(tel);
                 return res;
             } else {
-                conn.close();
                 res.setAuth(-1);
                 res.setCode(1020);                              // user not found
                 return res;
@@ -71,6 +69,12 @@ public class passengerInfo {
             res.setAuth(-2);
             res.setCode(2000);                                // mysql error
             return res;
+        } finally {
+            try {
+                conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

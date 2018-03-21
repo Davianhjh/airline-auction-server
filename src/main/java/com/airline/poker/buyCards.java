@@ -73,7 +73,6 @@ public class buyCards {
                         if (ai != null && ai.getAuctionState().equals("active") && ai.getAuctionType().equals("p")) {
                             String total_Amount = getTotalAmount(cards);
                             if (total_Amount == null) {
-                                conn.close();
                                 res.setAuth(-2);
                                 res.setCode(2000);                              // mysql error
                                 return res;
@@ -87,7 +86,6 @@ public class buyCards {
                                     in.close();
                                 } catch (IOException e) {
                                     e.printStackTrace();
-                                    conn.close();
                                     res.setAuth(-2);
                                     res.setCode(2000);                                          // properties file not found
                                     return res;
@@ -106,7 +104,6 @@ public class buyCards {
                                 pst.setInt(7, 0);
                                 pst.executeUpdate();
 
-                                conn.close();
                                 res.setAuth(1);
                                 res.setCode(0);
                                 res.setMethod("Alipay");
@@ -116,26 +113,22 @@ public class buyCards {
                                 return res;
                             }
                         } else {
-                            conn.close();
                             res.setAuth(-2);
                             res.setCode(1030);                               // error auctionState
                             return res;
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
-                        conn.close();
                         res.setAuth(-2);                                    // auction service fail
                         res.setCode(1060);
                         return res;
                     }
                 } else {
-                    conn.close();
                     res.setAuth(-1);
                     res.setCode(1000);                        // parameters not correct
                     return res;
                 }
             } else {
-                conn.close();
                 res.setAuth(-1);
                 res.setCode(1020);                           // user not found
                 return res;
@@ -145,8 +138,12 @@ public class buyCards {
             res.setAuth(-2);
             res.setCode(2000);                               // mysql error
             return res;
-
-
+        } finally {
+            try {
+                conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 

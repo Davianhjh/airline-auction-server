@@ -81,20 +81,17 @@ public class passengerState {
                 try {
                     res = getAuctionUtil.getBiddingResult(uid, ps.getAuctionID(), ps.getCertificateNo());
                     if (res.getAuctionType() == null || res.getAuctionState() == null) {
-                        conn.close();
                         res.setAuth(-1);                                // auction not found
                         res.setCode(1040);
                         return res;
                     }
 
                     if (biddingTag == 0) {                              // agreed and not bid by someone else
-                        conn.close();
                         res.setAuth(1);
                         res.setCode(0);
                         res.setUserStatus(userStatus);
                         return res;
                     } else {                                            // bid by someone else
-                        conn.close();
                         res.setAuth(1);
                         res.setCode(0);
                         res.setUserStatus(-1);
@@ -102,13 +99,11 @@ public class passengerState {
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    conn.close();
                     res.setAuth(-2);
                     res.setCode(1060);                                  // auction service error
                     return res;
                 }
             } else {
-                conn.close();
                 res.setAuth(-1);
                 res.setCode(1020);                                      // user not found
                 return res;
@@ -118,6 +113,12 @@ public class passengerState {
             res.setAuth(-2);
             res.setCode(2000);                                          // mysql error
             return res;
+        } finally {
+            try {
+                conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 

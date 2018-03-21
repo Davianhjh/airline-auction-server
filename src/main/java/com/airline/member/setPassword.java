@@ -51,7 +51,6 @@ public class setPassword {
                 String name = ret.getString(2);
                 String pwd = ret.getString(3);
                 if (pwd != null) {
-                    conn.close();
                     res.setAuth(-1);
                     res.setCode(1021);                        // password has been set
                     return res;
@@ -70,7 +69,6 @@ public class setPassword {
                     pst.setString(3, sp.getPlatform());
                     pst.executeUpdate();
 
-                    conn.close();
                     res.setAuth(1);
                     res.setCode(0);
                     res.setName(name);
@@ -78,7 +76,6 @@ public class setPassword {
                     return res;
                 }
             } else {
-                conn.close();
                 res.setAuth(-1);
                 res.setCode(1011);                             // account not registered
                 return res;
@@ -88,6 +85,12 @@ public class setPassword {
             res.setAuth(-2);
             res.setCode(2000);                                     // mysql error
             return res;
+        } finally {
+            try {
+                conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 

@@ -73,31 +73,26 @@ public class biddingPrice {
                             pst.setInt(3, uid);
                             pst.setString(4, bp.getCertificateNo());
                             pst.executeUpdate();
-                            conn.close();
                             res.setAuth(1);
                             res.setCode(0);
                             res.setBid(1);
                             return res;
                         } else {
-                            conn.close();
                             res.setAuth(-2);
                             res.setCode(1060);                  // auction service error OR auction not found
                             return res;
                         }
                     } else {
-                        conn.close();
                         res.setAuth(-1);
                         res.setCode(1031);                      // error userStatus
                         return res;
                     }
                 } else {
-                    conn.close();
                     res.setAuth(-1);
                     res.setCode(1031);                          // error userStatus
                     return res;
                 }
             } else {
-                conn.close();
                 res.setAuth(-1);
                 res.setCode(1020);                              // user not found
                 return res;
@@ -107,6 +102,12 @@ public class biddingPrice {
             res.setAuth(-2);
             res.setCode(2000);                                  // mysql error
             return res;
+        } finally {
+            try {
+                conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 

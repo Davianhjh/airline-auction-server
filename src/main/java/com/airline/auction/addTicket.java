@@ -58,24 +58,20 @@ public class addTicket {
                     int uid = ret.getInt(1);
                     result = getTicketsUtil.getRemoteTickets(conn, uid, at.getName(), at.getNumber(), at.getNumberType(), tickets, null);
                     if (result == 1) {
-                        conn.close();
                         res.setAuth(1);
                         res.setCode(0);
                         res.setTickets(tickets);
                         return res;
                     } else if (result == -1) {
-                        conn.close();
                         res.setAuth(-2);
                         res.setCode(1050);                       // get ticketData error
                         return res;
                     } else {
-                        conn.close();
                         res.setAuth(-2);
                         res.setCode(1060);                       // get auctionData error
                         return res;
                     }
                 } else {
-                    conn.close();
                     res.setAuth(-1);
                     res.setCode(1020);                              // user not found
                     return res;
@@ -84,7 +80,6 @@ public class addTicket {
             // for visitor add ticket
             else {
                 if (at.getNumberType() == 1) {
-                    conn.close();
                     res.setAuth(-1);
                     res.setCode(1023);                                  // visitor cannot use certificateNo search tickets
                     return res;
@@ -92,7 +87,6 @@ public class addTicket {
                     result = getTicketsUtil.getRemoteTickets(conn, TAMPORARY_UID, at.getName(), at.getNumber(), at.getNumberType(), tickets, null);
                     if (result == 1) {
                         if (tickets.size() == 0) {
-                            conn.close();
                             res.setAuth(1);
                             res.setCode(0);
                             res.setTickets(tickets);             // ticketNo not found, tickets is [];
@@ -130,7 +124,6 @@ public class addTicket {
                                     pst.setString(2, token);
                                     pst.executeUpdate();
                                 } else {
-                                    conn.close();
                                     res.setAuth(-2);
                                     res.setCode(2000);         // mysql error (shouldn't be here)
                                     return res;
@@ -149,7 +142,6 @@ public class addTicket {
                             pst.setInt(3, TAMPORARY_UID);
                             pst.setString(4, at.getNumber());
                             pst.executeUpdate();
-                            conn.close();
                             res.setAuth(1);
                             res.setCode(0);
                             res.setName(at.getName());
@@ -158,12 +150,10 @@ public class addTicket {
                             return res;
                         }
                     } else if (result == -1) {
-                        conn.close();
                         res.setAuth(-2);
                         res.setCode(1050);                       // get ticketData error
                         return res;
                     } else {
-                        conn.close();
                         res.setAuth(-2);
                         res.setCode(1060);                       // get auctionData error
                         return res;
@@ -175,6 +165,12 @@ public class addTicket {
             res.setAuth(-2);
             res.setCode(2000);                           // mysql error
             return res;
+        } finally {
+            try {
+                conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 

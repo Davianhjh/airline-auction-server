@@ -34,7 +34,6 @@ public class deliverCards {
         Connection conn;
         PreparedStatement pst;
         ResultSet ret, ret2;
-
         if (AgiToken == null) {
             res.setAuth(-1);
             res.setCode(1000);                               // parameters not correct
@@ -88,31 +87,26 @@ public class deliverCards {
                             }
                             res.setNewCards(cardArray);
                             cardArray.clear();
-                            conn.close();
                             res.setAuth(1);
                             res.setCode(0);
                             res.setVerify(1);
                             return res;
                         } else {
-                            conn.close();
                             res.setAuth(-2);
                             res.setCode(1061);                               // card exceeded
                             return res;
                         }
                     } else {
-                        conn.close();
                         res.setAuth(-2);
                         res.setCode(1060);                                   // auction server error
                         return res;
                     }
                 } else {
-                    conn.close();
                     res.setAuth(-1);
                     res.setCode(1033);                                  // payment not verified
                     return res;
                 }
             } else {
-                conn.close();
                 res.setAuth(-1);
                 res.setCode(1020);                                      // user not found
                 return res;
@@ -122,6 +116,12 @@ public class deliverCards {
             res.setAuth(-2);
             res.setCode(2000);                                          // mysql error
             return res;
+        } finally {
+            try {
+                conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 

@@ -63,13 +63,11 @@ public class passengerFlight {
                 ArrayList<baseTicketData> tickets = new ArrayList<baseTicketData>();
                 if (cnid == null || cnid_name == null) {
                      if (getTicketsUtil.getLocalAddedTickets(conn, uid, utcTimeStr, tickets)) {
-                        conn.close();
                         res.setAuth(1);
                         res.setCode(1);                          // a remind for bounding certificateCard
                         res.setTickets(tickets);
                         return res;
                     } else {
-                        conn.close();
                         res.setAuth(-2);
                         res.setCode(1060);                       // get auctionData error
                         return res;
@@ -93,7 +91,6 @@ public class passengerFlight {
                             timeInterval = currentTimeStamp - savedTime;
                         } catch (ParseException e) {
                             e.printStackTrace();
-                            conn.close();
                             res.setAuth(-2);
                             res.setCode(2000);                                  // date parse error
                             return res;
@@ -101,31 +98,26 @@ public class passengerFlight {
                         if (timeInterval > MAX_INTERVAL) {
                             int result = getTicketsUtil.getRemoteTickets(conn, uid, cnid_name, cnid, 1, tickets, savedEdgeTime);
                             if (result == 1) {
-                                conn.close();
                                 res.setAuth(1);
                                 res.setCode(0);
                                 res.setTickets(tickets);
                                 return res;
                             } else if (result == -1) {
-                                conn.close();
                                 res.setAuth(-2);
                                 res.setCode(1050);                       // get ticketData error
                                 return res;
                             } else {
-                                conn.close();
                                 res.setAuth(-2);
                                 res.setCode(1060);                       // get auctionData error
                                 return res;
                             }
                         } else {
                             if (getTicketsUtil.getLocalAddedTickets(conn, uid, utcTimeStr, tickets)) {
-                                conn.close();
                                 res.setAuth(1);
                                 res.setCode(0);
                                 res.setTickets(tickets);
                                 return res;
                             } else {
-                                conn.close();
                                 res.setAuth(-2);
                                 res.setCode(1060);                       // get auctionData error
                                 return res;
@@ -134,18 +126,15 @@ public class passengerFlight {
                     } else {
                         int result = getTicketsUtil.getRemoteTickets(conn, uid, cnid_name, cnid, 1, tickets, null);
                         if (result == 1) {
-                            conn.close();
                             res.setAuth(1);
                             res.setCode(0);
                             res.setTickets(tickets);
                             return res;
                         } else if (result == -1) {
-                            conn.close();
                             res.setAuth(-2);
                             res.setCode(1050);                       // get ticketData error
                             return res;
                         } else {
-                            conn.close();
                             res.setAuth(-2);
                             res.setCode(1060);                       // get auctionData error
                             return res;
@@ -153,7 +142,6 @@ public class passengerFlight {
                     }
                 }
             } else {
-                conn.close();
                 res.setAuth(-1);
                 res.setCode(1020);                              // user not found
                 return res;
@@ -163,6 +151,12 @@ public class passengerFlight {
             res.setAuth(-2);
             res.setCode(2000);                                  // mysql error
             return res;
+        } finally {
+            try {
+                conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

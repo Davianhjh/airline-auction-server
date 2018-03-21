@@ -54,7 +54,6 @@ public class verifyTel {
                 pst.setString(2, telCountry);
                 ret2 = pst.executeQuery();
                 if (ret2.next()) {
-                    conn.close();
                     res.setAuth(1);
                     res.setCode(0);
                     res.setActivated(true);
@@ -63,7 +62,6 @@ public class verifyTel {
                     String sql2 = "INSERT INTO customerAccount (tel, tel_country, username, platform) VALUES (?,?,?,?);";
                     String userName = MD5Util.getMD5(tel);
                     if (userName == null) {
-                        conn.close();
                         res.setAuth(-2);
                         res.setCode(2000);                                     // MD5 error
                         return res;
@@ -81,14 +79,12 @@ public class verifyTel {
                     pst.setString(2, platform);
                     pst.executeUpdate();
 
-                    conn.close();
                     res.setAuth(1);
                     res.setCode(0);
                     res.setActivated(true);
                     return res;
                 }
             } else {
-                conn.close();
                 res.setAuth(-1);
                 res.setCode(1020);                                 // verify code not correct
                 res.setActivated(false);
@@ -99,6 +95,12 @@ public class verifyTel {
             res.setAuth(-2);
             res.setCode(2000);                                     // mysql error
             return res;
+        } finally {
+            try {
+                conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

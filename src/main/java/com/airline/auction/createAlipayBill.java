@@ -60,13 +60,11 @@ public class createAlipayBill {
                 try {
                     result = getAuctionUtil.getBiddingResult(uid, ca.getAuctionID(), ca.getCertificateNo());
                 } catch (Exception e) {
-                    conn.close();
                     res.setAuth(-2);                                    // auction service fail
                     res.setCode(1060);
                     return res;
                 }
                 if (!result.getAuctionState().equals("result") || (!result.getAuctionType().equals("1") && !result.getAuctionType().equals("2")) || !result.getHit().equals("Y") || result.getBiddingPrice() <= 0) {
-                    conn.close();
                     res.setAuth(-2);
                     res.setCode(1030);                                  // error auctionState
                     return res;
@@ -82,7 +80,6 @@ public class createAlipayBill {
                     in.close();
                 } catch (IOException e) {
                     e.printStackTrace();
-                    conn.close();
                     res.setAuth(-2);
                     res.setCode(2000);                                          // properties file not found
                     return res;
@@ -101,7 +98,6 @@ public class createAlipayBill {
                 pst.setString(7, utcTimeStr);
                 pst.executeUpdate();
 
-                conn.close();
                 res.setAuth(1);
                 res.setCode(0);
                 res.setMethod("Alipay");
@@ -110,7 +106,6 @@ public class createAlipayBill {
                 res.setTransactionID(transactionID);
                 return res;
             } else {
-                conn.close();
                 res.setAuth(-1);
                 res.setCode(1020);                                      // user not found
                 return res;
@@ -120,6 +115,12 @@ public class createAlipayBill {
             res.setAuth(-2);
             res.setCode(2000);                                          // mysql error
             return res;
+        } finally {
+            try {
+                conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 

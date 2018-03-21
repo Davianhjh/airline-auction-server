@@ -36,10 +36,8 @@ public class memberLogin {
         }
         try {
             if (verifyResult == 0) {
-                conn.close();
                 res.setAuth(-1);
                 res.setCode(1000);                               // parameters not correct
-                conn.close();
                 return res;
             } else if (verifyResult == 1) {
                 String searchSql = "SELECT id, password, username, cnid_name FROM customerAccount WHERE email=?;";
@@ -59,10 +57,8 @@ public class memberLogin {
                 String userName = ret.getString(3);
                 String cnid_name = ret.getString(4);
                 if (!BCrypt.checkpw(ml.getPassword(), hashedPassword)) {
-                    conn.close();
                     res.setAuth(-1);
                     res.setCode(1020);                          // user password not match
-                    conn.close();
                     return res;
                 }
                 String token = tokenHandler.createJWT(String.valueOf(id), userName, ml.getPlatform(), 7 * 24 * 3600 * 1000);
@@ -85,7 +81,6 @@ public class memberLogin {
                     pst.setString(3, ml.getPlatform());
                     pst.executeUpdate();
                 }
-                conn.close();
                 res.setAuth(1);
                 res.setCode(0);
                 if (cnid_name == null)
@@ -94,7 +89,6 @@ public class memberLogin {
                 res.setToken(token);
                 return res;
             } else {
-                conn.close();
                 res.setAuth(-1);
                 res.setCode(1020);                              // user not found
                 return res;
@@ -104,6 +98,12 @@ public class memberLogin {
             res.setAuth(-2);
             res.setCode(2000);                                  // mysql error
             return res;
+        } finally {
+            try {
+                conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 
