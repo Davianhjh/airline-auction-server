@@ -57,8 +57,13 @@ public class deliverCards {
             ret = pst.executeQuery();
             if (ret.next()) {
                 String transactionID = testBody.getString("transactionID");
-                if (transactionID == null)
-                    transactionID = testBody.getJSONObject("alipay_trade_app_pay_response").getString("out_trade_no");
+                if (transactionID != null) {
+                    String updateSql = "UPDATE cardTransaction set paymentState=1 WHERE transactionNo=?;";
+                    pst = conn.prepareStatement(updateSql);
+                    pst.setString(1, transactionID);
+                    pst.executeUpdate();
+                }
+                else transactionID = testBody.getJSONObject("alipay_trade_app_pay_response").getString("out_trade_no");
                 String searchSql = "SELECT auctionID, certificateNo, uid, card FROM cardTransaction WHERE transactionNo=? AND paymentState=1";
                 pst = conn.prepareStatement(searchSql);
                 pst.setString(1, transactionID);

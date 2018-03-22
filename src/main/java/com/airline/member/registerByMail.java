@@ -19,6 +19,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Properties;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 @Path("/member/registerByMail")
 public class registerByMail {
@@ -116,8 +117,9 @@ public class registerByMail {
     }
 
     private boolean verifyRegisterByMailParams (registerByMailParam rm) {
+        String emailPattern = "^\\s*\\w+(?:\\.{0,1}[\\w-]+)*@[a-zA-Z0-9]+(?:[-.][a-zA-Z0-9]+)*\\.[a-zA-Z]+\\s*$";
         try {
-            return rm.getEmail() != null && rm.getPassword() != null && rm.getPlatform() != null;
+            return rm.getEmail() != null && rm.getPassword() != null && rm.getPlatform() != null && Pattern.matches(emailPattern, rm.getEmail());
         } catch (RuntimeException e) {
             return false;
         }
