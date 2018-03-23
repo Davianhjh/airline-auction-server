@@ -69,9 +69,8 @@ public class deliverCards {
                 pst.setString(1, transactionID);
                 ret2 = pst.executeQuery();
                 if (ret2.next()) {
-                    String resStr = getCardsFromServer(ret2.getString(1), ret2.getString(2), ret2.getInt(3), ret2.getString(4).split(",").length);
-                    if (resStr != null) {
-                        JSONObject response = JSONObject.parseObject(resStr);
+                    JSONObject response = getCardsFromServer(ret2.getString(1), ret2.getString(2), ret2.getInt(3), ret2.getString(4).split(",").length);
+                    if (response != null) {
                         if (response.getBoolean("success")) {
                             JSONArray existing = response.getJSONArray("existing");
                             JSONArray delivered = response.getJSONArray("new");
@@ -130,7 +129,7 @@ public class deliverCards {
         }
     }
 
-    private String getCardsFromServer(String auctionID, String certificateNo, int uid, int cardNumber) {
+    private JSONObject getCardsFromServer(String auctionID, String certificateNo, int uid, int cardNumber) {
         try {
             Properties serverProp = new Properties();
             InputStream in = deliverCards.class.getResourceAsStream("/serverAddress.properties");
@@ -142,7 +141,7 @@ public class deliverCards {
             body.put("uid", uid);
             body.put("passenger", certificateNo);
             body.put("quantity", cardNumber);
-            return httpRequestUtil.postRequest(urlStr, null, body.toJSONString());
+            return httpRequestUtil.postRequest(urlStr, null, body);
         } catch (Exception e){
             e.printStackTrace();
             return null;                        // request failed OR bad response

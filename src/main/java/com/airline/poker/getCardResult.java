@@ -58,9 +58,8 @@ public class getCardResult {
                 int uid = ret.getInt(1);
                 auctionInfo ai = getAuctionUtil.getAuctionStatus(cr.getAuctionID());
                 if (ai != null && ai.getAuctionState().equals("result") && ai.getAuctionType().equals("p")) {
-                    String resStr = getPokerResult(cr.getAuctionID(), cr.getCertificateNo(), uid);
-                    if (resStr != null) {
-                        JSONObject response = JSONObject.parseObject(resStr);
+                    JSONObject response = getPokerResult(cr.getAuctionID(), cr.getCertificateNo(), uid);
+                    if (response != null) {
                         JSONArray userCards = response.getJSONArray("cards");
                         JSONArray winner = response.getJSONArray("winner");
                         ArrayList<card> cardArray = new ArrayList<card>();
@@ -78,8 +77,8 @@ public class getCardResult {
                             tmp.setNumber(winner.getJSONObject(i).getString("number"));
                             cardArray.add(tmp);
                         }
-                        cardArray.clear();
                         res.setWinner(cardArray);
+                        cardArray.clear();
                         res.setAuth(1);
                         res.setCode(0);
                         res.setHit(response.getBoolean("win") ? 1:0);
@@ -121,7 +120,7 @@ public class getCardResult {
         }
     }
 
-    private String getPokerResult(String auctionID, String certificateNo, int uid) {
+    private JSONObject getPokerResult(String auctionID, String certificateNo, int uid) {
         try {
             Properties serverProp = new Properties();
             InputStream in = getCardResult.class.getResourceAsStream("/serverAddress.properties");
@@ -132,7 +131,7 @@ public class getCardResult {
             body.put("auction", auctionID);
             body.put("uid", uid);
             body.put("passenger", certificateNo);
-            return httpRequestUtil.postRequest(urlStr, null, body.toJSONString());
+            return httpRequestUtil.postRequest(urlStr, null, body);
         } catch (Exception e){
             e.printStackTrace();
             return null;                                     // request failed OR bad response

@@ -1,14 +1,27 @@
 package com.airline.tools;
 
+import com.alibaba.fastjson.JSONObject;
+
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
-import java.net.URL;
+import java.net.URI;
 
 public class httpRequestUtil {
 
-    public static String postRequest(String urlPath, String token, String body) throws Exception {
-        URL url = new URL(urlPath);
+    public static JSONObject postRequest(String urlPath, String token, JSONObject body) throws Exception {
+        URI uri = new URI(urlPath);
+        Client postClient = jerseyClientFactory.create();
+        WebTarget webTarget = postClient.target(uri);
+        Response response = webTarget.request(MediaType.APPLICATION_JSON_TYPE).header("token", token).post(Entity.entity(body, MediaType.APPLICATION_JSON_TYPE));
+        JSONObject res =  response.readEntity(JSONObject.class);
+        return res;
+        /*
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("POST");
         conn.setDoOutput(true);
@@ -40,5 +53,6 @@ public class httpRequestUtil {
             System.out.println("Request Error: " + conn.getResponseCode());
             throw new Exception();
         }
+        */
     }
 }

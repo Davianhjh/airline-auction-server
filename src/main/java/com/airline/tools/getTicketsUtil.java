@@ -21,7 +21,7 @@ public class getTicketsUtil {
         ResultSet ret;
         ArrayList<String> flightArray = new ArrayList<String>();
         ArrayList<baseAuctionData> auctions = new ArrayList<baseAuctionData>();
-        String resStr;
+        JSONObject response;
         Properties serverProp = new Properties();
         String sql = "SELECT passengerName, certificateNo, flightNo, flightDate, ticketNo, carbinClass, dptAirport, dptAptCode, arvAirport, arvAptCode, depTime, arrTime FROM passengerFlight WHERE addedByUid=? AND depTime > ?;";
         pst = conn.prepareStatement(sql);
@@ -54,12 +54,11 @@ public class getTicketsUtil {
                 String urlStr = serverProp.getProperty("auctionServiceServer") + "/auction/flights";
                 JSONObject body = new JSONObject();
                 body.put("flights", flightArray);
-                resStr = httpRequestUtil.postRequest(urlStr, null, body.toJSONString());
+                response = httpRequestUtil.postRequest(urlStr, null, body);
             } catch (Exception e){
                 e.printStackTrace();
                 return false;                                 // request failed OR bad response
             }
-            JSONObject response = JSONObject.parseObject(resStr);
             for(int i=0; i<flightArray.size(); i++){
                 JSONArray flightAuction = response.getJSONArray(flightArray.get(i));
                 if(flightAuction.size() != 0){
@@ -91,7 +90,7 @@ public class getTicketsUtil {
         pst = conn.prepareStatement(sql);
         ArrayList<String> flightArray = new ArrayList<String>();
         ArrayList<baseAuctionData> auctions = new ArrayList<baseAuctionData>();
-        String resStr1, resStr2;
+        JSONObject response1, response2;
         Properties serverProp = new Properties();
 
         if(savedEdgeTime != null){
@@ -117,12 +116,11 @@ public class getTicketsUtil {
                 urlStr1 = serverProp.getProperty("airlineMiddlewareServer") + "/rest/ticketNoSearch";
                 body1.put("ticketNo", number);
             }
-            resStr1 = httpRequestUtil.postRequest(urlStr1, null, body1.toJSONString());
+            response1 = httpRequestUtil.postRequest(urlStr1, null, body1);
         } catch (Exception e){
             e.printStackTrace();
             return -1;                        // request failed OR bad response
         }
-        JSONObject response1 = JSONObject.parseObject(resStr1);
         JSONArray ticketList = response1.getJSONArray("tickets");
         if(ticketList.size() != 0){
             for(int i=0; i<ticketList.size(); i++){
@@ -167,14 +165,13 @@ public class getTicketsUtil {
                 String urlStr2 = serverProp.getProperty("auctionServiceServer") + "/auction/flights";
                 JSONObject body = new JSONObject();
                 body.put("flights", flightArray);
-                resStr2 = httpRequestUtil.postRequest(urlStr2, null, body.toJSONString());
+                response2 = httpRequestUtil.postRequest(urlStr2, null, body);
             } catch (Exception e){
                 e.printStackTrace();
                 return -2;                    // request failed OR bad response
             }
-            JSONObject response = JSONObject.parseObject(resStr2);
             for(int i=0; i<flightArray.size(); i++){
-                JSONArray flightAuction = response.getJSONArray(flightArray.get(i));
+                JSONArray flightAuction = response2.getJSONArray(flightArray.get(i));
                 if(flightAuction.size() != 0){
                     for(int j=0; j<flightAuction.size(); j++){
                         JSONObject auction = flightAuction.getJSONObject(j);

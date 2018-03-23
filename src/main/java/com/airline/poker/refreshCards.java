@@ -58,9 +58,8 @@ public class refreshCards {
                 int uid = ret.getInt(1);
                 auctionInfo ai = getAuctionUtil.getAuctionStatus(fc.getAuctionID());
                 if (ai != null && ai.getAuctionType().equals("p")) {
-                    String resStr = getCards(fc.getAuctionID(), fc.getCertificateNo(), uid);
-                    JSONObject response = JSONObject.parseObject(resStr);
-                    if (resStr != null) {
+                    JSONObject response = getCards(fc.getAuctionID(), fc.getCertificateNo(), uid);
+                    if (response != null) {
                         String searchSql = "SELECT COUNT(tradeID) FROM cardTransaction WHERE auctionID=? AND paymentState=1;";
                         pst = conn.prepareStatement(searchSql);
                         pst.setString(1, fc.getAuctionID());
@@ -120,7 +119,7 @@ public class refreshCards {
         }
     }
 
-    private String getCards (String auctionID, String certificateNo, int uid) {
+    private JSONObject getCards (String auctionID, String certificateNo, int uid) {
         try {
             Properties serverProp = new Properties();
             InputStream in = refreshCards.class.getResourceAsStream("/serverAddress.properties");
@@ -131,7 +130,7 @@ public class refreshCards {
             body.put("auction", auctionID);
             body.put("uid", uid);
             body.put("passenger", certificateNo);
-            return httpRequestUtil.postRequest(urlStr, null, body.toJSONString());
+            return httpRequestUtil.postRequest(urlStr, null, body);
         } catch (Exception e){
             e.printStackTrace();
             return null;                        // request failed OR bad response

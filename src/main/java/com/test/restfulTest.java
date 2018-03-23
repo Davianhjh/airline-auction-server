@@ -42,8 +42,7 @@ public class restfulTest {
         flightArray.add("2018-02-26-MU5186");
         JSONObject body = new JSONObject();
         body.put("flights", flightArray);
-        String resStr = httpRequestUtil.postRequest(urlPath, null, body.toJSONString());
-        JSONObject response = JSONObject.parseObject(resStr);
+        JSONObject response = httpRequestUtil.postRequest(urlPath, null, body);
         for(String flightID: flightArray){
             JSONArray fa = response.getJSONArray(flightID);
             if(fa != null){

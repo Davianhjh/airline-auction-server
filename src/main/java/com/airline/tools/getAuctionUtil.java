@@ -9,7 +9,7 @@ import java.util.Properties;
 public class getAuctionUtil {
 
     public static auctionInfo getAuctionStatus (String auctionID) {
-        String resStr;
+        JSONObject response;
         Properties serverProp = new Properties();
         try {
             InputStream in = getAuctionUtil.class.getResourceAsStream("/serverAddress.properties");
@@ -18,12 +18,11 @@ public class getAuctionUtil {
             String urlStr = serverProp.getProperty("auctionServiceServer") + "/auction/status";
             JSONObject body = new JSONObject();
             body.put("auction", auctionID);
-            resStr = httpRequestUtil.postRequest(urlStr, null, body.toJSONString());
+            response = httpRequestUtil.postRequest(urlStr, null, body);
         } catch (Exception e){
             e.printStackTrace();
             return null;                                 // request failed OR bad response
         }
-        JSONObject response = JSONObject.parseObject(resStr);
         auctionInfo auctionInfo = new auctionInfo();
         auctionInfo.setAuctionState(response.getString("status"));
         auctionInfo.setAuctionType(response.getString("type"));
@@ -31,7 +30,7 @@ public class getAuctionUtil {
     }
 
     public static boolean bidForPrice (int uid, String auctionID, String certificateNo, double price) {
-        String resStr;
+        JSONObject response;
         Properties serverProp = new Properties();
         try {
             InputStream in = getAuctionUtil.class.getResourceAsStream("/serverAddress.properties");
@@ -43,17 +42,16 @@ public class getAuctionUtil {
             body.put("uid", uid);
             body.put("passenger", certificateNo);
             body.put("price", price);
-            resStr = httpRequestUtil.postRequest(urlStr, null, body.toJSONString());
+            response = httpRequestUtil.postRequest(urlStr, null, body);
         } catch (Exception e) {
             e.printStackTrace();
             return false;                                // request failed OR bad response
         }
-        JSONObject response = JSONObject.parseObject(resStr);
         return response.getString("error") == null;
     }
 
     public static passengerResult getBiddingResult (int uid, String auctionID, String certificateNo) throws Exception {
-        String resStr;
+        JSONObject response;
         Properties serverProp = new Properties();
         InputStream in = getAuctionUtil.class.getResourceAsStream("/serverAddress.properties");
         serverProp.load(in);
@@ -63,8 +61,7 @@ public class getAuctionUtil {
         body.put("auction", auctionID);
         body.put("uid", uid);
         body.put("passenger", certificateNo);
-        resStr = httpRequestUtil.postRequest(urlStr, null, body.toJSONString());
-        JSONObject response = JSONObject.parseObject(resStr);
+        response = httpRequestUtil.postRequest(urlStr, null, body);
         passengerResult pRes = new passengerResult();
         pRes.setAuctionState(response.getString("status"));
         pRes.setAuctionType(response.getString("type"));
