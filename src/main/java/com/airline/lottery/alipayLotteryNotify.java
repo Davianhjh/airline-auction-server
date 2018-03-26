@@ -1,5 +1,4 @@
-
-package com.airline.poker;
+package com.airline.lottery;
 
 import com.airline.tools.AlipayAPPUtil;
 import com.airline.tools.HiKariCPHandler;
@@ -17,10 +16,13 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
-@Path("/poker/alipay_notify")
-public class alipayCardNotify {
+@Path("/lottery/alipay_notify")
+public class alipayLotteryNotify {
     @POST
     @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -61,18 +63,18 @@ public class alipayCardNotify {
                     conn = HiKariCPHandler.getConn();
                     PreparedStatement pst;
                     ResultSet ret;
-                    String searchSql = "SELECT totalAmount FROM cardTransaction WHERE transactionNo=?;";
+                    String searchSql = "SELECT totalAmount FROM ballTransaction WHERE transactionNo=?;";
                     pst = conn.prepareStatement(searchSql);
                     pst.setString(1, out_trade_no);
                     ret = pst.executeQuery();
                     if (ret.next()) {
                         double totalAmount = ret.getDouble(1);
                         Properties paymentProp = new Properties();
-                        InputStream in = alipayCardNotify.class.getResourceAsStream("/paymentManage.properties");
+                        InputStream in = alipayLotteryNotify.class.getResourceAsStream("/paymentManage.properties");
                         paymentProp.load(in);
                         in.close();
                         if (app_id.equals(paymentProp.getProperty("appid")) && seller_id.equals(paymentProp.getProperty("sellerid")) && Double.parseDouble(total_Amount) == totalAmount) {
-                            String updateSql = "UPDATE cardTransaction SET paymentState=1 WHERE transactionNo=?;";
+                            String updateSql = "UPDATE ballTransaction SET paymentState=1 WHERE transactionNo=?;";
                             pst = conn.prepareStatement(updateSql);
                             pst.setString(1, out_trade_no);
                             pst.executeUpdate();

@@ -3,6 +3,8 @@ package com.airline.tools;
 public class auctionInfo {
     private String auctionState;
     private String auctionType;
+    private int startCountDown;
+    private int endCountDown;
 
     public auctionInfo() {
         super();
@@ -22,5 +24,21 @@ public class auctionInfo {
 
     public void setAuctionType(String auctionType) {
         this.auctionType = auctionType;
+    }
+
+    public int getStartCountDown() {
+        return startCountDown;
+    }
+
+    public void setStartCountDown(int startCountDown) {
+        this.startCountDown = startCountDown;
+    }
+
+    public int getEndCountDown() {
+        return endCountDown;
+    }
+
+    public void setEndCountDown(int endCountDown) {
+        this.endCountDown = endCountDown;
     }
 }

@@ -65,7 +65,7 @@ public class createAlipayBill {
                     return res;
                 }
                 if (!result.getAuctionState().equals("result") || (!result.getAuctionType().equals("1") && !result.getAuctionType().equals("2")) || !result.getHit().equals("Y") || result.getBiddingPrice() <= 0) {
-                    res.setAuth(-2);
+                    res.setAuth(-1);
                     res.setCode(1030);                                  // error auctionState
                     return res;
                 }

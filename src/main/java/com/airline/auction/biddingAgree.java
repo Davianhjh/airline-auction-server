@@ -59,7 +59,7 @@ public class biddingAgree {
                     res.setAuth(-2);
                     res.setCode(1060);                       // auction server error
                     return res;
-                } else if (ai.getAuctionState().equals("active") && (ai.getAuctionType().equals("1") || ai.getAuctionType().equals("2"))) {
+                } else if (ai.getAuctionState().equals("active")) {
                     String searchSql = "SELECT userStatus FROM userState WHERE auctionID=? AND uid=? AND certificateNo=?;";
                     pst = conn.prepareStatement(searchSql);
                     pst.setString(1, ba.getAuctionID());
@@ -86,7 +86,7 @@ public class biddingAgree {
                         return res;
                     }
                 } else {
-                    res.setAuth(-2);
+                    res.setAuth(-1);
                     res.setCode(1030);                       // error auctionState
                     return res;
                 }

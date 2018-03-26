@@ -56,76 +56,104 @@ public class buyCards {
             ret = pst.executeQuery();
             if (ret.next()) {
                 int uid = ret.getInt(1);
-                String searchSql = "SELECT card FROM cardTransaction WHERE uid=? AND auctionID=? AND certificateNo=? AND paymentState=1 ORDER BY timeStamp DESC;";
-                pst = conn.prepareStatement(searchSql);
-                pst.setInt(1, uid);
-                pst.setString(2, bc.getAuctionID());
+                String sql1 = "SELECT userStatus FROM userState WHERE auctionID=? AND uid=? AND certificateNo=?;";
+                pst = conn.prepareStatement(sql1);
+                pst.setString(1, bc.getAuctionID());
+                pst.setInt(2, uid);
                 pst.setString(3, bc.getCertificateNo());
-                ret2 = pst.executeQuery();
-                String[] cards = bc.getCards().split(",");
-                boolean verifyCard;
-                if (ret2.next())
-                    verifyCard = verifyCardSequence(cards, ret2.getString(1).split(","));
-                else verifyCard = verifyCardSequence(cards, null);
-                if (verifyCard) {
-                    try {
-                        auctionInfo ai = getAuctionUtil.getAuctionStatus(bc.getAuctionID());
-                        if (ai != null && ai.getAuctionState().equals("active") && ai.getAuctionType().equals("p")) {
-                            String total_Amount = getTotalAmount(cards);
-                            if (total_Amount == null) {
-                                res.setAuth(-2);
-                                res.setCode(2000);                              // mysql error
-                                return res;
-                            } else {
-                                String tranStr = bc.getAuctionID() + System.currentTimeMillis();
-                                String transactionID = getTransID(tranStr);
-                                Properties property = new Properties();
-                                try {
-                                    InputStream in = buyCards.class.getResourceAsStream("/serverAddress.properties");
-                                    property.load(in);
-                                    in.close();
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                    res.setAuth(-2);
-                                    res.setCode(2000);                                          // properties file not found
+                ret = pst.executeQuery();
+                if (ret.next()) {
+                    int userStatus = ret.getInt(1);
+                    if (userStatus == 1 || userStatus == 2) {
+                        String searchSql = "SELECT card FROM cardTransaction WHERE uid=? AND auctionID=? AND certificateNo=? AND paymentState=1 ORDER BY timeStamp DESC;";
+                        pst = conn.prepareStatement(searchSql);
+                        pst.setInt(1, uid);
+                        pst.setString(2, bc.getAuctionID());
+                        pst.setString(3, bc.getCertificateNo());
+                        ret2 = pst.executeQuery();
+                        String[] cards = bc.getCards().split(",");
+                        boolean verifyCard;
+                        if (ret2.next())
+                            verifyCard = verifyCardSequence(cards, ret2.getString(1).split(","));
+                        else verifyCard = verifyCardSequence(cards, null);
+                        if (verifyCard) {
+                            try {
+                                auctionInfo ai = getAuctionUtil.getAuctionStatus(bc.getAuctionID());
+                                if (ai != null && ai.getAuctionState().equals("active") && ai.getAuctionType().equals("p")) {
+                                    String total_Amount = getTotalAmount(cards);
+                                    if (total_Amount == null) {
+                                        res.setAuth(-2);
+                                        res.setCode(2000);                              // get card price error
+                                        return res;
+                                    } else {
+                                        String tranStr = bc.getAuctionID() + System.currentTimeMillis();
+                                        String transactionID = getTransID(tranStr);
+                                        Properties property = new Properties();
+                                        try {
+                                            InputStream in = buyCards.class.getResourceAsStream("/serverAddress.properties");
+                                            property.load(in);
+                                            in.close();
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                            res.setAuth(-2);
+                                            res.setCode(2000);                                          // properties file not found
+                                            return res;
+                                        }
+                                        String notify_url = property.getProperty("localhostServer") + "/poker/alipay_notify";
+                                        String alipayStr = AlipayAPPUtil.alipayStr(transactionID, "poker", "flight upgrade", total_Amount, notify_url);
+
+                                        String insertSql = "INSERT INTO cardTransaction (transactionNo, uid, auctionID, certificateNo, totalAmount, card, paymentState) VALUES (?,?,?,?,?,?,?);";
+                                        pst = conn.prepareStatement(insertSql);
+                                        pst.setString(1, transactionID);
+                                        pst.setInt(2, uid);
+                                        pst.setString(3, bc.getAuctionID());
+                                        pst.setString(4, bc.getCertificateNo());
+                                        pst.setDouble(5, Double.parseDouble(total_Amount));
+                                        pst.setString(6, bc.getCards());
+                                        pst.setInt(7, 0);
+                                        pst.executeUpdate();
+
+                                        if (userStatus == 1) {
+                                            String updateSql = "UPDATE userState set userStatus=2, timeStamp=? WHERE auctionID=? AND uid=? AND certificateNo=?;";
+                                            pst = conn.prepareStatement(updateSql);
+                                            pst.setString(1, utcTimeStr);
+                                            pst.setString(2, bc.getAuctionID());
+                                            pst.setInt(3, uid);
+                                            pst.setString(4, bc.getCertificateNo());
+                                            pst.executeUpdate();
+                                        }
+                                        res.setAuth(1);
+                                        res.setCode(0);
+                                        res.setMethod("Alipay");
+                                        res.setSignType("RSA2");
+                                        res.setSignedStr(alipayStr);
+                                        res.setTransactionID(transactionID);
+                                        return res;
+                                    }
+                                } else {
+                                    res.setAuth(-1);
+                                    res.setCode(1030);                               // error auctionState
                                     return res;
                                 }
-                                String notify_url = property.getProperty("localhostServer") + "/poker/alipay_notify";
-                                String alipayStr = AlipayAPPUtil.alipayStr(transactionID, "poker", "flight upgrade", total_Amount, notify_url);
-
-                                String insertSql = "INSERT INTO cardTransaction (transactionNo, uid, auctionID, certificateNo, totalAmount, card, paymentState) VALUES (?,?,?,?,?,?,?);";
-                                pst = conn.prepareStatement(insertSql);
-                                pst.setString(1, transactionID);
-                                pst.setInt(2, uid);
-                                pst.setString(3, bc.getAuctionID());
-                                pst.setString(4, bc.getCertificateNo());
-                                pst.setDouble(5, Double.parseDouble(total_Amount));
-                                pst.setString(6, bc.getCards());
-                                pst.setInt(7, 0);
-                                pst.executeUpdate();
-
-                                res.setAuth(1);
-                                res.setCode(0);
-                                res.setMethod("Alipay");
-                                res.setSignType("RSA2");
-                                res.setSignedStr(alipayStr);
-                                res.setTransactionID(transactionID);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                res.setAuth(-2);                                    // auction service fail
+                                res.setCode(1060);
                                 return res;
                             }
                         } else {
-                            res.setAuth(-2);
-                            res.setCode(1030);                               // error auctionState
+                            res.setAuth(-1);
+                            res.setCode(1000);               // parameters not correct
                             return res;
                         }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        res.setAuth(-2);                                    // auction service fail
-                        res.setCode(1060);
+                    } else {
+                        res.setAuth(-1);
+                        res.setCode(1031);                   // error userStatus
                         return res;
                     }
                 } else {
                     res.setAuth(-1);
-                    res.setCode(1000);                        // parameters not correct
+                    res.setCode(1031);                       // error userStatus
                     return res;
                 }
             } else {

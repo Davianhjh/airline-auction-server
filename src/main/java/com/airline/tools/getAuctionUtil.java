@@ -26,6 +26,8 @@ public class getAuctionUtil {
         auctionInfo auctionInfo = new auctionInfo();
         auctionInfo.setAuctionState(response.getString("status"));
         auctionInfo.setAuctionType(response.getString("type"));
+        auctionInfo.setStartCountDown(response.getIntValue("startCountDown"));
+        auctionInfo.setEndCountDown(response.getIntValue("endCountDown"));
         return auctionInfo;
     }
 

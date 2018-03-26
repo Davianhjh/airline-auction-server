@@ -1,10 +1,7 @@
 package com.airline.auction;
 
-import com.airline.member.passengerFlight;
 import com.airline.tools.AlipayAPPUtil;
 import com.airline.tools.HiKariCPHandler;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -70,7 +67,7 @@ public class alipayAPPNotify {
                     if (ret.next()) {
                         double totalAmount = ret.getDouble(1);
                         Properties paymentProp = new Properties();
-                        InputStream in = passengerFlight.class.getResourceAsStream("/paymentManage.properties");
+                        InputStream in = alipayAPPNotify.class.getResourceAsStream("/paymentManage.properties");
                         paymentProp.load(in);
                         in.close();
                         if (app_id.equals(paymentProp.getProperty("appid")) && seller_id.equals(paymentProp.getProperty("sellerid")) && Double.parseDouble(total_Amount) == totalAmount) {

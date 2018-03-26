@@ -1,6 +1,7 @@
-package com.airline.poker;
+package com.airline.lottery;
 
 import com.airline.tools.*;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
@@ -20,19 +21,19 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Properties;
 
-@Path("/refreshCards")
-public class refreshCards {
+@Path("/lottery/refreshBalls")
+public class refreshBalls {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public refreshCardsRes refresh (@Context HttpHeaders hh, refreshCardsParam fc) {
+    public refreshBallsRes refreshBalls (@Context HttpHeaders hh, refreshBallsParam rb) {
         MultivaluedMap<String, String> header = hh.getRequestHeaders();
         String AgiToken = header.getFirst("token");
-        refreshCardsRes res = new refreshCardsRes();
+        refreshBallsRes res = new refreshBallsRes();
         Connection conn;
         PreparedStatement pst;
-        ResultSet ret, ret2;
-        boolean verifyResult = verifyRefreshCardsParam(fc);
+        ResultSet ret;
+        boolean verifyResult = verifyRefreshBallsParam(rb);
         if (AgiToken == null || !verifyResult) {
             res.setAuth(-1);
             res.setCode(1000);                               // parameters not correct
@@ -56,31 +57,25 @@ public class refreshCards {
             ret = pst.executeQuery();
             if (ret.next()) {
                 int uid = ret.getInt(1);
-                auctionInfo ai = getAuctionUtil.getAuctionStatus(fc.getAuctionID());
-                if (ai != null && ai.getAuctionType().equals("p") && (ai.getAuctionState().equals("active") || ai.getAuctionState().equals("result"))) {
-                    JSONObject response = getCards(fc.getAuctionID(), fc.getCertificateNo(), uid);
+                auctionInfo ai = getAuctionUtil.getAuctionStatus(rb.getAuctionID());
+                if (ai != null && ai.getAuctionType().equals("l") && (ai.getAuctionState().equals("active") || ai.getAuctionState().equals("result"))) {
+                    JSONObject response = getBalls(rb.getAuctionID(), rb.getCertificateNo(), uid);
                     if (response != null) {
-                        String searchSql = "SELECT COUNT(tradeID) FROM cardTransaction WHERE auctionID=? AND paymentState=1;";
-                        pst = conn.prepareStatement(searchSql);
-                        pst.setString(1, fc.getAuctionID());
-                        ret2 = pst.executeQuery();
-                        ret2.next();
-
+                        JSONArray ballRecords = response.getJSONArray("tickets");
+                        ArrayList<ballTicket> balls = new ArrayList<ballTicket>();
+                        for (int i = 0; i < ballRecords.size(); i++) {
+                            ballTicket tmp = new ballTicket();
+                            tmp.setStartBall(ballRecords.getJSONObject(i).getIntValue("start"));
+                            tmp.setEndBall(ballRecords.getJSONObject(i).getIntValue("end"));
+                            tmp.setQuantity(ballRecords.getJSONObject(i).getIntValue("quantity"));
+                            balls.add(tmp);
+                        }
                         res.setAuth(1);
                         res.setCode(0);
                         res.setAuctionState(ai.getAuctionState());
                         res.setEndCountDown(ai.getEndCountDown());
-                        res.setTotalAmount(ret2.getInt(1));
-                        JSONArray cards = response.getJSONArray("cards");
-                        ArrayList<card> cardArray = new ArrayList<card>();
-                        for (int i = 0; i < cards.size(); i++) {
-                            card tmp = new card();
-                            tmp.setSuit(cards.getJSONObject(i).getString("suit"));
-                            tmp.setNumber(cards.getJSONObject(i).getString("number"));
-                            cardArray.add(tmp);
-                        }
-                        res.setCards(cardArray);
-                        cardArray.clear();
+                        res.setBalls(balls);
+                        balls.clear();
                         return res;
                     } else {
                         res.setAuth(-2);
@@ -111,22 +106,22 @@ public class refreshCards {
         }
     }
 
-    private boolean verifyRefreshCardsParam (refreshCardsParam fc) {
+    private boolean verifyRefreshBallsParam (refreshBallsParam rb) {
         try {
-            return (fc.getAuctionID() != null && fc.getCertificateNo() != null);
+            return (rb.getAuctionID() != null && rb.getCertificateNo() != null);
         } catch (RuntimeException e) {
             return false;
         }
     }
 
-    private JSONObject getCards (String auctionID, String certificateNo, int uid) {
+    private JSONObject getBalls (String auctionID, String certificateNo, int uid) {
         try {
             Properties serverProp = new Properties();
-            InputStream in = refreshCards.class.getResourceAsStream("/serverAddress.properties");
+            InputStream in = refreshBalls.class.getResourceAsStream("/serverAddress.properties");
             serverProp.load(in);
             in.close();
             JSONObject body = new JSONObject();
-            String urlStr =  serverProp.getProperty("auctionServiceServer") + "/poker/cards";
+            String urlStr =  serverProp.getProperty("auctionServiceServer") + "/auction/lottery";
             body.put("auction", auctionID);
             body.put("uid", uid);
             body.put("passenger", certificateNo);
