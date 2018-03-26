@@ -2,7 +2,6 @@ package com.airline.tools;
 
 import com.airline.baseAuctionData;
 import com.airline.baseTicketData;
-import com.airline.member.passengerFlight;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
