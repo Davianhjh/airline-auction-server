@@ -43,7 +43,7 @@ public class registerByTel {
         try {
             String searchSql = "SELECT id FROM customerAccount WHERE tel_country=? AND tel=?;";
             pst = conn.prepareStatement(searchSql);
-            pst.setString(1, rt.getPlatform());
+            pst.setString(1, rt.getTelCountry());
             pst.setString(2, rt.getTel());
             ret = pst.executeQuery();
             if (ret.next()) {

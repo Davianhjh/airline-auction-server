@@ -59,10 +59,8 @@ public class passengerState {
                 pst.setString(2, ps.getAuctionID());
                 pst.setString(3, ps.getCertificateNo());
                 ret2 = pst.executeQuery();
-                res.setPaymentState(false);
-                if (ret2.next() && ret2.getInt(1) == 1) {
-                    res.setPaymentState(true);
-                }
+                boolean paymentState = false;
+                if (ret2.next() && ret2.getInt(1) == 1) paymentState = true;
 
                 String searchSql = "SELECT uid, userStatus FROM userState WHERE auctionID=? AND certificateNo=?;";
                 pst = conn.prepareStatement(searchSql);
@@ -85,11 +83,11 @@ public class passengerState {
                         res.setCode(1040);
                         return res;
                     }
-
                     if (biddingTag == 0) {                              // agreed and not bid by someone else
                         res.setAuth(1);
                         res.setCode(0);
                         res.setUserStatus(userStatus);
+                        res.setPaymentState(paymentState);
                         return res;
                     } else {                                            // bid by someone else
                         res.setAuth(1);
