@@ -57,8 +57,8 @@ public class verifyQuickAccess {
                     String updateSql = "UPDATE customerToken SET token=?, expire=ADDTIME(utc_timestamp(), '7 00:00:00'), platform=? WHERE uid=?;";
                     pst = conn.prepareStatement(updateSql);
                     pst.setString(1, token);
-                    pst.setInt(2, uid);
-                    pst.setString(3, platform);
+                    pst.setString(2, platform);
+                    pst.setInt(3, uid);
                     pst.executeUpdate();
                 } else {
                     String insertSql = "INSERT INTO customerToken (uid, token, platform, expire) VALUES (?,?,?,ADDTIME(utc_timestamp(), '7 00:00:00'));";

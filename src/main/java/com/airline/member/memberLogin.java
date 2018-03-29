@@ -70,8 +70,8 @@ public class memberLogin {
                     String sql3 = "UPDATE customerToken SET token=?, expire=ADDTIME(utc_timestamp(), '7 00:00:00'), platform=? WHERE uid=?;";
                     pst = conn.prepareStatement(sql3);
                     pst.setString(1, token);
-                    pst.setInt(2, id);
-                    pst.setString(3, ml.getPlatform());
+                    pst.setString(2, ml.getPlatform());
+                    pst.setInt(3, id);
                     pst.executeUpdate();
                 } else {
                     String sql4 = "INSERT INTO customerToken (uid, token, platform, expire) VALUES (?,?,?,ADDTIME(utc_timestamp(), '7 00:00:00'));";
