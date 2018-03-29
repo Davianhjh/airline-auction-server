@@ -62,19 +62,19 @@ public class memberLogin {
                     return res;
                 }
                 String token = tokenHandler.createJWT(String.valueOf(id), userName, ml.getPlatform(), 7 * 24 * 3600 * 1000);
-                String sql2 = "SELECT token FROM customerToken WHERE uid=? AND platform=?;";
+                String sql2 = "SELECT token FROM customerToken WHERE uid=?;";
                 pst = conn.prepareStatement(sql2);
                 pst.setInt(1, id);
-                pst.setString(2, ml.getPlatform());
                 ret2 = pst.executeQuery();
                 if (ret2.next()) {
-                    String sql3 = "UPDATE customerToken SET token=?, expire=ADDTIME(utc_timestamp(), '7 00:00:00') WHERE uid=?;";
+                    String sql3 = "UPDATE customerToken SET token=?, expire=ADDTIME(utc_timestamp(), '7 00:00:00'), platform=? WHERE uid=?;";
                     pst = conn.prepareStatement(sql3);
                     pst.setString(1, token);
                     pst.setInt(2, id);
+                    pst.setString(3, ml.getPlatform());
                     pst.executeUpdate();
                 } else {
-                    String sql4 = "INSERT INTO customerToken (uid, token, platform, expire) VALUES (?,?,?, ADDTIME(utc_timestamp(), '7 00:00:00'));";
+                    String sql4 = "INSERT INTO customerToken (uid, token, platform, expire) VALUES (?,?,?,ADDTIME(utc_timestamp(), '7 00:00:00'));";
                     pst = conn.prepareStatement(sql4);
                     pst.setInt(1, id);
                     pst.setString(2, token);

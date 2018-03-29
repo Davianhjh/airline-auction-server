@@ -49,19 +49,19 @@ public class verifyQuickAccess {
                 int uid = ret.getInt(1);
                 String userName = ret.getString(2);
                 String token = tokenHandler.createJWT(String.valueOf(uid), userName, platform, 7 * 24 * 3600 * 1000);
-                String sql1 = "SELECT tid from customerToken WHERE uid=? AND platform=?";
+                String sql1 = "SELECT tid from customerToken WHERE uid=?";
                 pst = conn.prepareStatement(sql1);
                 pst.setInt(1, uid);
-                pst.setString(2, platform);
                 ret2 = pst.executeQuery();
                 if (ret2.next()) {
-                    String updateSql = "UPDATE customerToken SET token=?, expire=ADDTIME(utc_timestamp(), '7 00:00:00') WHERE uid=?;";
+                    String updateSql = "UPDATE customerToken SET token=?, expire=ADDTIME(utc_timestamp(), '7 00:00:00'), platform=? WHERE uid=?;";
                     pst = conn.prepareStatement(updateSql);
                     pst.setString(1, token);
                     pst.setInt(2, uid);
+                    pst.setString(3, platform);
                     pst.executeUpdate();
                 } else {
-                    String insertSql = "INSERT INTO customerToken (uid, token, platform, expire) VALUES (?,?,?, ADDTIME(utc_timestamp(), '7 00:00:00'));";
+                    String insertSql = "INSERT INTO customerToken (uid, token, platform, expire) VALUES (?,?,?,ADDTIME(utc_timestamp(), '7 00:00:00'));";
                     pst = conn.prepareStatement(insertSql);
                     pst.setInt(1, uid);
                     pst.setString(2, token);
