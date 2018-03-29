@@ -1,7 +1,6 @@
 package com.airline.member;
 
 import com.airline.tools.HiKariCPHandler;
-import org.mindrot.jbcrypt.BCrypt;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -12,21 +11,20 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Random;
 
-@Path("/member/registerByTel")
-public class registerByTel {
+@Path("/member/quickAccess")
+public class quickAccess {
     private static final boolean TEXTSWITCH = true;
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public registerByTelRes register (registerByTelParam rt) {
-        registerByTelRes res = new registerByTelRes();
+    public quickAccessRes quickAccessLogin (quickAccessParam qa) {
+        quickAccessRes res = new quickAccessRes();
         Connection conn;
         PreparedStatement pst;
         ResultSet ret;
-        boolean verifyResult = verifyRegisterByTelParams(rt);
+        boolean verifyResult = verifyQuickAccessParams(qa);
         if (!verifyResult) {
             res.setAuth(-1);
             res.setCode(1000);                               // parameters not correct
@@ -42,29 +40,28 @@ public class registerByTel {
             return res;
         }
         try {
-            String searchSql = "SELECT id FROM customerAccount WHERE tel_country=? AND tel=?;";
+            String searchSql = "SELECT id, username, cnid_name FROM customerAccount WHERE tel_country=? AND tel=?;";
             pst = conn.prepareStatement(searchSql);
-            pst.setString(1, rt.getTelCountry());
-            pst.setString(2, rt.getTel());
+            pst.setString(1, qa.getTelCountry());
+            pst.setString(2, qa.getTel());
             ret = pst.executeQuery();
             if (ret.next()) {
-                conn.close();
-                res.setAuth(-1);
-                res.setCode(1010);                           // tel has been registered
-                return res;
-            } else {
+                int uid = ret.getInt(1);
+                String userName = ret.getString(2);
+                String cnid_name = ret.getString(3);
                 StringBuffer verifyCode = new StringBuffer("");
                 for(int i=0; i<6; i++){
                     int tmp = (int)Math.floor(Math.random()*10);
                     verifyCode.append(tmp);
                 }
-                String sql = "INSERT INTO preRegister (tel_country, tel, password, platform, verifyCode, expire) VALUES (?,?,?,?,?,ADDTIME(utc_timestamp(), '0 00:02:00'));";
-                pst = conn.prepareStatement(sql);
-                pst.setString(1, rt.getTelCountry());
-                pst.setString(2, rt.getTel());
-                pst.setString(3, BCrypt.hashpw(rt.getPassword(), BCrypt.gensalt()));
-                pst.setString(3, rt.getPlatform());
-                pst.setString(4, verifyCode.toString());
+                String insertSql = "INSERT INTO quickAccess (uid, tel_country, tel, username, platform, verifyCode, expire) VALUES (?,?,?,?,?,?,ADDTIME(utc_timestamp(), '0 00:02:00'));";
+                pst = conn.prepareStatement(insertSql);
+                pst.setInt(1, uid);
+                pst.setString(2, qa.getTelCountry());
+                pst.setString(3, qa.getTel());
+                pst.setString(4, cnid_name == null ? userName : cnid_name);
+                pst.setString(5, qa.getPlatform());
+                pst.setString(6, verifyCode.toString());
                 pst.executeUpdate();
                 // TODO
                 // sending msg module
@@ -72,10 +69,15 @@ public class registerByTel {
                 conn.close();
                 res.setAuth(1);
                 res.setCode(0);
-                res.setRegister(true);
+                res.setAccess(true);
                 if (TEXTSWITCH) {
                     res.setVerifyCode(verifyCode.toString());
                 }
+                return res;
+
+            } else {
+                res.setAuth(-1);
+                res.setCode(1020);                              // user not found
                 return res;
             }
         } catch (SQLException e){
@@ -92,9 +94,9 @@ public class registerByTel {
         }
     }
 
-    private boolean verifyRegisterByTelParams(registerByTelParam rt){
+    private boolean verifyQuickAccessParams (quickAccessParam qa) {
         try {
-            return rt.getTel() != null && rt.getTelCountry() != null && rt.getPassword() != null && rt.getPlatform() != null;
+            return qa.getTel() != null && qa.getTelCountry() != null && qa.getPlatform() != null;
         } catch (RuntimeException e){
             return false;
         }
