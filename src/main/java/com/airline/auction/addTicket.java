@@ -108,7 +108,7 @@ public class addTicket {
                                 pst.setInt(2, uid);
                                 pst.executeUpdate();
                             } else {
-                                String userName = MD5Util.getMD5(at.getTel());
+                                String userName = MD5Util.getMD5(at.getTel()).substring(0,10);
                                 String sql3 = "INSERT INTO customerAccount (tel_country, tel, username, platform) VALUES ('86',?,?,'mobile');";
                                 pst = conn.prepareStatement(sql3, Statement.RETURN_GENERATED_KEYS);
                                 pst.setString(1, at.getTel());

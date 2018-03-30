@@ -23,7 +23,7 @@ public class setPassword {
         setPasswordRes res = new setPasswordRes();
         Connection conn;
         PreparedStatement pst;
-        ResultSet ret;
+        ResultSet ret, ret2;
 
         boolean verifyResult = verifySetPasswordParams(sp);
         if (!verifyResult) {
@@ -61,14 +61,26 @@ public class setPassword {
                     pst.setInt(2, uid);
                     pst.executeUpdate();
 
-                    String sql2 = "INSERT INTO customerToken (uid, token, platform, expire) VALUES (?,?,?,ADDTIME(utc_timestamp(), '7 00:00:00'));";
-                    String token = tokenHandler.createJWT(String.valueOf(uid), name, sp.getPlatform(), 7 * 24 * 3600 * 1000);
+                    String sql2 = "SELECT token from customerToken WHERE uid=?";
                     pst = conn.prepareStatement(sql2);
                     pst.setInt(1, uid);
-                    pst.setString(2, token);
-                    pst.setString(3, sp.getPlatform());
-                    pst.executeUpdate();
-
+                    ret2 = pst.executeQuery();
+                    String token = tokenHandler.createJWT(String.valueOf(uid), name, sp.getPlatform(), 7 * 24 * 3600 * 1000);
+                    if (ret2.next()) {
+                        String sql3 = "UPDATE customerToken set token=?, platform=?, expire=ADDTIME(utc_timestamp(), '7 00:00:00') WHERE uid=?";
+                        pst = conn.prepareStatement(sql3);
+                        pst.setString(1, token);
+                        pst.setString(2, sp.getPlatform());
+                        pst.setInt(3, uid);
+                        pst.executeQuery();
+                    } else {
+                        String sql4 = "INSERT INTO customerToken (uid, token, platform, expire) VALUES (?,?,?,ADDTIME(utc_timestamp(), '7 00:00:00'));";
+                        pst = conn.prepareStatement(sql4);
+                        pst.setInt(1, uid);
+                        pst.setString(2, token);
+                        pst.setString(3, sp.getPlatform());
+                        pst.executeUpdate();
+                    }
                     res.setAuth(1);
                     res.setCode(0);
                     res.setName(name);
