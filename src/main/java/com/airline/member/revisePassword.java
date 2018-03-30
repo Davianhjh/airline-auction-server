@@ -27,8 +27,8 @@ public class revisePassword {
         String AgiToken = header.getFirst("token");
         revisePasswordRes res = new revisePasswordRes();
         Connection conn;
-        PreparedStatement pst, pst2;
-        ResultSet ret, ret2;
+        PreparedStatement pst;
+        ResultSet ret;
         boolean verifyResult = verifyRevisePasswordParam(rp);
         if (AgiToken == null | !verifyResult) {
             res.setAuth(-1);
