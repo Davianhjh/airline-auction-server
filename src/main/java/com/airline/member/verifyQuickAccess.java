@@ -56,18 +56,21 @@ public class verifyQuickAccess {
                 if (ret2.next()) {
                     String updateSql = "UPDATE customerToken SET token=?, expire=ADDTIME(utc_timestamp(), '7 00:00:00'), platform=? WHERE uid=?;";
                     pst = conn.prepareStatement(updateSql);
-                    pst.setString(1, token);
-                    pst.setString(2, platform);
-                    pst.setInt(3, uid);
-                    pst.executeUpdate();
                 } else {
-                    String insertSql = "INSERT INTO customerToken (uid, token, platform, expire) VALUES (?,?,?,ADDTIME(utc_timestamp(), '7 00:00:00'));";
+                    String insertSql = "INSERT INTO customerToken (token, platform, uid, expire) VALUES (?,?,?,ADDTIME(utc_timestamp(), '7 00:00:00'));";
                     pst = conn.prepareStatement(insertSql);
-                    pst.setInt(1, uid);
-                    pst.setString(2, token);
-                    pst.setString(3, platform);
-                    pst.executeUpdate();
                 }
+                pst.setString(1, token);
+                pst.setString(2, platform);
+                pst.setInt(3, uid);
+                pst.executeUpdate();
+
+                String deleteSql = "DELETE FROM quickAccess WHERE verifyCode=? AND platform=?;";
+                pst = conn.prepareStatement(deleteSql);
+                pst.setString(1, verifyCode);
+                pst.setString(2, platform);
+                pst.executeUpdate();
+
                 res.setAuth(1);
                 res.setCode(0);
                 res.setName(userName);

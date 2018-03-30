@@ -63,8 +63,8 @@ public class registerByTel {
                 pst.setString(1, rt.getTelCountry());
                 pst.setString(2, rt.getTel());
                 pst.setString(3, BCrypt.hashpw(rt.getPassword(), BCrypt.gensalt()));
-                pst.setString(3, rt.getPlatform());
-                pst.setString(4, verifyCode.toString());
+                pst.setString(4, rt.getPlatform());
+                pst.setString(5, verifyCode.toString());
                 pst.executeUpdate();
                 // TODO
                 // sending msg module

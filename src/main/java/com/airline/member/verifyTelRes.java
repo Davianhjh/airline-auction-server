@@ -3,17 +3,26 @@ package com.airline.member;
 import com.airline.baseRestfulResponse;
 
 public class verifyTelRes extends baseRestfulResponse {
-    private boolean activated;
+    private String name;
+    private String token;
 
-    public verifyTelRes(){
+    public verifyTelRes() {
         super();
     }
 
-    public boolean getActivated(){
-        return activated;
+    public String getName() {
+        return name;
     }
 
-    public void setActivated(boolean activated){
-        this.activated = activated;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 }
