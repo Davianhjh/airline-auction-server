@@ -1,11 +1,12 @@
 package com.airline.member;
 
-public class setTelParam {
+public class verifyTelParam {
     private String tel;
     private String telCountry;
+    private String verifyCode;
     private String platform;
 
-    public setTelParam() {
+    public verifyTelParam() {
         super();
     }
 
@@ -23,6 +24,14 @@ public class setTelParam {
 
     public void setTelCountry(String telCountry) {
         this.telCountry = telCountry;
+    }
+
+    public String getVerifyCode() {
+        return verifyCode;
+    }
+
+    public void setVerifyCode(String verifyCode) {
+        this.verifyCode = verifyCode;
     }
 
     public String getPlatform() {

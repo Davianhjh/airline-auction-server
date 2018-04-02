@@ -54,16 +54,9 @@ public class registerByMail {
             if (ret.next()) {
                 conn.close();
                 res.setAuth(-1);
-                res.setCode(1010);                               // email has been registered
+                res.setCode(1012);                               // email has been registered
                 return res;
             } else {
-                String hash = MD5Util.getMD5(rm.getEmail());
-                if (hash == null) {
-                    conn.close();
-                    res.setAuth(-2);
-                    res.setCode(2000);                           // md5 failed
-                    return res;
-                }
                 UUID uuid = UUID.randomUUID();
                 String verifyCode = uuid.toString().substring(24,32);
                 String insertSql = "INSERT INTO preRegister (email, password, platform, verifyCode, expire) VALUES (?,?,?,?,ADDTIME(utc_timestamp(), '0 00:30:00'));";
@@ -82,23 +75,20 @@ public class registerByMail {
                     in.close();
                     verifyUrl = serverProp.getProperty("localhostServer") + "/member/verifyMail?verifyCode=" + verifyCode + "&platform=" + rm.getPlatform();
                 } catch (IOException e) {
-                    conn.close();
                     res.setAuth(-2);
                     res.setCode(2000);                            // server address properties error
                     return res;
                 }
-                String context = "<p>系统检测到您正在用此邮箱地址在AGiView竞拍平台注册账号，请您在30分钟之内点击如下链接完成邮箱验证。如非您本人操作，请忽略此邮件。</p><p>" + verifyUrl + "</p>";
+                String context = "<p>系统检测到您正在用此邮箱地址在AGiView竞拍平台注册账号，请您不要将此信息透露给其他人，并在30分钟之内点击如下链接完成邮箱验证。如非您本人操作，请忽略此邮件。</p><p>" + verifyUrl + "</p>";
                 mailSendUtil mail = new mailSendUtil();
                 if (mail.sendHtmlMail(rm.getEmail(), "AGiView账号邮箱验证", context)) {
-                    conn.close();
                     res.setAuth(1);
                     res.setCode(0);
                     res.setRegister(1);
                     return res;
                 } else {
-                    conn.close();
                     res.setAuth(-1);
-                    res.setCode(1012);                          // mail fails to send
+                    res.setCode(1013);                          // mail fails to send
                     return res;
                 }
             }

@@ -30,7 +30,7 @@ public class revisePassword {
         PreparedStatement pst;
         ResultSet ret;
         boolean verifyResult = verifyRevisePasswordParam(rp);
-        if (AgiToken == null | !verifyResult) {
+        if (AgiToken == null || !verifyResult) {
             res.setAuth(-1);
             res.setCode(1000);                               // parameters not correct
             return res;
@@ -56,22 +56,21 @@ public class revisePassword {
                 String password = ret.getString(2);
                 if (password == null) {
                     res.setAuth(-1);
-                    res.setCode(1023);                          // user's password not set yet
+                    res.setCode(1027);                          // user's password not set yet
                     return res;
                 } else if (!BCrypt.checkpw(rp.getOldPwd(), password)) {
                     res.setAuth(-1);
                     res.setCode(1020);                          // user's old password not match
                     return res;
                 } else {
-                    String updateSql = "UPDATE customerAccount set password=?, platform=? WHERE id=?";
+                    String updateSql = "UPDATE customerAccount set password=? WHERE id=?";
                     pst = conn.prepareStatement(updateSql);
                     pst.setString(1, BCrypt.hashpw(rp.getNewPwd(), BCrypt.gensalt()));
-                    pst.setString(2, rp.getPlatform());
-                    pst.setInt(3, uid);
+                    pst.setInt(2, uid);
                     pst.executeUpdate();
                     res.setAuth(1);
                     res.setCode(0);
-                    res.setRevise(true);
+                    res.setRevise(1);
                     return res;
                 }
             } else {
@@ -95,7 +94,7 @@ public class revisePassword {
 
     private boolean verifyRevisePasswordParam (revisePasswordParam rp) {
         try {
-            return rp.getOldPwd() != null && rp.getNewPwd() != null && rp.getPlatform() != null;
+            return rp.getOldPwd() != null && rp.getNewPwd() != null;
         } catch (RuntimeException e) {
             return false;
         }

@@ -3,18 +3,18 @@ package com.airline.member;
 import com.airline.baseRestfulResponse;
 
 public class registerByTelRes extends baseRestfulResponse {
-    private boolean register;
+    private int register;
     private String verifyCode;
 
     public registerByTelRes(){
         super();
     }
 
-    public boolean getRegister() {
+    public int getRegister() {
         return register;
     }
 
-    public void setRegister(boolean register) {
+    public void setRegister(int register) {
         this.register = register;
     }
 

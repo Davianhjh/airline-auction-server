@@ -3,18 +3,18 @@ package com.airline.member;
 import com.airline.baseRestfulResponse;
 
 public class quickAccessRes extends baseRestfulResponse {
-    private boolean access;
+    private int access;
     private String verifyCode;
 
     public quickAccessRes (){
         super();
     }
 
-    public boolean getAccess() {
+    public int getAccess() {
         return access;
     }
 
-    public void setAccess (boolean access) {
+    public void setAccess (int access) {
         this.access = access;
     }
 

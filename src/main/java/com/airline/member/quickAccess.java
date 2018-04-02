@@ -40,28 +40,30 @@ public class quickAccess {
             return res;
         }
         try {
-            String searchSql = "SELECT id, username, cnid_name FROM customerAccount WHERE tel_country=? AND tel=?;";
+            String searchSql = "SELECT id, password, username, cnid_name FROM customerAccount WHERE tel_country=? AND tel=?;";
             pst = conn.prepareStatement(searchSql);
             pst.setString(1, qa.getTelCountry());
             pst.setString(2, qa.getTel());
             ret = pst.executeQuery();
             if (ret.next()) {
                 int uid = ret.getInt(1);
-                String userName = ret.getString(2);
-                String cnid_name = ret.getString(3);
+                String password = ret.getString(2);
+                String userName = ret.getString(3);
+                String cnid_name = ret.getString(4);
                 StringBuffer verifyCode = new StringBuffer("");
                 for(int i=0; i<6; i++){
                     int tmp = (int)Math.floor(Math.random()*10);
                     verifyCode.append(tmp);
                 }
-                String insertSql = "INSERT INTO quickAccess (uid, tel_country, tel, username, platform, verifyCode, expire) VALUES (?,?,?,?,?,?,ADDTIME(utc_timestamp(), '0 00:02:00'));";
+                String insertSql = "INSERT INTO quickAccess (uid, tel_country, tel, username, password, platform, verifyCode, expire) VALUES (?,?,?,?,?,?,?,ADDTIME(utc_timestamp(), '0 00:02:00'));";
                 pst = conn.prepareStatement(insertSql);
                 pst.setInt(1, uid);
                 pst.setString(2, qa.getTelCountry());
                 pst.setString(3, qa.getTel());
                 pst.setString(4, cnid_name == null ? userName : cnid_name);
-                pst.setString(5, qa.getPlatform());
-                pst.setString(6, verifyCode.toString());
+                pst.setString(5, password);
+                pst.setString(6, qa.getPlatform());
+                pst.setString(7, verifyCode.toString());
                 pst.executeUpdate();
                 // TODO
                 // sending msg module
@@ -69,7 +71,7 @@ public class quickAccess {
                 conn.close();
                 res.setAuth(1);
                 res.setCode(0);
-                res.setAccess(true);
+                res.setAccess(1);
                 if (TEXTSWITCH) {
                     res.setVerifyCode(verifyCode.toString());
                 }

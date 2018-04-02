@@ -3,13 +3,13 @@ package com.airline.member;
 import com.airline.baseRestfulResponse;
 
 public class authenticationRes extends baseRestfulResponse {
-    private boolean authentication;
+    private int authentication;
 
-    public boolean getAuthentication() {
+    public int getAuthentication() {
         return authentication;
     }
 
-    public void setAuthentication(boolean authentication){
+    public void setAuthentication(int authentication){
         this.authentication = authentication;
     }
 }

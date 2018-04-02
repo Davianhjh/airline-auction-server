@@ -5,6 +5,7 @@ import com.airline.baseRestfulResponse;
 public class verifyQuickAccessRes extends baseRestfulResponse {
     private String name;
     private String token;
+    private int pwdSetTag;
 
     public verifyQuickAccessRes() {
         super();
@@ -24,5 +25,13 @@ public class verifyQuickAccessRes extends baseRestfulResponse {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public int getPwdSetTag() {
+        return pwdSetTag;
+    }
+
+    public void setPwdSetTag(int pwdSetTag) {
+        this.pwdSetTag = pwdSetTag;
     }
 }

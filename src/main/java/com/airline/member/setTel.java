@@ -18,6 +18,8 @@ import java.sql.SQLException;
 
 @Path("/member/setTel")
 public class setTel {
+    private static final boolean TEXTSWITCH = true;
+
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -45,13 +47,20 @@ public class setTel {
         }
         try {
             String utcTimeStr = UTCTimeUtil.getUTCTimeStr();
-            String verifySql = "SELECT id FROM customerToken INNER JOIN customerAccount ON customerToken.uid = customerAccount.id WHERE token = ? and expire > ?;";
+            String verifySql = "SELECT uid, tel, email FROM customerToken INNER JOIN customerAccount ON customerToken.uid = customerAccount.id WHERE token = ? and expire > ?;";
             pst = conn.prepareStatement(verifySql);
             pst.setString(1, AgiToken);
             pst.setString(2, utcTimeStr);
             ret = pst.executeQuery();
             if (ret.next()) {
                 int uid = ret.getInt(1);
+                String tel = ret.getString(2);
+                String email = ret.getString(3);
+                if (tel != null || email == null) {
+                    res.setAuth(-1);
+                    res.setCode(1022);                          // tel has been set
+                    return res;
+                }
                 String searchSql = "SELECT id FROM customerAccount WHERE telCountry=? AND tel=?;";
                 pst = conn.prepareStatement(searchSql);
                 pst.setString(1, st.getTelCountry());
@@ -62,15 +71,29 @@ public class setTel {
                     res.setCode(1010);                          // tel registered
                     return res;
                 } else {
-                    String updateSql = "UPDATE customerAccount set telCountry=?, tel=? WHERE id=?;";
-                    pst = conn.prepareStatement(updateSql);
-                    pst.setString(1, st.getTelCountry());
-                    pst.setString(2, st.getTel());
-                    pst.setInt(3, uid);
+                    StringBuffer verifyCode = new StringBuffer("");
+                    for(int i=0; i<6; i++){
+                        int tmp = (int)Math.floor(Math.random()*10);
+                        verifyCode.append(tmp);
+                    }
+                    String sql = "INSERT INTO preRegister (uid, tel_country, tel, platform, verifyCode, expire) VALUES (?,?,?,?,?,ADDTIME(utc_timestamp(), '0 00:02:00'));";
+                    pst = conn.prepareStatement(sql);
+                    pst.setInt(1, uid);
+                    pst.setString(2, st.getTelCountry());
+                    pst.setString(3, st.getTel());
+                    pst.setString(4, st.getPlatform());
+                    pst.setString(5, verifyCode.toString());
                     pst.executeUpdate();
+                    // TODO
+                    // sending msg module
+                    //
+                    conn.close();
                     res.setAuth(1);
                     res.setCode(0);
-                    res.setRevise(1);
+                    res.setBind(1);
+                    if (TEXTSWITCH) {
+                        res.setVerifyCode(verifyCode.toString());
+                    }
                     return res;
                 }
             } else {
@@ -94,7 +117,7 @@ public class setTel {
 
     private boolean verifySetTelParam (setTelParam st) {
         try {
-            return st.getTel() != null && st.getTelCountry() != null;
+            return st.getTel() != null && st.getTelCountry() != null && st.getPlatform() != null;
         } catch (RuntimeException e) {
             return false;
         }

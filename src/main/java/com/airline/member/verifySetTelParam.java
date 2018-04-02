@@ -1,19 +1,19 @@
 package com.airline.member;
 
-public class setEmailParam {
-    private String email;
+public class verifySetTelParam {
+    private String verifyCode;
     private String platform;
 
-    public setEmailParam () {
+    public verifySetTelParam() {
         super();
     }
 
-    public String getEmail() {
-        return email;
+    public String getVerifyCode() {
+        return verifyCode;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setVerifyCode(String verifyCode) {
+        this.verifyCode = verifyCode;
     }
 
     public String getPlatform() {

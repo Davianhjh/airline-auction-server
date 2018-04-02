@@ -29,7 +29,7 @@ public class registerByTel {
         boolean verifyResult = verifyRegisterByTelParams(rt);
         if (!verifyResult) {
             res.setAuth(-1);
-            res.setCode(1000);                               // parameters not correct
+            res.setCode(1000);                                   // parameters not correct
             return res;
         }
 
@@ -48,9 +48,13 @@ public class registerByTel {
             pst.setString(2, rt.getTel());
             ret = pst.executeQuery();
             if (ret.next()) {
-                conn.close();
-                res.setAuth(-1);
-                res.setCode(1010);                           // tel has been registered
+                if (ret.getString(1) != null) {
+                    res.setAuth(-1);
+                    res.setCode(1011);                           // tel has been registered, use quick access
+                } else {
+                    res.setAuth(-1);
+                    res.setCode(1010);                           // tel has been registered, probably not yours
+                }
                 return res;
             } else {
                 StringBuffer verifyCode = new StringBuffer("");
@@ -58,13 +62,12 @@ public class registerByTel {
                     int tmp = (int)Math.floor(Math.random()*10);
                     verifyCode.append(tmp);
                 }
-                String sql = "INSERT INTO preRegister (tel_country, tel, password, platform, verifyCode, expire) VALUES (?,?,?,?,?,ADDTIME(utc_timestamp(), '0 00:02:00'));";
+                String sql = "INSERT INTO preRegister (tel_country, tel, platform, verifyCode, expire) VALUES (?,?,?,?,ADDTIME(utc_timestamp(), '0 00:02:00'));";
                 pst = conn.prepareStatement(sql);
                 pst.setString(1, rt.getTelCountry());
                 pst.setString(2, rt.getTel());
-                pst.setString(3, BCrypt.hashpw(rt.getPassword(), BCrypt.gensalt()));
-                pst.setString(4, rt.getPlatform());
-                pst.setString(5, verifyCode.toString());
+                pst.setString(3, rt.getPlatform());
+                pst.setString(4, verifyCode.toString());
                 pst.executeUpdate();
                 // TODO
                 // sending msg module
@@ -72,7 +75,7 @@ public class registerByTel {
                 conn.close();
                 res.setAuth(1);
                 res.setCode(0);
-                res.setRegister(true);
+                res.setRegister(1);
                 if (TEXTSWITCH) {
                     res.setVerifyCode(verifyCode.toString());
                 }
@@ -94,7 +97,7 @@ public class registerByTel {
 
     private boolean verifyRegisterByTelParams(registerByTelParam rt){
         try {
-            return rt.getTel() != null && rt.getTelCountry() != null && rt.getPassword() != null && rt.getPlatform() != null;
+            return rt.getTel() != null && rt.getTelCountry() != null && rt.getPlatform() != null;
         } catch (RuntimeException e){
             return false;
         }

@@ -2,10 +2,10 @@ package com.airline.member;
 
 import com.airline.baseRestfulResponse;
 
-public class setEmailRes extends baseRestfulResponse {
+public class verifySetTelRes extends baseRestfulResponse {
     private int bind;
 
-    public setEmailRes () {
+    public verifySetTelRes() {
         super();
     }
 

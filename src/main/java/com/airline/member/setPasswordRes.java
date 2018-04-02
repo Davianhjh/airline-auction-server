@@ -3,27 +3,17 @@ package com.airline.member;
 import com.airline.baseRestfulResponse;
 
 public class setPasswordRes extends baseRestfulResponse {
-    private String name;
-    private String token;
+    private int set;
 
     public setPasswordRes(){
         super();
     }
 
-    public String getName(){
-        return name;
+    public int getSet() {
+        return set;
     }
 
-    public void setName(String name){
-        this.name = name;
+    public void setSet(int set) {
+        this.set = set;
     }
-
-    public String getToken(){
-        return token;
-    }
-
-    public void setToken(String token){
-        this.token = token;
-    }
-
 }

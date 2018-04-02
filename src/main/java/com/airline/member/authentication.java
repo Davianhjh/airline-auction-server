@@ -71,7 +71,7 @@ public class authentication  {
                     pst.executeUpdate();
                     res.setAuth(1);
                     res.setCode(0);
-                    res.setAuthentication(true);
+                    res.setAuthentication(1);
                     return res;
                 }
             } else {
