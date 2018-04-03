@@ -68,6 +68,12 @@ public class revisePassword {
                     pst.setString(1, BCrypt.hashpw(rp.getNewPwd(), BCrypt.gensalt()));
                     pst.setInt(2, uid);
                     pst.executeUpdate();
+
+                    String sql = "UPDATE customerToken set token=null WHERE uid=?";
+                    pst = conn.prepareStatement(sql);
+                    pst.setInt(1, uid);
+                    pst.executeUpdate();
+
                     res.setAuth(1);
                     res.setCode(0);
                     res.setRevise(1);

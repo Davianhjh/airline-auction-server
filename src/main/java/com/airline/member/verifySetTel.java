@@ -67,7 +67,7 @@ public class verifySetTel {
                         String tel = ret.getString(2);
                         String telCountry = ret.getString(3);
                         if (ret.getInt(1) == uid && tel != null && telCountry != null) {
-                            String sql1 = "SELECT id FROM customerAccount WHERE tel=? AND telCountry=?";
+                            String sql1 = "SELECT id FROM customerAccount WHERE tel=? AND tel_country=?";
                             pst = conn.prepareStatement(sql1);
                             pst.setString(1, tel);
                             pst.setString(2, telCountry);

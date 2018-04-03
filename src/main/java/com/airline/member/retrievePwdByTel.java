@@ -12,19 +12,19 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-@Path("/member/quickAccess")
-public class quickAccess {
+@Path("/member/tel/retrievePassword")
+public class retrievePwdByTel {
     private static final boolean TEXTSWITCH = true;
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public quickAccessRes quickAccessLogin (quickAccessParam qa) {
-        quickAccessRes res = new quickAccessRes();
+    public retrievePwdByTelRes retrieveByTel (retrievePwdByTelParam rt) {
+        retrievePwdByTelRes res = new retrievePwdByTelRes();
         Connection conn;
         PreparedStatement pst;
         ResultSet ret;
-        boolean verifyResult = verifyQuickAccessParams(qa);
+        boolean verifyResult = verifyRetrieveParam(rt);
         if (!verifyResult) {
             res.setAuth(-1);
             res.setCode(1000);                               // parameters not correct
@@ -36,55 +36,47 @@ public class quickAccess {
         } catch (SQLException e){
             e.printStackTrace();
             res.setAuth(-2);
-            res.setCode(2000);                                   // fail to get mysql connection
+            res.setCode(2000);                               // fail to get mysql connection
             return res;
         }
         try {
-            String searchSql = "SELECT id, password, username, cnid_name FROM customerAccount WHERE tel_country=? AND tel=?;";
+            String searchSql = "SELECT id FROM customerAccount WHERE tel=? AND tel_country=?";
             pst = conn.prepareStatement(searchSql);
-            pst.setString(1, qa.getTelCountry());
-            pst.setString(2, qa.getTel());
+            pst.setString(1, rt.getTel());
+            pst.setString(2, rt.getTelCountry());
             ret = pst.executeQuery();
             if (ret.next()) {
                 int uid = ret.getInt(1);
-                String password = ret.getString(2);
-                String userName = ret.getString(3);
-                String cnid_name = ret.getString(4);
                 StringBuffer verifyCode = new StringBuffer("");
                 for(int i=0; i<6; i++){
                     int tmp = (int)Math.floor(Math.random()*10);
                     verifyCode.append(tmp);
                 }
-                String insertSql = "INSERT INTO quickAccess (uid, tel_country, tel, username, password, platform, verifyCode, expire) VALUES (?,?,?,?,?,?,?,ADDTIME(utc_timestamp(), '0 00:02:00'));";
+                String insertSql = "INSERT INTO preRegister (uid, tel, tel_country, platform, verifyCode, expire) VALUES (?,?,?,?,?,ADDTIME(utc_timestamp(), '0 00:02:00'))";
                 pst = conn.prepareStatement(insertSql);
                 pst.setInt(1, uid);
-                pst.setString(2, qa.getTelCountry());
-                pst.setString(3, qa.getTel());
-                pst.setString(4, cnid_name == null ? userName : cnid_name);
-                pst.setString(5, password);
-                pst.setString(6, qa.getPlatform());
-                pst.setString(7, verifyCode.toString());
+                pst.setString(2, rt.getTel());
+                pst.setString(3, rt.getTelCountry());
+                pst.setString(4, rt.getPlatform());
+                pst.setString(5, verifyCode.toString());
                 pst.executeUpdate();
-                // TODO
-                // sending msg module
-                //
+
                 res.setAuth(1);
                 res.setCode(0);
-                res.setAccess(1);
+                res.setRetrieve(1);
                 if (TEXTSWITCH) {
                     res.setVerifyCode(verifyCode.toString());
                 }
                 return res;
-
             } else {
                 res.setAuth(-1);
-                res.setCode(1020);                              // user not found
+                res.setCode(1028);                           // not registered
                 return res;
             }
-        } catch (SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
             res.setAuth(-2);
-            res.setCode(2000);                                  // mysql error
+            res.setCode(2000);                               // mysql error
             return res;
         } finally {
             try {
@@ -95,10 +87,10 @@ public class quickAccess {
         }
     }
 
-    private boolean verifyQuickAccessParams (quickAccessParam qa) {
+    private boolean verifyRetrieveParam (retrievePwdByTelParam rt) {
         try {
-            return qa.getTel() != null && qa.getTelCountry() != null && qa.getPlatform() != null;
-        } catch (RuntimeException e){
+            return rt.getTel() != null && rt.getTelCountry() != null && rt.getPlatform() != null;
+        } catch (RuntimeException e) {
             return false;
         }
     }

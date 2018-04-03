@@ -61,7 +61,7 @@ public class setTel {
                     res.setCode(1022);                          // tel has been set
                     return res;
                 }
-                String searchSql = "SELECT id FROM customerAccount WHERE telCountry=? AND tel=?;";
+                String searchSql = "SELECT id FROM customerAccount WHERE tel_country=? AND tel=?;";
                 pst = conn.prepareStatement(searchSql);
                 pst.setString(1, st.getTelCountry());
                 pst.setString(2, st.getTel());
