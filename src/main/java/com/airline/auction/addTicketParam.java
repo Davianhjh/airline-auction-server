@@ -3,8 +3,8 @@ package com.airline.auction;
 public class addTicketParam {
     private String name;
     private String tel;
-    private String number;
-    private int numberType;
+    private String telCountry;
+    private String ticketNo;
 
     public addTicketParam(){
         super();
@@ -26,19 +26,19 @@ public class addTicketParam {
         this.tel = tel;
     }
 
-    public String getNumber() {
-        return number;
+    public String getTelCountry() {
+        return telCountry;
     }
 
-    public void setNumber(String number) {
-        this.number = number;
+    public void setTelCountry(String telCountry) {
+        this.telCountry = telCountry;
     }
 
-    public int getNumberType() {
-        return numberType;
+    public String getTicketNo() {
+        return ticketNo;
     }
 
-    public void setNumberType(int numberType) {
-        this.numberType = numberType;
+    public void setTicketNo(String ticketNo) {
+        this.ticketNo = ticketNo;
     }
 }

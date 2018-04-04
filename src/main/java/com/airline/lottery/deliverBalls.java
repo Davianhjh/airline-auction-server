@@ -66,6 +66,8 @@ public class deliverBalls {
                 pst = conn.prepareStatement(searchSql);
                 pst.setString(1, transactionID);
                 ret2 = pst.executeQuery();
+                System.out.println(pst);
+                System.out.println(utcTimeStr);
                 if (ret2.next()) {
                     JSONObject response = getBallsFromServer(ret2.getString(1), ret2.getString(2), ret2.getInt(3), ret2.getInt(4));
                     if (response != null) {

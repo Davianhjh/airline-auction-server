@@ -58,7 +58,7 @@ public class authentication  {
                 ret2 = pst.executeQuery();
                 if (ret2.next()) {
                     res.setAuth(-1);
-                    res.setCode(1010);                          // idcard has been authenticated
+                    res.setCode(1015);                          // idcard has been authenticated
                     return res;
                 } else {
                     String sql = "UPDATE customerAccount set cnid=?, cnid_name=?, gender=?, birthday=? WHERE id=?;";

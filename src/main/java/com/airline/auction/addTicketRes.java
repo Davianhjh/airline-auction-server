@@ -9,6 +9,7 @@ public class addTicketRes extends baseRestfulResponse {
     private String name;
     private String token;
     private ArrayList<baseTicketData> tickets;
+    private int newComer;
 
     public String getName() {
         return name;
@@ -32,5 +33,13 @@ public class addTicketRes extends baseRestfulResponse {
 
     public void setTickets(ArrayList<baseTicketData> tickets){
         this.tickets= new ArrayList<baseTicketData>(tickets);
+    }
+
+    public int getNewComer() {
+        return newComer;
+    }
+
+    public void setNewComer(int newComer) {
+        this.newComer = newComer;
     }
 }

@@ -56,114 +56,131 @@ public class addTicket {
                 ret = pst.executeQuery();
                 if (ret.next()) {
                     int uid = ret.getInt(1);
-                    result = getTicketsUtil.getRemoteTickets(conn, uid, at.getName(), at.getNumber(), at.getNumberType(), tickets, null);
+                    result = getTicketsUtil.getRemoteTickets(conn, uid, at.getName(), at.getTicketNo(), at.getTel(), tickets);
                     if (result == 1) {
                         res.setAuth(1);
                         res.setCode(0);
                         res.setTickets(tickets);
                         return res;
+                    } else if (result == 0) {
+                        res.setAuth(-1);
+                        res.setCode(1040);                       // ticket not found OR not exist
+                        return res;
                     } else if (result == -1) {
                         res.setAuth(-2);
-                        res.setCode(1050);                       // get ticketData error
+                        res.setCode(1050);                       // middleware server error
                         return res;
                     } else {
                         res.setAuth(-2);
-                        res.setCode(1060);                       // get auctionData error
+                        res.setCode(1060);                       // auction server error
                         return res;
                     }
                 } else {
                     res.setAuth(-1);
-                    res.setCode(1020);                              // user not found
+                    res.setCode(1020);                           // user not found
                     return res;
                 }
             }
             // for visitor add ticket
             else {
-                if (at.getNumberType() == 1) {
-                    res.setAuth(-1);
-                    res.setCode(1023);                                  // visitor cannot use certificateNo search tickets
-                    return res;
-                } else {
-                    result = getTicketsUtil.getRemoteTickets(conn, TAMPORARY_UID, at.getName(), at.getNumber(), at.getNumberType(), tickets, null);
-                    if (result == 1) {
-                        if (tickets.size() == 0) {
-                            res.setAuth(1);
-                            res.setCode(0);
-                            res.setTickets(tickets);             // ticketNo not found, tickets is [];
-                            return res;
+                result = getTicketsUtil.getRemoteTickets(conn, TAMPORARY_UID, at.getName(), at.getTicketNo(), at.getTel(), tickets);
+                if (result == 1) {
+                    String token = null;
+                    int uid;
+                    String sql1 = "SELECT id, username FROM customerAccount WHERE tel=? AND tel_country=?;";
+                    pst= conn.prepareStatement(sql1);
+                    pst.setString(1, at.getTel());
+                    pst.setString(2, at.getTelCountry());
+                    ret2 = pst.executeQuery();
+                    if (ret2.next()) {
+                        uid = ret2.getInt(1);
+                        String userName = ret2.getString(2);
+                        token = tokenHandler.createJWT(String.valueOf(uid), userName, "mobile", 7 * 24 * 3600 * 1000);
+                        String sql2 = "SELECT tid FROM customerToken WHERE uid=?";
+                        pst = conn.prepareStatement(sql2);
+                        pst.setInt(1, uid);
+                        ret3 = pst.executeQuery();
+                        if (ret3.next()) {
+                            String sql3 = "UPDATE customerToken set token=?, expire=ADDTIME(utc_timestamp(), '7 00:00:00') WHERE uid=?;";
+                            pst = conn.prepareStatement(sql3);
+                            pst.setString(1, token);
+                            pst.setInt(2, uid);
+                            pst.executeUpdate();
                         } else {
-                            String token = null;
-                            int uid;
-                            String sql1 = "SELECT id, username FROM customerAccount WHERE tel=?;";
-                            pst= conn.prepareStatement(sql1);
-                            pst.setString(1, at.getTel());
-                            ret2 = pst.executeQuery();
-                            if (ret2.next()) {
-                                uid = ret2.getInt(1);
-                                String userName = ret2.getString(2);
-                                token = tokenHandler.createJWT(String.valueOf(uid), userName, "mobile", 7 * 24 * 3600 * 1000);
-                                String sql2 = "UPDATE customerToken set token=?, expire=ADDTIME(utc_timestamp(), '7 00:00:00') WHERE uid=?;";
-                                pst = conn.prepareStatement(sql2);
-                                pst.setString(1, token);
-                                pst.setInt(2, uid);
-                                pst.executeUpdate();
-                            } else {
-                                String userName = MD5Util.getMD5(at.getTel()).substring(0,10);
-                                String sql3 = "INSERT INTO customerAccount (tel_country, tel, username, platform) VALUES ('86',?,?,'mobile');";
-                                pst = conn.prepareStatement(sql3, Statement.RETURN_GENERATED_KEYS);
-                                pst.setString(1, at.getTel());
-                                pst.setString(2, userName);
-                                pst.executeUpdate();
-                                ret3 = pst.getGeneratedKeys();
-                                if (ret3.next()) {
-                                    uid = ret3.getInt(1);
-                                    token = tokenHandler.createJWT(String.valueOf(uid), userName, "mobile", 7 * 24 * 3600 * 1000);
-                                    String sql4 = "INSERT INTO customerToken (uid, token, platform, expire) VALUES (?,?,'mobile', ADDTIME(utc_timestamp(), '7 00:00:00'));";
-                                    pst = conn.prepareStatement(sql4);
-                                    pst.setInt(1, uid);
-                                    pst.setString(2, token);
-                                    pst.executeUpdate();
-                                } else {
-                                    res.setAuth(-2);
-                                    res.setCode(2000);         // mysql error (shouldn't be here)
-                                    return res;
-                                }
-                            }
-                            String deleteSql = "DELETE FROM passengerFlight WHERE addedByUid=? AND ticketNo=?";
-                            pst = conn.prepareStatement(deleteSql);
+                            String sql4 = "INSERT INTO customerToken (uid, token, platform, expire) VALUES (?,?,'mobile', ADDTIME(utc_timestamp(), '7 00:00:00'));";
+                            pst = conn.prepareStatement(sql4);
                             pst.setInt(1, uid);
-                            pst.setString(2, at.getNumber());
+                            pst.setString(2, token);
                             pst.executeUpdate();
-
-                            String updateSql = "UPDATE passengerFlight set addedByUid=?, timeStamp=? WHERE addedByUid=? AND ticketNo=?;";
-                            pst = conn.prepareStatement(updateSql);
-                            pst.setInt(1, uid);
-                            pst.setString(2, UTCTimeUtil.getUTCTimeStr());
-                            pst.setInt(3, TAMPORARY_UID);
-                            pst.setString(4, at.getNumber());
-                            pst.executeUpdate();
-                            res.setAuth(1);
-                            res.setCode(0);
-                            res.setName(at.getName());
-                            res.setToken(token);
-                            res.setTickets(tickets);
+                        }
+                        res.setNewComer(0);
+                    } else {
+                        String userName = MD5Util.getMD5(at.getTel());
+                        if (userName == null) {
+                            res.setAuth(-2);
+                            res.setCode(2000);                    // MD5 error
                             return res;
                         }
-                    } else if (result == -1) {
-                        res.setAuth(-2);
-                        res.setCode(1050);                       // get ticketData error
-                        return res;
-                    } else {
-                        res.setAuth(-2);
-                        res.setCode(1060);                       // get auctionData error
-                        return res;
+                        String sql3 = "INSERT INTO customerAccount (tel_country, tel, username, cnid_name, platform) VALUES (?,?,?,?,'mobile');";
+                        pst = conn.prepareStatement(sql3, Statement.RETURN_GENERATED_KEYS);
+                        pst.setString(1, at.getTelCountry());
+                        pst.setString(2, at.getTel());
+                        pst.setString(3, userName.substring(0,10));
+                        pst.setString(4, at.getName());
+                        pst.executeUpdate();
+                        ResultSet rst = pst.getGeneratedKeys();
+                        if (rst.next()) {
+                            uid = rst.getInt(1);
+                            token = tokenHandler.createJWT(String.valueOf(uid), userName, "mobile", 7 * 24 * 3600 * 1000);
+                            String sql4 = "INSERT INTO customerToken (uid, token, platform, expire) VALUES (?,?,'mobile', ADDTIME(utc_timestamp(), '7 00:00:00'));";
+                            pst = conn.prepareStatement(sql4);
+                            pst.setInt(1, uid);
+                            pst.setString(2, token);
+                            pst.executeUpdate();
+                            res.setNewComer(1);
+                        } else {
+                            res.setAuth(-2);
+                            res.setCode(2000);         // mysql error (shouldn't be here)
+                            return res;
+                        }
                     }
+                    String deleteSql = "DELETE FROM passengerFlight WHERE addedByUid=? AND ticketNo=?";
+                    pst = conn.prepareStatement(deleteSql);
+                    pst.setInt(1, uid);
+                    pst.setString(2, at.getTicketNo());
+                    pst.executeUpdate();
+
+                    String updateSql = "UPDATE passengerFlight set addedByUid=?, timeStamp=? WHERE addedByUid=? AND ticketNo=?;";
+                    pst = conn.prepareStatement(updateSql);
+                    pst.setInt(1, uid);
+                    pst.setString(2, UTCTimeUtil.getUTCTimeStr());
+                    pst.setInt(3, TAMPORARY_UID);
+                    pst.setString(4, at.getTicketNo());
+                    pst.executeUpdate();
+                    res.setAuth(1);
+                    res.setCode(0);
+                    res.setName(at.getName());
+                    res.setToken(token);
+                    res.setTickets(tickets);
+                    return res;
+                } else if (result == 0) {
+                    res.setAuth(-1);
+                    res.setCode(1040);                       // ticket not found OR not exist
+                    return res;
+                } else if (result == -1) {
+                    res.setAuth(-2);
+                    res.setCode(1050);                       // middleware server error
+                    return res;
+                } else {
+                    res.setAuth(-2);
+                    res.setCode(1060);                       // auction server error
+                    return res;
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
             res.setAuth(-2);
-            res.setCode(2000);                           // mysql error
+            res.setCode(2000);                               // mysql error
             return res;
         } finally {
             try {
@@ -176,7 +193,7 @@ public class addTicket {
 
     private boolean verifyAddTicketParams(addTicketParam at) {
         try {
-            return  ((at.getNumberType() == 1 || at.getNumberType() == 2) && at.getName() != null && at.getTel() != null && at.getNumber() != null);
+            return  (at.getTicketNo() != null && at.getName() != null && at.getTel() != null && at.getTelCountry() != null);
         } catch (RuntimeException e) {
             return false;
         }

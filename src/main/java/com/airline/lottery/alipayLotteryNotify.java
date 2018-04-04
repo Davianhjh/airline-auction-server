@@ -2,6 +2,7 @@ package com.airline.lottery;
 
 import com.airline.tools.AlipayAPPUtil;
 import com.airline.tools.HiKariCPHandler;
+import com.airline.tools.UTCTimeUtil;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -74,9 +75,11 @@ public class alipayLotteryNotify {
                         paymentProp.load(in);
                         in.close();
                         if (app_id.equals(paymentProp.getProperty("appid")) && seller_id.equals(paymentProp.getProperty("sellerid")) && Double.parseDouble(total_Amount) == totalAmount) {
-                            String updateSql = "UPDATE ballTransaction SET paymentState=1 WHERE transactionNo=?;";
+                            String updateSql = "UPDATE ballTransaction SET paymentState=1, timeStamp=? WHERE transactionNo=?;";
                             pst = conn.prepareStatement(updateSql);
+                            String utcTimeStr = UTCTimeUtil.getUTCTimeStr();
                             pst.setString(1, out_trade_no);
+                            pst.setString(2, utcTimeStr);
                             pst.executeUpdate();
                             System.out.println("payment verified success!");
                             return "success";

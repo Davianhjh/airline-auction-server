@@ -5,7 +5,6 @@ import com.airline.tools.httpRequestUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import org.omg.CORBA.OBJ_ADAPTER;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -19,12 +18,13 @@ import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+import javax.servlet.http.HttpServletRequest;
 
 @Path("/test")
 public class restfulTest {
     @GET
     @Produces(MediaType.TEXT_PLAIN)
-    public String printTesting() {
+    public String printTesting(@Context HttpServletRequest request) {
         /*
         MultivaluedMap<String, String> body = form.asMap();
         System.out.println(body.size());
@@ -68,7 +68,8 @@ public class restfulTest {
         System.out.println("file.encoding=" + System.getProperty("file.encoding"));
         System.out.println("Default Charset in Use=" + getDefaultCharSet());
         */
-        return "testing Jersey Restful API";
+        String ip = request.getRemoteAddr();
+        return "Testing Jersey Restful API! Your IP is: " + ip;
     }
 
     @GET
@@ -88,9 +89,9 @@ public class restfulTest {
     @Path("/postUser")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public int sendUser(@Context HttpHeaders hh, User user) {
+    public int sendUser(@Context HttpServletRequest request, @Context HttpHeaders hh, User user) {
         MultivaluedMap<String, String> header = hh.getRequestHeaders();
-        String token = header.getFirst("agi-token");
+        String token = header.getFirst("token");
         Map<String,Cookie> tmp = hh.getCookies();
         for(Cookie item : tmp.values()) {
             System.out.println(item.getValue());

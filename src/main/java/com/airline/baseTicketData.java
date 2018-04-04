@@ -1,11 +1,10 @@
 package com.airline;
 
-import com.alibaba.fastjson.annotation.JSONField;
-
 import java.util.ArrayList;
 
 public class baseTicketData {
     private String passengerName;
+    private String mobile;
     private String certificateNo;
     private String flightNo;
     private String flightDate;
@@ -29,6 +28,14 @@ public class baseTicketData {
 
     public void setPassengerName(String passengerName){
         this.passengerName = passengerName;
+    }
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
     }
 
     public String getCertificateNo(){
