@@ -1,21 +1,12 @@
 package com.airline.auction;
 
 public class addTicketParam {
-    private String name;
     private String tel;
     private String telCountry;
     private String ticketNo;
 
     public addTicketParam(){
         super();
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getTel() {

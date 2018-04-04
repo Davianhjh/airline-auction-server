@@ -75,6 +75,7 @@ public class searchTicket {
                     res.setAuth(1);
                     res.setCode(0);
                     res.setSearch(1);
+                    res.setVerifyCode(verifyCode.toString());
                     return res;
                 } else {
                     res.setAuth(-1);

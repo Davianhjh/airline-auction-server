@@ -56,7 +56,7 @@ public class memberLogin {
                 String hashedPassword = ret.getString(2);
                 String userName = ret.getString(3);
                 String cnid_name = ret.getString(4);
-                if (!BCrypt.checkpw(ml.getPassword(), hashedPassword)) {
+                if (hashedPassword == null || !BCrypt.checkpw(ml.getPassword(), hashedPassword)) {
                     res.setAuth(-1);
                     res.setCode(1020);                          // user password not match
                     return res;

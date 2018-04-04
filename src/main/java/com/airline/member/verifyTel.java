@@ -40,13 +40,14 @@ public class verifyTel {
         }
         try {
             String utcTimeStr = UTCTimeUtil.getUTCTimeStr();
-            String searchSql = "SELECT tel, tel_country FROM preRegister WHERE verifyCode=? AND platform=? AND expire > ?;";
+            String searchSql = "SELECT tel, tel_country, password FROM preRegister WHERE verifyCode=? AND platform=? AND expire > ?;";
             pst = conn.prepareStatement(searchSql);
             pst.setString(1, vt.getVerifyCode());
             pst.setString(2, vt.getPlatform());
             pst.setString(3, utcTimeStr);
             ret = pst.executeQuery();
             if (ret.next()) {
+                String password = ret.getString(3);
                 if (!ret.getString(1).equals(vt.getTel()) || !ret.getString(2).equals(vt.getTelCountry())) {
                     res.setAuth(-1);
                     res.setCode(1014);                                     // verify not correct
@@ -68,12 +69,13 @@ public class verifyTel {
                         res.setCode(2000);                                 // MD5 error
                         return res;
                     }
-                    String sql2 = "INSERT INTO customerAccount (tel, tel_country, username, platform) VALUES (?,?,?,?);";
+                    String sql2 = "INSERT INTO customerAccount (tel, tel_country, password, username, platform) VALUES (?,?,?,?,?);";
                     pst = conn.prepareStatement(sql2, Statement.RETURN_GENERATED_KEYS);
                     pst.setString(1, vt.getTel());
                     pst.setString(2, vt.getTelCountry());
-                    pst.setString(3, userName.substring(0, 10));
-                    pst.setString(4, vt.getPlatform());
+                    pst.setString(3, password);
+                    pst.setString(4, userName.substring(0, 10));
+                    pst.setString(5, vt.getPlatform());
                     pst.executeUpdate();
                     ResultSet rs = pst.getGeneratedKeys();
                     rs.next();

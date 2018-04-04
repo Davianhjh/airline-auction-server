@@ -62,12 +62,19 @@ public class registerByTel {
                     int tmp = (int)Math.floor(Math.random()*10);
                     verifyCode.append(tmp);
                 }
-                String sql = "INSERT INTO preRegister (tel_country, tel, platform, verifyCode, expire) VALUES (?,?,?,?,ADDTIME(utc_timestamp(), '0 00:02:00'));";
+                String password;
+                try {
+                    password = rt.getPassword();
+                } catch (RuntimeException e) {
+                    password = null;
+                }
+                String sql = "INSERT INTO preRegister (tel_country, tel, password, platform, verifyCode, expire) VALUES (?,?,?,?,?,ADDTIME(utc_timestamp(), '0 00:02:00'));";
                 pst = conn.prepareStatement(sql);
                 pst.setString(1, rt.getTelCountry());
                 pst.setString(2, rt.getTel());
-                pst.setString(3, rt.getPlatform());
-                pst.setString(4, verifyCode.toString());
+                pst.setString(3, password == null ? null : BCrypt.hashpw(password, BCrypt.gensalt()));
+                pst.setString(4, rt.getPlatform());
+                pst.setString(5, verifyCode.toString());
                 pst.executeUpdate();
                 // TODO
                 // sending msg module

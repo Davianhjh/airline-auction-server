@@ -1,6 +1,7 @@
 package com.test;
 
 import com.airline.baseAuctionData;
+import com.airline.tools.getIpAddressUtil;
 import com.airline.tools.httpRequestUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -68,7 +69,7 @@ public class restfulTest {
         System.out.println("file.encoding=" + System.getProperty("file.encoding"));
         System.out.println("Default Charset in Use=" + getDefaultCharSet());
         */
-        String ip = request.getRemoteAddr();
+        String ip = getIpAddressUtil.getIpAddress(request);
         return "Testing Jersey Restful API! Your IP is: " + ip;
     }
 

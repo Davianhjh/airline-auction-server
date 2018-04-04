@@ -84,7 +84,7 @@ public class getTicketsUtil {
         return true;
     }
 
-    public static int getRemoteTickets(Connection conn, int uid, String cnid_name, String ticketNo, String mobile, ArrayList<baseTicketData> tickets) throws SQLException {
+    public static int getRemoteTickets(Connection conn, int uid, String ticketNo, String mobile, ArrayList<baseTicketData> tickets) throws SQLException {
         PreparedStatement pst;
         String sql = "INSERT IGNORE INTO passengerFlight (passengerName, mobile, flightNo, flightDate, ticketNo, certificateType, certificateNo, carbinClass, dptAirport, dptAptCode, arvAirport, arvAptCode, depTime, arrTime, addedByUid, timeStamp) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
         pst = conn.prepareStatement(sql);

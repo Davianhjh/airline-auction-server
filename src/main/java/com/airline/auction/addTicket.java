@@ -56,7 +56,7 @@ public class addTicket {
                 ret = pst.executeQuery();
                 if (ret.next()) {
                     int uid = ret.getInt(1);
-                    result = getTicketsUtil.getRemoteTickets(conn, uid, at.getName(), at.getTicketNo(), at.getTel(), tickets);
+                    result = getTicketsUtil.getRemoteTickets(conn, uid, at.getTicketNo(), at.getTel(), tickets);
                     if (result == 1) {
                         res.setAuth(1);
                         res.setCode(0);
@@ -83,9 +83,9 @@ public class addTicket {
             }
             // for visitor add ticket
             else {
-                result = getTicketsUtil.getRemoteTickets(conn, TAMPORARY_UID, at.getName(), at.getTicketNo(), at.getTel(), tickets);
+                result = getTicketsUtil.getRemoteTickets(conn, TAMPORARY_UID, at.getTicketNo(), at.getTel(), tickets);
                 if (result == 1) {
-                    String token = null;
+                    String token,userName;
                     int uid;
                     String sql1 = "SELECT id, username FROM customerAccount WHERE tel=? AND tel_country=?;";
                     pst= conn.prepareStatement(sql1);
@@ -94,7 +94,7 @@ public class addTicket {
                     ret2 = pst.executeQuery();
                     if (ret2.next()) {
                         uid = ret2.getInt(1);
-                        String userName = ret2.getString(2);
+                        userName = ret2.getString(2);
                         token = tokenHandler.createJWT(String.valueOf(uid), userName, "mobile", 7 * 24 * 3600 * 1000);
                         String sql2 = "SELECT tid FROM customerToken WHERE uid=?";
                         pst = conn.prepareStatement(sql2);
@@ -115,18 +115,17 @@ public class addTicket {
                         }
                         res.setNewComer(0);
                     } else {
-                        String userName = MD5Util.getMD5(at.getTel());
+                        userName = MD5Util.getMD5(at.getTel());
                         if (userName == null) {
                             res.setAuth(-2);
                             res.setCode(2000);                    // MD5 error
                             return res;
                         }
-                        String sql3 = "INSERT INTO customerAccount (tel_country, tel, username, cnid_name, platform) VALUES (?,?,?,?,'mobile');";
+                        String sql3 = "INSERT INTO customerAccount (tel_country, tel, cnid_name, platform) VALUES (?,?,?,'mobile');";
                         pst = conn.prepareStatement(sql3, Statement.RETURN_GENERATED_KEYS);
                         pst.setString(1, at.getTelCountry());
                         pst.setString(2, at.getTel());
                         pst.setString(3, userName.substring(0,10));
-                        pst.setString(4, at.getName());
                         pst.executeUpdate();
                         ResultSet rst = pst.getGeneratedKeys();
                         if (rst.next()) {
@@ -159,7 +158,7 @@ public class addTicket {
                     pst.executeUpdate();
                     res.setAuth(1);
                     res.setCode(0);
-                    res.setName(at.getName());
+                    res.setName(userName);
                     res.setToken(token);
                     res.setTickets(tickets);
                     return res;
@@ -193,7 +192,7 @@ public class addTicket {
 
     private boolean verifyAddTicketParams(addTicketParam at) {
         try {
-            return  (at.getTicketNo() != null && at.getName() != null && at.getTel() != null && at.getTelCountry() != null);
+            return  (at.getTicketNo() != null && at.getTel() != null && at.getTelCountry() != null);
         } catch (RuntimeException e) {
             return false;
         }

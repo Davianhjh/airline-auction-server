@@ -3,6 +3,7 @@ package com.airline.member;
 public class registerByTelParam {
     private String tel;
     private String telCountry;
+    private String password;
     private String platform;
 
     public registerByTelParam(){
@@ -23,6 +24,14 @@ public class registerByTelParam {
 
     public void setTelCountry(String telCountry) {
         this.telCountry = telCountry;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getPlatform() {
