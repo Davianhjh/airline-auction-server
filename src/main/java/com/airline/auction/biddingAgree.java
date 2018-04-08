@@ -55,7 +55,7 @@ public class biddingAgree {
             if (ret.next()) {
                 int uid = ret.getInt(1);
                 auctionInfo ai = getAuctionUtil.getAuctionStatus(ba.getAuctionID());
-                if (ai == null) {
+                if (ai == null || ai.getAuctionState() == null) {
                     res.setAuth(-2);
                     res.setCode(1060);                       // auction server error
                     return res;

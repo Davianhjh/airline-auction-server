@@ -58,24 +58,14 @@ public class refreshBalls {
             if (ret.next()) {
                 int uid = ret.getInt(1);
                 auctionInfo ai = getAuctionUtil.getAuctionStatus(rb.getAuctionID());
-                if (ai != null && ai.getAuctionType().equals("l") && (ai.getAuctionState().equals("active") || ai.getAuctionState().equals("result"))) {
+                if (ai != null && ai.getAuctionState() != null && ai.getAuctionType().equals("l") && (ai.getAuctionState().equals("active") || ai.getAuctionState().equals("result"))) {
                     JSONObject response = getBalls(rb.getAuctionID(), rb.getCertificateNo(), uid);
                     if (response != null) {
-                        JSONArray ballRecords = response.getJSONArray("tickets");
-                        ArrayList<ballTicket> balls = new ArrayList<ballTicket>();
-                        for (int i = 0; i < ballRecords.size(); i++) {
-                            ballTicket tmp = new ballTicket();
-                            tmp.setStartBall(ballRecords.getJSONObject(i).getIntValue("start"));
-                            tmp.setEndBall(ballRecords.getJSONObject(i).getIntValue("end"));
-                            tmp.setQuantity(ballRecords.getJSONObject(i).getIntValue("quantity"));
-                            balls.add(tmp);
-                        }
                         res.setAuth(1);
                         res.setCode(0);
                         res.setAuctionState(ai.getAuctionState());
                         res.setEndCountDown(ai.getEndCountDown());
-                        res.setBalls(balls);
-                        balls.clear();
+                        res.setBalls(response.getJSONArray("tickets"));
                         return res;
                     } else {
                         res.setAuth(-2);
@@ -114,7 +104,7 @@ public class refreshBalls {
         }
     }
 
-    private JSONObject getBalls (String auctionID, String certificateNo, int uid) {
+    public static JSONObject getBalls (String auctionID, String certificateNo, int uid) {
         try {
             Properties serverProp = new Properties();
             InputStream in = refreshBalls.class.getResourceAsStream("/serverAddress.properties");

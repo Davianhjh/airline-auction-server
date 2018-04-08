@@ -81,6 +81,7 @@ public class alipayLotteryNotify {
                             pst.setString(1, out_trade_no);
                             pst.setString(2, utcTimeStr);
                             pst.executeUpdate();
+                            System.out.println(utcTimeStr);
                             System.out.println("payment verified success!");
                             return "success";
                         }

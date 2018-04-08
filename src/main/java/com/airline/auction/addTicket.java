@@ -93,6 +93,8 @@ public class addTicket {
                     pst.setString(2, at.getTelCountry());
                     ret2 = pst.executeQuery();
                     if (ret2.next()) {
+                        // TODO
+                        System.out.println(pst);
                         uid = ret2.getInt(1);
                         userName = ret2.getString(2);
                         token = tokenHandler.createJWT(String.valueOf(uid), userName, "mobile", 7 * 24 * 3600 * 1000);
@@ -121,11 +123,10 @@ public class addTicket {
                             res.setCode(2000);                    // MD5 error
                             return res;
                         }
-                        String sql3 = "INSERT INTO customerAccount (tel_country, tel, cnid_name, platform) VALUES (?,?,?,'mobile');";
+                        String sql3 = "INSERT INTO customerAccount (tel_country, tel, platform) VALUES (?,?,'mobile');";
                         pst = conn.prepareStatement(sql3, Statement.RETURN_GENERATED_KEYS);
                         pst.setString(1, at.getTelCountry());
                         pst.setString(2, at.getTel());
-                        pst.setString(3, userName.substring(0,10));
                         pst.executeUpdate();
                         ResultSet rst = pst.getGeneratedKeys();
                         if (rst.next()) {
@@ -158,7 +159,7 @@ public class addTicket {
                     pst.executeUpdate();
                     res.setAuth(1);
                     res.setCode(0);
-                    res.setName(userName);
+                    res.setName(userName.substring(0,10));
                     res.setToken(token);
                     res.setTickets(tickets);
                     return res;

@@ -5,6 +5,9 @@ public class auctionInfo {
     private String auctionType;
     private int startCountDown;
     private int endCountDown;
+    private long startTime;
+    private long endTime;
+    private String description;
 
     public auctionInfo() {
         super();
@@ -40,5 +43,29 @@ public class auctionInfo {
 
     public void setEndCountDown(int endCountDown) {
         this.endCountDown = endCountDown;
+    }
+
+    public long getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(long startTime) {
+        this.startTime = startTime;
+    }
+
+    public long getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(long endTime) {
+        this.endTime = endTime;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

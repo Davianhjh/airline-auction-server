@@ -79,7 +79,7 @@ public class buyCards {
                         if (verifyCard) {
                             try {
                                 auctionInfo ai = getAuctionUtil.getAuctionStatus(bc.getAuctionID());
-                                if (ai != null && ai.getAuctionState().equals("active") && ai.getAuctionType().equals("p")) {
+                                if (ai != null && ai.getAuctionState() != null && ai.getAuctionState().equals("active") && ai.getAuctionType().equals("p")) {
                                     String total_Amount = getTotalAmount(cards);
                                     if (total_Amount == null) {
                                         res.setAuth(-2);

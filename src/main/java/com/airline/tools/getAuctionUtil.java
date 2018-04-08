@@ -28,6 +28,9 @@ public class getAuctionUtil {
         auctionInfo.setAuctionType(response.getString("type"));
         auctionInfo.setStartCountDown(response.getIntValue("startCountDown"));
         auctionInfo.setEndCountDown(response.getIntValue("endCountDown"));
+        auctionInfo.setStartTime(response.getLongValue("start"));
+        auctionInfo.setEndTime(response.getLongValue("end"));
+        auctionInfo.setDescription(response.getString("description"));
         return auctionInfo;
     }
 

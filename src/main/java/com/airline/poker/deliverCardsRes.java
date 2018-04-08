@@ -1,13 +1,12 @@
 package com.airline.poker;
 
 import com.airline.baseRestfulResponse;
-
-import java.util.ArrayList;
+import com.alibaba.fastjson.JSONArray;
 
 public class deliverCardsRes extends baseRestfulResponse {
     private int verify;
-    private ArrayList<card> existingCards;
-    private ArrayList<card> newCards;
+    private JSONArray existingCards;
+    private JSONArray newCards;
 
     public deliverCardsRes() {
         super();
@@ -21,19 +20,19 @@ public class deliverCardsRes extends baseRestfulResponse {
         this.verify = verify;
     }
 
-    public ArrayList<card> getExistingCards() {
+    public JSONArray getExistingCards() {
         return existingCards;
     }
 
-    public void setExistingCards(ArrayList<card> existingCards) {
-        this.existingCards = new ArrayList<card>(existingCards);
+    public void setExistingCards(JSONArray existingCards) {
+        this.existingCards = new JSONArray(existingCards);
     }
 
-    public ArrayList<card> getNewCards() {
+    public JSONArray getNewCards() {
         return newCards;
     }
 
-    public void setNewCards(ArrayList<card> newCards) {
-        this.newCards = new ArrayList<card>(newCards);
+    public void setNewCards(JSONArray newCards) {
+        this.newCards = new JSONArray(newCards);
     }
 }

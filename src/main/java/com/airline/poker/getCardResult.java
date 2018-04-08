@@ -57,31 +57,14 @@ public class getCardResult {
             if (ret.next()) {
                 int uid = ret.getInt(1);
                 auctionInfo ai = getAuctionUtil.getAuctionStatus(cr.getAuctionID());
-                if (ai != null && ai.getAuctionState().equals("result") && ai.getAuctionType().equals("p")) {
+                if (ai != null && ai.getAuctionState() != null && ai.getAuctionState().equals("result") && ai.getAuctionType().equals("p")) {
                     JSONObject response = getPokerResult(cr.getAuctionID(), cr.getCertificateNo(), uid);
                     if (response != null) {
-                        JSONArray userCards = response.getJSONArray("cards");
-                        JSONArray winner = response.getJSONArray("winner");
-                        ArrayList<card> cardArray = new ArrayList<card>();
-                        for (int i = 0; i < userCards.size(); i++) {
-                            card tmp = new card();
-                            tmp.setSuit(userCards.getJSONObject(i).getString("suit"));
-                            tmp.setNumber(userCards.getJSONObject(i).getString("number"));
-                            cardArray.add(tmp);
-                        }
-                        res.setUserCards(cardArray);
-                        cardArray.clear();
-                        for (int i = 0; i < winner.size(); i++) {
-                            card tmp = new card();
-                            tmp.setSuit(winner.getJSONObject(i).getString("suit"));
-                            tmp.setNumber(winner.getJSONObject(i).getString("number"));
-                            cardArray.add(tmp);
-                        }
-                        res.setWinner(cardArray);
-                        cardArray.clear();
                         res.setAuth(1);
                         res.setCode(0);
                         res.setHit(response.getBoolean("win") ? 1:0);
+                        res.setUserCards(response.getJSONArray("cards"));
+                        res.setWinner(response.getJSONArray("winner"));
                         return res;
                     } else {
                         res.setAuth(-2);
@@ -120,7 +103,7 @@ public class getCardResult {
         }
     }
 
-    private JSONObject getPokerResult(String auctionID, String certificateNo, int uid) {
+    public static JSONObject getPokerResult(String auctionID, String certificateNo, int uid) {
         try {
             Properties serverProp = new Properties();
             InputStream in = getCardResult.class.getResourceAsStream("/serverAddress.properties");

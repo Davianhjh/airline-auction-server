@@ -1,14 +1,13 @@
 package com.airline.poker;
 
 import com.airline.baseRestfulResponse;
-
-import java.util.ArrayList;
+import com.alibaba.fastjson.JSONArray;
 
 public class refreshCardsRes extends baseRestfulResponse {
     private String auctionState;
     private int endCountDown;
     private int totalAmount;                 // number of participate person
-    private ArrayList<card> cards;
+    private JSONArray cards;
 
     public refreshCardsRes() {
         super();
@@ -38,11 +37,11 @@ public class refreshCardsRes extends baseRestfulResponse {
         this.totalAmount = totalAmount;
     }
 
-    public ArrayList<card> getCards() {
+    public JSONArray getCards() {
         return cards;
     }
 
-    public void setCards(ArrayList<card> cards) {
-        this.cards = new ArrayList<card>(cards);
+    public void setCards(JSONArray cards) {
+        this.cards = new JSONArray(cards);
     }
 }

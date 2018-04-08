@@ -57,17 +57,14 @@ public class getBallResult {
             if (ret.next()) {
                 int uid = ret.getInt(1);
                 auctionInfo ai = getAuctionUtil.getAuctionStatus(br.getAuctionID());
-                if (ai != null && ai.getAuctionState().equals("result") && ai.getAuctionType().equals("l")) {
+                if (ai != null && ai.getAuctionState() != null && ai.getAuctionState().equals("result") && ai.getAuctionType().equals("l")) {
                     JSONObject response = getLotteryResult(br.getAuctionID(), br.getCertificateNo(), uid);
                     if (response != null) {
-                        JSONArray balls = response.getJSONArray("tickets");
-                        JSONArray winner = response.getJSONArray("winnerNumbers");
-                        boolean hit = response.getBoolean("isWinner");
                         res.setAuth(1);
                         res.setCode(0);
-                        res.setBalls(balls);
-                        res.setWinner(winner);
-                        res.setHit(hit ? 1:0);
+                        res.setBalls(response.getJSONArray("tickets"));
+                        res.setWinner(response.getJSONArray("winnerNumbers"));
+                        res.setHit(response.getBoolean("isWinner") ? 1:0);
                         return res;
                     } else {
                         res.setAuth(-2);
@@ -106,7 +103,7 @@ public class getBallResult {
         }
     }
 
-    private JSONObject getLotteryResult (String auctionID, String certificateNo, int uid) {
+    public static JSONObject getLotteryResult (String auctionID, String certificateNo, int uid) {
         try {
             Properties serverProp = new Properties();
             InputStream in = getCardResult.class.getResourceAsStream("/serverAddress.properties");

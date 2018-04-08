@@ -57,7 +57,7 @@ public class refreshCards {
             if (ret.next()) {
                 int uid = ret.getInt(1);
                 auctionInfo ai = getAuctionUtil.getAuctionStatus(fc.getAuctionID());
-                if (ai != null && ai.getAuctionType().equals("p") && (ai.getAuctionState().equals("active") || ai.getAuctionState().equals("result"))) {
+                if (ai != null && ai.getAuctionState() != null && ai.getAuctionType().equals("p") && (ai.getAuctionState().equals("active") || ai.getAuctionState().equals("result"))) {
                     JSONObject response = getCards(fc.getAuctionID(), fc.getCertificateNo(), uid);
                     if (response != null) {
                         String searchSql = "SELECT COUNT(tradeID) FROM cardTransaction WHERE auctionID=? AND paymentState=1;";
@@ -71,16 +71,7 @@ public class refreshCards {
                         res.setAuctionState(ai.getAuctionState());
                         res.setEndCountDown(ai.getEndCountDown());
                         res.setTotalAmount(ret2.getInt(1));
-                        JSONArray cards = response.getJSONArray("cards");
-                        ArrayList<card> cardArray = new ArrayList<card>();
-                        for (int i = 0; i < cards.size(); i++) {
-                            card tmp = new card();
-                            tmp.setSuit(cards.getJSONObject(i).getString("suit"));
-                            tmp.setNumber(cards.getJSONObject(i).getString("number"));
-                            cardArray.add(tmp);
-                        }
-                        res.setCards(cardArray);
-                        cardArray.clear();
+                        res.setCards(response.getJSONArray("cards"));
                         return res;
                     } else {
                         res.setAuth(-2);
@@ -119,7 +110,7 @@ public class refreshCards {
         }
     }
 
-    private JSONObject getCards (String auctionID, String certificateNo, int uid) {
+    public static JSONObject getCards (String auctionID, String certificateNo, int uid) {
         try {
             Properties serverProp = new Properties();
             InputStream in = refreshCards.class.getResourceAsStream("/serverAddress.properties");

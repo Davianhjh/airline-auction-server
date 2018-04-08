@@ -68,74 +68,41 @@ public class auctionHistory {
                 if (response != null) {
                     JSONArray arr = response.getJSONArray("history");
                     ArrayList<baseUserAuctionData> history = new ArrayList<>();
-                    for(int i=0; i<arr.size(); i++) {
-                        JSONObject tmp = arr.getJSONObject(i);
-                        if (tmp.getString("type").equals("1") || tmp.getString("type").equals("2")) {
-                            String tmp_sql = "SELECT passengerName, paymentState FROM (SELECT certificateNo, paymentState FROM tradeRecord WHERE uid=? AND " +
-                                    "certificateNo=? AND auctionID=?) as tr RIGHT JOIN passengerFlight ON tr.certificateNo=passengerFlight.certificateNo WHERE " +
-                                    "passengerFlight.flightNo=? AND passengerFlight.flightDate=? AND passengerFlight.certificateNo=?";
-                            PreparedStatement tmp_pst = conn.prepareStatement(tmp_sql);
-                            tmp_pst.setInt(1, uid);
-                            tmp_pst.setString(2, tmp.getString("passenger"));
-                            tmp_pst.setString(3, tmp.getString("auction"));
-                            tmp_pst.setString(4, tmp.getString("flight").substring(11));
-                            tmp_pst.setString(5, tmp.getString("flight").substring(0,10));
-                            tmp_pst.setString(6, tmp.getString("passenger"));
-                            ResultSet tmp_ret = tmp_pst.executeQuery();
-                            while (tmp_ret.next()) {
-                                baseUserAuctionData tmp_Data = new baseUserAuctionData();
-                                tmp_Data.setFlightNo(tmp.getString("flight").substring(11));
-                                tmp_Data.setFlightDate(tmp.getString("flight").substring(0,10));
-                                tmp_Data.setPassengerName(tmp_ret.getString(1));
-                                tmp_Data.setCertificateNo(tmp.getString("passenger"));
-                                tmp_Data.setAuctionID(tmp.getString("auction"));
-                                tmp_Data.setAuctionType(tmp.getString("type"));
-                                tmp_Data.setAuctionState(tmp.getString("status"));
-                                tmp_Data.setStartTime(tmp.getLongValue("start"));
-                                tmp_Data.setEndTime(tmp.getLongValue("end"));
-                                tmp_Data.setDescription(tmp.getString("description"));
-                                tmp_Data.setBiddingPrice(tmp.getDoubleValue("price"));
-                                tmp_Data.setBiddingTime(tmp.getLongValue("time"));
-                                tmp_Data.setHit(tmp.getString("hit"));
-                                tmp_Data.setPaymentState(tmp_ret.getInt(2));
-                                history.add(tmp_Data);
-                            }
-                            tmp_ret.close();
-                            tmp_pst.close();
-                        } else {
-                            String sql2 = "SELECT passengerName FROM passengerFlight WHERE flightNo=? AND flightDate=? AND certificateNo=?";
-                            pst2 = conn.prepareStatement(sql2);
-                            pst2.setString(1, tmp.getString("flight").substring(11));
-                            pst2.setString(2, tmp.getString("flight").substring(0,10));
-                            pst2.setString(3, tmp.getString("passenger"));
-                            ret2 = pst2.executeQuery();
-                            if (ret2.next()) {
-                                baseUserAuctionData tmp_Data = new baseUserAuctionData();
-                                tmp_Data.setFlightNo(tmp.getString("flight").substring(11));
-                                tmp_Data.setFlightDate(tmp.getString("flight").substring(0,10));
-                                tmp_Data.setPassengerName(ret2.getString(1));
-                                tmp_Data.setCertificateNo(tmp.getString("passenger"));
-                                tmp_Data.setAuctionID(tmp.getString("auction"));
-                                tmp_Data.setAuctionType(tmp.getString("type"));
-                                tmp_Data.setAuctionState(tmp.getString("status"));
-                                tmp_Data.setStartTime(tmp.getLongValue("start"));
-                                tmp_Data.setEndTime(tmp.getLongValue("end"));
-                                tmp_Data.setDescription(tmp.getString("description"));
-                                tmp_Data.setBiddingPrice(tmp.getDoubleValue("price"));
-                                tmp_Data.setBiddingTime(tmp.getLongValue("time"));
-                                tmp_Data.setHit(tmp.getString("hit"));
-                                tmp_Data.setPaymentState(1);
-                                history.add(tmp_Data);
-                            } else {
-                                res.setAuth(-1);
-                                res.setCode(1040);           // user ticket info not found
-                                return res;
-                            }
+                    for (int i=0; i<arr.size(); i++) {
+                        baseUserAuctionData tmp = new baseUserAuctionData();
+                        JSONObject tmpData = arr.getJSONObject(i);
+                        String flightID = tmpData.getString("flight");
+                        String sql = "SELECT passengerName, mobile, certificateNo, carbinClass, dptAirport, dptAptCode, arvAirport, arvAptCode, depTime, arrTime FROM passengerFlight WHERE addedByUid=? AND flightNo=? AND flightDate=?";
+                        pst2 = conn.prepareStatement(sql);
+                        pst2.setInt(1, uid);
+                        pst2.setString(2, flightID.substring(11, flightID.length()));
+                        pst2.setString(3, flightID.substring(0,10));
+                        ret2 = pst2.executeQuery();
+                        if (ret2.next()) {
+                            tmp.setPassengerName(ret2.getString(1));
+                            tmp.setMobile(ret2.getString(2));
+                            tmp.setCertificateNo(ret2.getString(3));
+                            tmp.setFlightNo(flightID.substring(11, flightID.length()));
+                            tmp.setFlightDate(flightID.substring(0, 10));
+                            tmp.setCarbinClass(ret2.getString(4));
+                            tmp.setDptAirport(ret2.getString(5));
+                            tmp.setDptAptCode(ret2.getString(6));
+                            tmp.setArvAirport(ret2.getString(7));
+                            tmp.setArvAptCode(ret2.getString(8));
+                            tmp.setDepTime(ret2.getString(9).substring(0,19));
+                            tmp.setArrTime(ret2.getString(10).substring(0,19));
+                            tmp.setAuctionID(tmpData.getString("auction"));
+                            tmp.setAuctionState(tmpData.getString("status"));
+                            tmp.setAuctionType(tmpData.getString("type"));
+                            history.add(tmp);
                         }
+                        ret2.close();
+                        pst2.close();
                     }
                     res.setAuth(1);
                     res.setCode(0);
                     res.setHistory(history);
+                    history.clear();
                     return res;
                 } else {
                     res.setAuth(-2);

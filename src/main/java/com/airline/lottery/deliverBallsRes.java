@@ -1,12 +1,11 @@
 package com.airline.lottery;
 
 import com.airline.baseRestfulResponse;
-
-import java.util.ArrayList;
+import com.alibaba.fastjson.JSONArray;
 
 public class deliverBallsRes extends baseRestfulResponse {
     private int verify;
-    private ArrayList<ballTicket> balls;
+    private JSONArray balls;
 
     public deliverBallsRes () {
         super();
@@ -20,11 +19,11 @@ public class deliverBallsRes extends baseRestfulResponse {
         this.verify = verify;
     }
 
-    public ArrayList<ballTicket> getBalls () {
+    public JSONArray getBalls() {
         return balls;
     }
 
-    public void setBalls (ArrayList<ballTicket> balls) {
-        this.balls = new ArrayList<ballTicket>(balls);
+    public void setBalls(JSONArray balls) {
+        this.balls = new JSONArray(balls);
     }
 }

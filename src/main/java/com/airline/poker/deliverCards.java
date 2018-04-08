@@ -72,28 +72,11 @@ public class deliverCards {
                     JSONObject response = getCardsFromServer(ret2.getString(1), ret2.getString(2), ret2.getInt(3), ret2.getString(4).split(",").length);
                     if (response != null) {
                         if (response.getBoolean("success")) {
-                            JSONArray existing = response.getJSONArray("existing");
-                            JSONArray delivered = response.getJSONArray("new");
-                            ArrayList<card> cardArray = new ArrayList<card>();
-                            for (int i = 0; i < existing.size(); i++) {
-                                card tmp = new card();
-                                tmp.setSuit(existing.getJSONObject(i).getString("suit"));
-                                tmp.setNumber(existing.getJSONObject(i).getString("number"));
-                                cardArray.add(tmp);
-                            }
-                            res.setExistingCards(cardArray);
-                            cardArray.clear();
-                            for (int i = 0; i < delivered.size(); i++) {
-                                card tmp = new card();
-                                tmp.setSuit(delivered.getJSONObject(i).getString("suit"));
-                                tmp.setNumber(delivered.getJSONObject(i).getString("number"));
-                                cardArray.add(tmp);
-                            }
-                            res.setNewCards(cardArray);
-                            cardArray.clear();
                             res.setAuth(1);
                             res.setCode(0);
                             res.setVerify(1);
+                            res.setExistingCards(response.getJSONArray("existing"));
+                            res.setNewCards(response.getJSONArray("new"));
                             return res;
                         } else {
                             res.setAuth(-2);
