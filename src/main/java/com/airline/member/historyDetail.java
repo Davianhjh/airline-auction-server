@@ -107,7 +107,7 @@ public class historyDetail {
                                 ret = pst.executeQuery();
                                 if (ret.next()) {
                                     res.setTotalC(ret.getDouble(1));
-                                    res.setBiddingTime(ret.getString(2));
+                                    res.setBiddingTime(ret.getString(2).substring(0,19));
                                 }
                                 return res;
                             } else {
@@ -138,7 +138,7 @@ public class historyDetail {
                                 ret = pst.executeQuery();
                                 if (ret.next()) {
                                     res.setTotalB(ret.getDouble(1));
-                                    res.setBiddingTime(ret.getString(2));
+                                    res.setBiddingTime(ret.getString(2).substring(0,19));
                                 }
                                 return res;
                             } else {
@@ -195,7 +195,7 @@ public class historyDetail {
                                 ret = pst.executeQuery();
                                 if (ret.next()) {
                                     res.setTotalC(ret.getDouble(1));
-                                    res.setBiddingTime(ret.getString(2));
+                                    res.setBiddingTime(ret.getString(2).substring(0,19));
                                 }
                                 return res;
                             } else {
@@ -224,7 +224,7 @@ public class historyDetail {
                                 ret = pst.executeQuery();
                                 if (ret.next()) {
                                     res.setTotalB(ret.getDouble(1));
-                                    res.setBiddingTime(ret.getString(2));
+                                    res.setBiddingTime(ret.getString(2).substring(0,19));
                                 }
                                 return res;
                             } else {

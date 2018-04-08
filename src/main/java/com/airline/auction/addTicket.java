@@ -123,10 +123,11 @@ public class addTicket {
                             res.setCode(2000);                    // MD5 error
                             return res;
                         }
-                        String sql3 = "INSERT INTO customerAccount (tel_country, tel, platform) VALUES (?,?,'mobile');";
+                        String sql3 = "INSERT INTO customerAccount (tel_country, tel, username, platform) VALUES (?,?,?,'mobile');";
                         pst = conn.prepareStatement(sql3, Statement.RETURN_GENERATED_KEYS);
                         pst.setString(1, at.getTelCountry());
                         pst.setString(2, at.getTel());
+                        pst.setString(3, userName.substring(0, 10));
                         pst.executeUpdate();
                         ResultSet rst = pst.getGeneratedKeys();
                         if (rst.next()) {

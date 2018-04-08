@@ -78,10 +78,9 @@ public class alipayLotteryNotify {
                             String updateSql = "UPDATE ballTransaction SET paymentState=1, timeStamp=? WHERE transactionNo=?;";
                             pst = conn.prepareStatement(updateSql);
                             String utcTimeStr = UTCTimeUtil.getUTCTimeStr();
-                            pst.setString(1, out_trade_no);
-                            pst.setString(2, utcTimeStr);
+                            pst.setString(1, utcTimeStr);
+                            pst.setString(2, out_trade_no);
                             pst.executeUpdate();
-                            System.out.println(utcTimeStr);
                             System.out.println("payment verified success!");
                             return "success";
                         }
