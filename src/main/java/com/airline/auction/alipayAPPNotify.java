@@ -2,8 +2,6 @@ package com.airline.auction;
 
 import com.airline.tools.AlipayAPPUtil;
 import com.airline.tools.HiKariCPHandler;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
