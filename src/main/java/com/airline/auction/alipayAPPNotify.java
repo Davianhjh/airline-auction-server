@@ -2,6 +2,8 @@ package com.airline.auction;
 
 import com.airline.tools.AlipayAPPUtil;
 import com.airline.tools.HiKariCPHandler;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -28,16 +30,16 @@ public class alipayAPPNotify {
         if (body.size() == 0)
             return "success";
         else {
-            String out_trade_no = body.getFirst("out_trade_number");
+            String out_trade_no = body.getFirst("out_trade_no");
             String total_Amount = body.getFirst("total_Amount");
             String seller_id = body.getFirst("seller_id");
             String app_id = body.getFirst("app_id");
             String charset = body.getFirst("charset");
 
             Map<String, String> params = new HashMap<String, String>();
-            for (Iterator it = body.entrySet().iterator(); it.hasNext(); ) {
-                String name = (String) it.next();
-                List<String> values = body.get(name);
+            for (Map.Entry<String, List<String>> entry : body.entrySet()) {
+                String key = entry.getKey();
+                List<String> values = entry.getValue();
                 String valueStr = "";
                 for (int i = 0; i < values.size(); i++) {
                     valueStr = (i == values.size() - 1) ? valueStr + values.get(i) : valueStr + values.get(i) + ",";
@@ -48,7 +50,7 @@ public class alipayAPPNotify {
                     e.printStackTrace();
                     return "fail";
                 }
-                params.put(name, valueStr);
+                params.put(key, valueStr);
             }
             boolean verifyResult = AlipayAPPUtil.verifyPayment(params, charset);
             if (!verifyResult) {

@@ -93,8 +93,6 @@ public class addTicket {
                     pst.setString(2, at.getTelCountry());
                     ret2 = pst.executeQuery();
                     if (ret2.next()) {
-                        // TODO
-                        System.out.println(pst);
                         uid = ret2.getInt(1);
                         userName = ret2.getString(2);
                         token = tokenHandler.createJWT(String.valueOf(uid), userName, "mobile", 7 * 24 * 3600 * 1000);
