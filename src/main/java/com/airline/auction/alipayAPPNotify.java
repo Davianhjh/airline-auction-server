@@ -31,7 +31,7 @@ public class alipayAPPNotify {
             return "success";
         else {
             String out_trade_no = body.getFirst("out_trade_no");
-            String total_Amount = body.getFirst("total_Amount");
+            String total_Amount = body.getFirst("total_amount");
             String seller_id = body.getFirst("seller_id");
             String app_id = body.getFirst("app_id");
             String charset = body.getFirst("charset");
