@@ -8,30 +8,14 @@ import java.util.Date;
 import java.util.TimeZone;
 
 public class UTCTimeUtil {
-    private static DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+    private static DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public static String getUTCTimeStr(){
-        StringBuffer UTCTimeBuffer = new StringBuffer();
-        Calendar cal = Calendar.getInstance();
-        int zoneOffset = cal.get(java.util.Calendar.ZONE_OFFSET);
-        int dstOffset = cal.get(java.util.Calendar.DST_OFFSET);
-
-        cal.add(java.util.Calendar.MILLISECOND, -(zoneOffset + dstOffset));
-        int year = cal.get(Calendar.YEAR);
-        int month = cal.get(Calendar.MONTH)+1;
-        int day = cal.get(Calendar.DAY_OF_MONTH);
-        int hour = cal.get(Calendar.HOUR_OF_DAY);
-        int minute = cal.get(Calendar.MINUTE);
-        int second = cal.get(Calendar.SECOND);
-        UTCTimeBuffer.append(year).append("-").append(month).append("-").append(day) ;
-        UTCTimeBuffer.append(" ").append(hour).append(":").append(minute).append(":").append(second);
-        try {
-            format.parse(UTCTimeBuffer.toString()) ;
-            return UTCTimeBuffer.toString() ;
-        } catch (ParseException e) {
-            e.printStackTrace();
-            return null;
-        }
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        Date date = new Date(cal.getTimeInMillis());
+        format.setTimeZone(TimeZone.getTimeZone("GMT"));
+        System.out.println(format.format(date));
+        return format.format(date);
     }
 
     public static String getLocalTimeFromUTC(String UTCTime){
