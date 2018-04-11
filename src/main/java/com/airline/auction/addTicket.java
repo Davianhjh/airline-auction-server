@@ -114,6 +114,7 @@ public class addTicket {
                             pst.executeUpdate();
                         }
                         res.setNewComer(0);
+                        res.setName(userName);
                     } else {
                         userName = MD5Util.getMD5(at.getTel());
                         if (userName == null) {
@@ -121,6 +122,7 @@ public class addTicket {
                             res.setCode(2000);                    // MD5 error
                             return res;
                         }
+                        res.setName(userName.substring(0,10));
                         String sql3 = "INSERT INTO customerAccount (tel_country, tel, username, platform) VALUES (?,?,?,'mobile');";
                         pst = conn.prepareStatement(sql3, Statement.RETURN_GENERATED_KEYS);
                         pst.setString(1, at.getTelCountry());
@@ -158,7 +160,6 @@ public class addTicket {
                     pst.executeUpdate();
                     res.setAuth(1);
                     res.setCode(0);
-                    res.setName(userName.substring(0,10));
                     res.setToken(token);
                     res.setTickets(tickets);
                     return res;

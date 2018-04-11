@@ -2,7 +2,6 @@ package com.airline.member;
 
 import com.airline.tools.HiKariCPHandler;
 import com.airline.tools.mailSendUtil;
-import org.mindrot.jbcrypt.BCrypt;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -72,7 +71,7 @@ public class retrievePwdByMail {
                     res.setCode(2000);                            // server address properties error
                     return res;
                 }
-                String context = "<p>系统检测到您正在用此邮箱账号在AGiView竞拍平台找回账号密码，请您不要将此信息透露给其他人，并在30分钟之内点击如下链接完成密码重置。如非您本人操作，请忽略此邮件。</p><p>" + verifyUrl + "</p>";
+                String context = "<p>系统检测到您正在用此邮箱账号在AGiView竞拍平台找回账号密码，请您不要将此信息透露给其他人，并在30分钟之内点击如下链接完成密码重置。如非您本人操作，请忽略此邮件。</p><a href=\"" + verifyUrl + "\">" + verifyUrl + "</a>";
                 mailSendUtil mail = new mailSendUtil();
                 if (mail.sendHtmlMail(rm.getEmail(), "AGiView账号密码找回", context)) {
                     res.setAuth(1);
