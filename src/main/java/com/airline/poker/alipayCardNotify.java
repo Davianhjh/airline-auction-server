@@ -1,7 +1,7 @@
 
 package com.airline.poker;
 
-import com.airline.tools.AlipayAPPUtil;
+import com.airline.tools.AlipayUtil;
 import com.airline.tools.HiKariCPHandler;
 
 import javax.ws.rs.Consumes;
@@ -51,7 +51,7 @@ public class alipayCardNotify {
                 }
                 params.put(key, valueStr);
             }
-            boolean verifyResult = AlipayAPPUtil.verifyPayment(params, charset);
+            boolean verifyResult = AlipayUtil.verifyPayment(params, charset);
             if (!verifyResult) {
                 return "fail";
             }

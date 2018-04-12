@@ -100,7 +100,7 @@ public class buyCards {
                                             return res;
                                         }
                                         String notify_url = property.getProperty("localhostServer") + "/poker/alipay_notify";
-                                        String alipayStr = AlipayAPPUtil.alipayStr(transactionID, "poker", "flight upgrade", total_Amount, notify_url);
+                                        String alipayStr = AlipayUtil.alipayAPPStr(transactionID, "poker", "flight upgrade", total_Amount, notify_url);
 
                                         String insertSql = "INSERT INTO cardTransaction (transactionNo, uid, auctionID, certificateNo, totalAmount, card, paymentState) VALUES (?,?,?,?,?,?,?);";
                                         pst = conn.prepareStatement(insertSql);

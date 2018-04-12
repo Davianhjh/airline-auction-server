@@ -5,6 +5,7 @@ import com.airline.baseRestfulResponse;
 public class passengerResult extends baseRestfulResponse {
     private String auctionState;
     private String auctionType;
+    private int endCountDown;
     private int userStatus;
     private double biddingPrice;
     private String biddingTime;
@@ -30,6 +31,14 @@ public class passengerResult extends baseRestfulResponse {
 
     public void setAuctionType(String auctionType) {
         this.auctionType = auctionType;
+    }
+
+    public int getEndCountDown() {
+        return endCountDown;
+    }
+
+    public void setEndCountDown(int endCountDown) {
+        this.endCountDown = endCountDown;
     }
 
     public int getUserStatus() {

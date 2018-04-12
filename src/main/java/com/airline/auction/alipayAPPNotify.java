@@ -1,6 +1,6 @@
 package com.airline.auction;
 
-import com.airline.tools.AlipayAPPUtil;
+import com.airline.tools.AlipayUtil;
 import com.airline.tools.HiKariCPHandler;
 
 import javax.ws.rs.Consumes;
@@ -50,7 +50,7 @@ public class alipayAPPNotify {
                 }
                 params.put(key, valueStr);
             }
-            boolean verifyResult = AlipayAPPUtil.verifyPayment(params, charset);
+            boolean verifyResult = AlipayUtil.verifyPayment(params, charset);
             if (!verifyResult) {
                 return "fail";
             }

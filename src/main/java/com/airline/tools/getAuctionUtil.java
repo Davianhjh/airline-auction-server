@@ -70,6 +70,7 @@ public class getAuctionUtil {
         passengerResult pRes = new passengerResult();
         pRes.setAuctionState(response.getString("status"));
         pRes.setAuctionType(response.getString("type"));
+        pRes.setEndCountDown(response.getIntValue("endCountDown"));
         pRes.setBiddingPrice(response.getDoubleValue("price") == 0 ? -1:response.getDoubleValue("price"));
         pRes.setBiddingTime(response.getString("time") == null ? "-1":response.getString("time"));
         pRes.setHit(response.getString("hit") == null ? "o":response.getString("hit"));

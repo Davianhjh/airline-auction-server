@@ -20,32 +20,26 @@ import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Properties;
 
-@Path("/createAlipayBill")
-public class createAlipayBill {
+@Path("/pageAlipayBill")
+public class pageAlipayBill {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public createBillRes getPassengerInfo (@Context HttpHeaders hh, createAlipayBillParam ca) {
+    @Produces(MediaType.TEXT_HTML)
+    public String buyBalls (@Context HttpHeaders hh, createAlipayBillParam ca) {
         MultivaluedMap<String, String> header = hh.getRequestHeaders();
         String AgiToken = header.getFirst("token");
-        createBillRes res = new createBillRes();
         Connection conn;
         PreparedStatement pst;
         ResultSet ret;
         boolean verifyResult = verifyCreateAlipayBillParam(ca);
         if (AgiToken == null || !verifyResult) {
-            res.setAuth(-1);
-            res.setCode(1000);                               // parameters not correct
-            return res;
+            return "1000";                                              // parameters not correct
         }
 
         try {
             conn = HiKariCPHandler.getConn();
         } catch (SQLException e){
-            e.printStackTrace();
-            res.setAuth(-2);
-            res.setCode(2000);                               // fail to get mysql connection
-            return res;
+            return "2000";                                              // fail to get mysql connection
         }
         try {
             String utcTimeStr = UTCTimeUtil.getUTCTimeStr();
@@ -60,14 +54,10 @@ public class createAlipayBill {
                 try {
                     result = getAuctionUtil.getBiddingResult(uid, ca.getAuctionID(), ca.getCertificateNo());
                 } catch (Exception e) {
-                    res.setAuth(-2);                                    // auction service fail
-                    res.setCode(1060);
-                    return res;
+                    return "1060";                                      // auction service fail
                 }
                 if (!result.getAuctionState().equals("result") || (!result.getAuctionType().equals("1") && !result.getAuctionType().equals("2")) || !result.getHit().equals("Y") || result.getBiddingPrice() <= 0) {
-                    res.setAuth(-1);
-                    res.setCode(1030);                                  // error auctionState
-                    return res;
+                    return "1030";                                      // error auctionState
                 }
                 DecimalFormat df = new DecimalFormat("0.00");
                 String biddingPrice = df.format(result.getBiddingPrice());
@@ -80,13 +70,13 @@ public class createAlipayBill {
                     in.close();
                 } catch (IOException e) {
                     e.printStackTrace();
-                    res.setAuth(-2);
-                    res.setCode(2000);                                          // properties file not found
-                    return res;
+                    return "2000";                                       // properties file not found
                 }
                 String notify_url = property.getProperty("localhostServer") + "/auction/alipay_notify";
-                String alipayStr = AlipayUtil.alipayAPPStr(transactionID, "auction", "flight upgrade", biddingPrice, notify_url);
-
+                String formStr = AlipayUtil.alipayPageStr(transactionID, "auction", "flight upgrade", biddingPrice, notify_url);
+                if (formStr == null) {
+                    return "2000";                                       // alipay sdk error
+                }
                 String sql2 = "INSERT INTO tradeRecord (transactionNo, uid, auctionID, certificateNo, totalAmount, paymentState, timeStamp) VALUES (?,?,?,?,?,?,?);";
                 pst = conn.prepareStatement(sql2);
                 pst.setString(1, transactionID);
@@ -98,23 +88,13 @@ public class createAlipayBill {
                 pst.setString(7, utcTimeStr);
                 pst.executeUpdate();
 
-                res.setAuth(1);
-                res.setCode(0);
-                res.setMethod("Alipay");
-                res.setSignType("RSA2");
-                res.setSignedStr(alipayStr);
-                res.setTransactionID(transactionID);
-                return res;
+                return formStr;
             } else {
-                res.setAuth(-1);
-                res.setCode(1020);                                      // user not found
-                return res;
+                return "1020";                                           // user not found
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            res.setAuth(-2);
-            res.setCode(2000);                                          // mysql error
-            return res;
+            return "2000";                                               // mysql error
         } finally {
             try {
                 conn.close();

@@ -1,10 +1,12 @@
 package com.airline.tools;
 
+import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.domain.AlipayTradeAppPayModel;
 import com.alipay.api.internal.util.AlipaySignature;
 import com.alipay.api.request.AlipayTradeAppPayRequest;
+import com.alipay.api.request.AlipayTradePagePayRequest;
 import com.alipay.api.response.AlipayTradeAppPayResponse;
 
 import java.io.DataInputStream;
@@ -14,12 +16,12 @@ import java.io.InputStream;
 import java.util.Map;
 import java.util.Properties;
 
-public class AlipayAPPUtil {
+public class AlipayUtil {
 
-    public static String alipayStr (String outTradeNo, String body, String subject, String totalAmount, String notify_url) {
+    public static String alipayAPPStr(String outTradeNo, String body, String subject, String totalAmount, String notify_url) {
         try {
             Properties property = new Properties();
-            InputStream in = AlipayAPPUtil.class.getResourceAsStream("/paymentManage.properties");
+            InputStream in = AlipayUtil.class.getResourceAsStream("/paymentManage.properties");
             property.load(in);
             in.close();
             String APP_ID = property.getProperty("appid");
@@ -48,6 +50,43 @@ public class AlipayAPPUtil {
         }
     }
 
+    public static String alipayPageStr(String outTradeNo, String body, String subject, String totalAmount, String notify_url) {
+        try {
+            Properties property = new Properties();
+            InputStream in = AlipayUtil.class.getResourceAsStream("/paymentManage.properties");
+            property.load(in);
+            in.close();
+            String APP_ID = property.getProperty("appid");
+            String APP_PRIVATE_KEY = readRSAKey("AgiviewKey");
+            String ALIPAY_PUBLIC_KEY = readRSAKey("AlipayPub");
+            if (APP_ID == null || ALIPAY_PUBLIC_KEY == null || APP_PRIVATE_KEY == null) {
+                return null;
+            } else {
+                AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", APP_ID, APP_PRIVATE_KEY, "json", "utf-8", ALIPAY_PUBLIC_KEY, "RSA2");
+                AlipayTradePagePayRequest alipayRequest = new AlipayTradePagePayRequest();
+                alipayRequest.setNotifyUrl(notify_url);
+                String content = "{" +
+                        "    \"out_trade_no\":\"" + outTradeNo + "\"," +
+                        "    \"product_code\":\"FAST_INSTANT_TRADE_PAY\"," +
+                        "    \"total_amount\":" + totalAmount + "," +
+                        "    \"subject\":\"" + subject + "\"," +
+                        "    \"body\":\"" + body + "\"," +
+                        "  }";
+                System.out.println(content);
+                alipayRequest.setBizContent(content);
+                try {
+                    return alipayClient.pageExecute(alipayRequest).getBody();                             //调用SDK生成表单
+                } catch (AlipayApiException e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+        }  catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public static boolean verifyPayment (Map<String, String> params, String charSet) {
         try {
             String ALIPAY_PUBLIC_KEY = readRSAKey("AlipayPub");
@@ -60,7 +99,7 @@ public class AlipayAPPUtil {
     private static String readRSAKey (String keyName) {
         try {
             Properties property = new Properties();
-            InputStream in = AlipayAPPUtil.class.getResourceAsStream("/paymentManage.properties");
+            InputStream in = AlipayUtil.class.getResourceAsStream("/paymentManage.properties");
             property.load(in);
             in.close();
             File file = new File(property.getProperty(keyName));
@@ -75,31 +114,4 @@ public class AlipayAPPUtil {
             return null;
         }
     }
-/*
-    private static String RSAPrivateKeyFormat (String keyStr) {
-        if (keyStr == null)
-            return null;
-        String[] arr = keyStr.split("\n");
-        StringBuffer buffer = new StringBuffer(24);
-        for (int i=0; i<arr.length; i++) {
-            if (i!=0 && i!=arr.length-1) {
-                buffer.append(arr[i]);
-            }
-        }
-        return new String (buffer);
-    }
-
-    private static String RSAPublicKeyFormat (String keyStr) {
-        if (keyStr == null)
-            return null;
-        String[] arr = keyStr.split("\n");
-        StringBuffer buffer = new StringBuffer(24);
-        for (int i=0; i<arr.length; i++) {
-            if (i!=0 && i!=arr.length-1) {
-                buffer.append(arr[i].substring(0, arr[i].length()-1));
-            }
-        }
-        return new String (buffer);
-    }
-*/
 }

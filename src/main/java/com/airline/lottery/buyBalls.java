@@ -86,7 +86,7 @@ public class buyBalls {
                                 double total = ballPrice * bb.getQuantity();
                                 DecimalFormat df = new DecimalFormat("0.00");
                                 String total_Amount = df.format(total);
-                                String alipayStr = AlipayAPPUtil.alipayStr(transactionID, "lottery", "flight upgrade", total_Amount, notify_url);
+                                String alipayStr = AlipayUtil.alipayAPPStr(transactionID, "lottery", "flight upgrade", total_Amount, notify_url);
 
                                 String sql2 = "INSERT INTO ballTransaction (transactionNo, uid, auctionID, certificateNo, totalAmount, ballPrice, quantity, paymentState, timeStamp) VALUES (?,?,?,?,?,?,?,?,?);";
                                 pst = conn.prepareStatement(sql2);

@@ -3,7 +3,6 @@ package com.airline.tools;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -14,7 +13,6 @@ public class UTCTimeUtil {
         java.util.Calendar cal = java.util.Calendar.getInstance();
         Date date = new Date(cal.getTimeInMillis());
         format.setTimeZone(TimeZone.getTimeZone("GMT"));
-        System.out.println(format.format(date));
         return format.format(date);
     }
 
