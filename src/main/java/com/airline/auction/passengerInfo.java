@@ -44,7 +44,7 @@ public class passengerInfo {
         }
         try {
             String utcTimeStr = UTCTimeUtil.getUTCTimeStr();
-            String verifySql = "SELECT password, cnid_name, cnid, tel FROM customerToken INNER JOIN customerAccount ON customerToken.uid = customerAccount.id WHERE token = ? and expire > ?;";
+            String verifySql = "SELECT password, cnid_name, cnid, tel, email FROM customerToken INNER JOIN customerAccount ON customerToken.uid = customerAccount.id WHERE token = ? and expire > ?;";
             pst = conn.prepareStatement(verifySql);
             pst.setString(1, AgiToken);
             pst.setString(2, utcTimeStr);
@@ -54,11 +54,13 @@ public class passengerInfo {
                 String cnid_name = ret.getString(2);
                 String cnid = ret.getString(3);
                 String tel = ret.getString(4);
+                String email = ret.getString(5);
                 res.setAuth(1);
                 res.setCode(0);
                 res.setName(cnid_name);
                 res.setCertificateNo(cnid);
                 res.setTel(tel);
+                res.setEmail(email );
                 res.setTag(password == null ? 1:0);
                 return res;
             } else {

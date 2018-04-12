@@ -6,6 +6,7 @@ public class passengerInfoRes extends baseRestfulResponse {
     private String name;
     private String certificateNo;
     private String tel;
+    private String email;
     private int tag;
 
     public passengerInfoRes() {
@@ -34,6 +35,14 @@ public class passengerInfoRes extends baseRestfulResponse {
 
     public void setTel(String tel) {
         this.tel = tel;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public int getTag() {

@@ -56,7 +56,7 @@ public class addTicket {
                 ret = pst.executeQuery();
                 if (ret.next()) {
                     int uid = ret.getInt(1);
-                    result = getTicketsUtil.getRemoteTickets(conn, uid, at.getTicketNo(), at.getTel(), tickets);
+                    result = getTicketsUtil.getRemoteTickets(conn, uid, at.getTicketNo(), at.getPassengerName(), at.getTel(), tickets);
                     if (result == 1) {
                         res.setAuth(1);
                         res.setCode(0);
@@ -83,7 +83,7 @@ public class addTicket {
             }
             // for visitor add ticket
             else {
-                result = getTicketsUtil.getRemoteTickets(conn, TAMPORARY_UID, at.getTicketNo(), at.getTel(), tickets);
+                result = getTicketsUtil.getRemoteTickets(conn, TAMPORARY_UID, at.getTicketNo(), at.getPassengerName(), at.getTel(), tickets);
                 if (result == 1) {
                     String token,userName;
                     int uid;

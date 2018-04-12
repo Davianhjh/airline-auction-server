@@ -84,7 +84,7 @@ public class getTicketsUtil {
         return true;
     }
 
-    public static int getRemoteTickets(Connection conn, int uid, String ticketNo, String mobile, ArrayList<baseTicketData> tickets) throws SQLException {
+    public static int getRemoteTickets(Connection conn, int uid, String ticketNo, String passengerName, String mobile, ArrayList<baseTicketData> tickets) throws SQLException {
         PreparedStatement pst;
         String sql = "INSERT IGNORE INTO passengerFlight (passengerName, mobile, flightNo, flightDate, ticketNo, certificateType, certificateNo, carbinClass, dptAirport, dptAptCode, arvAirport, arvAptCode, depTime, arrTime, addedByUid, timeStamp) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
         pst = conn.prepareStatement(sql);
@@ -101,6 +101,7 @@ public class getTicketsUtil {
             String urlStr1;
             urlStr1 = serverProp.getProperty("airlineMiddlewareServer") + "/rest/ticketNoSearch";
             body1.put("ticketNo", ticketNo);
+            body1.put("passengerName", passengerName);
             response1 = httpRequestUtil.postRequest(urlStr1, null, body1);
         } catch (Exception e){
             e.printStackTrace();
