@@ -6,10 +6,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
@@ -23,16 +20,17 @@ import java.util.Properties;
 @Path("/pageAlipayBill")
 public class pageAlipayBill {
     @POST
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.TEXT_HTML)
-    public String buyBalls (@Context HttpHeaders hh, createAlipayBillParam ca) {
-        MultivaluedMap<String, String> header = hh.getRequestHeaders();
-        String AgiToken = header.getFirst("token");
+    public String buyBalls (Form form) {
+        MultivaluedMap<String, String> param = form.asMap();
+        String AgiToken = param.getFirst("token");
+        String auctionID = param.getFirst("auctionID");
+        String certificateNo = param.getFirst("certificateNo");
         Connection conn;
         PreparedStatement pst;
         ResultSet ret;
-        boolean verifyResult = verifyCreateAlipayBillParam(ca);
-        if (AgiToken == null || !verifyResult) {
+        if (AgiToken == null || auctionID == null || certificateNo == null) {
             return "1000";                                              // parameters not correct
         }
 
@@ -52,7 +50,7 @@ public class pageAlipayBill {
                 int uid = ret.getInt(1);
                 passengerResult result;
                 try {
-                    result = getAuctionUtil.getBiddingResult(uid, ca.getAuctionID(), ca.getCertificateNo());
+                    result = getAuctionUtil.getBiddingResult(uid, auctionID, certificateNo);
                 } catch (Exception e) {
                     return "1060";                                      // auction service fail
                 }
@@ -61,7 +59,7 @@ public class pageAlipayBill {
                 }
                 DecimalFormat df = new DecimalFormat("0.00");
                 String biddingPrice = df.format(result.getBiddingPrice());
-                String tranStr = ca.getAuctionID() + System.currentTimeMillis();
+                String tranStr = auctionID + System.currentTimeMillis();
                 String transactionID = getTransID(tranStr);
                 Properties property = new Properties();
                 try {
@@ -81,8 +79,8 @@ public class pageAlipayBill {
                 pst = conn.prepareStatement(sql2);
                 pst.setString(1, transactionID);
                 pst.setInt(2, uid);
-                pst.setString(3, ca.getAuctionID());
-                pst.setString(4, ca.getCertificateNo());
+                pst.setString(3, auctionID);
+                pst.setString(4, certificateNo);
                 pst.setDouble(5, result.getPaymentPrice());
                 pst.setInt(6, 0);
                 pst.setString(7, utcTimeStr);
@@ -101,14 +99,6 @@ public class pageAlipayBill {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-        }
-    }
-
-    private boolean verifyCreateAlipayBillParam (createAlipayBillParam ca) {
-        try {
-            return ((ca.getAuctionID() != null) && (ca.getCertificateNo() != null));
-        } catch (RuntimeException e) {
-            return false;
         }
     }
 

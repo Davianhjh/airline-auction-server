@@ -60,7 +60,7 @@ public class revisePassword {
                     return res;
                 } else if (!BCrypt.checkpw(rp.getOldPwd(), password)) {
                     res.setAuth(-1);
-                    res.setCode(1020);                          // user's old password not match
+                    res.setCode(1017);                          // user's old password not match
                     return res;
                 } else {
                     String updateSql = "UPDATE customerAccount set password=? WHERE id=?";

@@ -66,12 +66,12 @@ public class AlipayUtil {
                 AlipayTradePagePayRequest alipayRequest = new AlipayTradePagePayRequest();
                 alipayRequest.setNotifyUrl(notify_url);
                 String content = "{" +
-                        "    \"out_trade_no\":\"" + outTradeNo + "\"," +
-                        "    \"product_code\":\"FAST_INSTANT_TRADE_PAY\"," +
-                        "    \"total_amount\":" + totalAmount + "," +
-                        "    \"subject\":\"" + subject + "\"," +
-                        "    \"body\":\"" + body + "\"," +
-                        "  }";
+                        "\"out_trade_no\":\"" + outTradeNo + "\"," +
+                        "\"product_code\":\"FAST_INSTANT_TRADE_PAY\"," +
+                        "\"total_amount\":" + totalAmount + "," +
+                        "\"subject\":\"" + subject + "\"," +
+                        "\"body\":\"" + body + "\"" +
+                        "}";
                 System.out.println(content);
                 alipayRequest.setBizContent(content);
                 try {

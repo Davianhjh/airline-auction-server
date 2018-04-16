@@ -193,7 +193,7 @@ public class addTicket {
 
     private boolean verifyAddTicketParams(addTicketParam at) {
         try {
-            return  (at.getTicketNo() != null && at.getTel() != null && at.getTelCountry() != null);
+            return  (at.getTicketNo() != null && at.getPassengerName() != null && at.getTel() != null && at.getTelCountry() != null);
         } catch (RuntimeException e) {
             return false;
         }

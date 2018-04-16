@@ -52,6 +52,7 @@ public class alipayAPPNotify {
             }
             boolean verifyResult = AlipayUtil.verifyPayment(params, charset);
             if (!verifyResult) {
+                System.out.println("++++++++++++++++1+++++++++++++++");
                 return "fail";
             }
             else {
@@ -79,13 +80,16 @@ public class alipayAPPNotify {
                             return "success";
                         }
                         else {
+                            System.out.println("++++++++++++++++2+++++++++++++++");
                             return "fail";
                         }
                     } else {
+                        System.out.println("++++++++++++++++3+++++++++++++++");
                         return "fail";
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
+                    System.out.println("++++++++++++++++4+++++++++++++++");
                     return "fail";
                 } finally {
                     try {

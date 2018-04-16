@@ -12,9 +12,11 @@ public class historyDetailRes extends baseRestfulResponse {
     private String description;
     private String biddingTime;
     private int hit;
+    private JSONArray transactionNo;
 
     private double biddingPrice;
     private int paymentState;
+    private String paymentTime;
     private double totalA;
 
     private JSONArray yourCards;
@@ -93,6 +95,14 @@ public class historyDetailRes extends baseRestfulResponse {
         this.hit = hit;
     }
 
+    public JSONArray getTransactionNo() {
+        return transactionNo;
+    }
+
+    public void setTransactionNo(JSONArray transactionNo) {
+        this.transactionNo = new JSONArray(transactionNo);
+    }
+
     public double getBiddingPrice() {
         return biddingPrice;
     }
@@ -115,6 +125,14 @@ public class historyDetailRes extends baseRestfulResponse {
 
     public void setPaymentState(int paymentState) {
         this.paymentState = paymentState;
+    }
+
+    public String getPaymentTime() {
+        return paymentTime;
+    }
+
+    public void setPaymentTime(String paymentTime) {
+        this.paymentTime = paymentTime;
     }
 
     public JSONArray getYourCards() {

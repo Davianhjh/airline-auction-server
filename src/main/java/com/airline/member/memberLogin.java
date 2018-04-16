@@ -58,7 +58,7 @@ public class memberLogin {
                 String cnid_name = ret.getString(4);
                 if (hashedPassword == null || !BCrypt.checkpw(ml.getPassword(), hashedPassword)) {
                     res.setAuth(-1);
-                    res.setCode(1020);                          // user password not match
+                    res.setCode(1019);                          // user password not match
                     return res;
                 }
                 String token = tokenHandler.createJWT(String.valueOf(id), userName, ml.getPlatform(), 7 * 24 * 3600 * 1000);

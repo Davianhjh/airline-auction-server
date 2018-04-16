@@ -108,7 +108,7 @@ public class getTicketsUtil {
             return -1;                                            // request failed OR bad response
         }
         JSONArray ticketList = response1.getJSONArray("tickets");
-        if (ticketList.size() != 0) {
+        if (ticketList != null && ticketList.size() != 0) {
             for(int i=0; i<ticketList.size(); i++){
                 JSONObject flightTicket = ticketList.getJSONObject(i);
                 baseTicketData ticketData = new baseTicketData();

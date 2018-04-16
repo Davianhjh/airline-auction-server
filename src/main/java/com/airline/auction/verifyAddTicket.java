@@ -50,7 +50,7 @@ public class verifyAddTicket {
                 int search_id = ret.getInt(1);
                 if (!ret.getString(2).equals(va.getTel()) || !ret.getString(3).equals(va.getTelCountry())) {
                     res.setAuth(-1);
-                    res.setCode(1014);                                     // verify not correct
+                    res.setCode(1016);                                     // verify not correct
                     return res;
                 } else {
                     String updateSql = "UPDATE searchRecord set verifyCode=null WHERE sch_id=?";
@@ -65,7 +65,7 @@ public class verifyAddTicket {
                 }
             } else {
                 res.setAuth(-1);
-                res.setCode(1014);                                 // verifyCode not correct
+                res.setCode(1016);                                 // verifyCode not correct
                 return res;
             }
         } catch (SQLException e) {

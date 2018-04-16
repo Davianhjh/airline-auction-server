@@ -6,6 +6,7 @@ import com.airline.lottery.refreshBalls;
 import com.airline.poker.getCardResult;
 import com.airline.poker.refreshCards;
 import com.airline.tools.*;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 import javax.ws.rs.Consumes;
@@ -32,7 +33,7 @@ public class historyDetail {
         historyDetailRes res = new historyDetailRes();
         Connection conn;
         PreparedStatement pst;
-        ResultSet ret;
+        ResultSet ret, ret2;
         boolean verifyResult = verifyHistoryDetailParams(hd);
         if (AgiToken == null || !verifyResult) {
             res.setAuth(-1);
@@ -73,11 +74,27 @@ public class historyDetail {
                                 res.setEndTime(ai.getEndTime());
                                 res.setDescription(ai.getDescription());
                                 res.setBiddingTime(pr.getBiddingTime());
-                                res.setHit(pr.getHit().equals("Y") ? 1:0);
-
                                 res.setBiddingPrice(pr.getBiddingPrice());
-                                res.setTotalA(pr.getPaymentPrice());
-                                res.setPaymentState(pr.getPaymentState() ? 1:0);
+                                res.setHit(pr.getHit().equals("Y") ? 1:0);
+                                if (pr.getHit().equals("Y")) {
+                                    String sql = "SELECT transactionNo, totalAmount, paymentState, timeStamp FROM tradeRecord WHERE uid=? AND auctionID=? AND certificateNo=?;";
+                                    pst = conn.prepareStatement(sql);
+                                    pst.setInt(1, uid);
+                                    pst.setString(2, hd.getAuctionID());
+                                    pst.setString(3, hd.getCertificateNo());
+                                    ret2 = pst.executeQuery();
+                                    if (ret2.next()) {
+                                        JSONArray arr = new JSONArray();
+                                        arr.add(ret2.getString(1));
+                                        res.setTransactionNo(arr);
+                                        res.setTotalA(ret2.getDouble(2));
+                                        res.setPaymentState(ret2.getInt(3));
+                                        res.setPaymentTime(ret2.getString(4));
+                                    } else {
+                                        res.setAuth(-2);
+                                        res.setCode(2000);                         // shouldn't be here
+                                    }
+                                }
                                 return res;
                             } catch (Exception e) {
                                 res.setAuth(-2);
@@ -95,20 +112,30 @@ public class historyDetail {
                                 res.setStartTime(ai.getStartTime());
                                 res.setEndTime(ai.getEndTime());
                                 res.setDescription(ai.getDescription());
+                                res.setPaymentState(1);
                                 res.setHit(response.getBoolean("win") ? 1:0);
 
                                 res.setYourCards(response.getJSONArray("cards"));
                                 res.setWinnerCards(response.getJSONArray("winner"));
-                                String searchSql = "SELECT sum(totalAmount), timeStamp FROM cardTransaction WHERE uid=? AND auctionID=? AND certificateNo=?";
+                                String searchSql = "SELECT transactionNo, totalAmount, timeStamp FROM cardTransaction WHERE uid=? AND auctionID=? AND certificateNo=?";
                                 pst = conn.prepareStatement(searchSql);
                                 pst.setInt(1, uid);
                                 pst.setString(2, hd.getAuctionID());
                                 pst.setString(3, hd.getCertificateNo());
-                                ret = pst.executeQuery();
-                                if (ret.next()) {
-                                    res.setTotalC(ret.getDouble(1));
-                                    res.setBiddingTime(ret.getString(2).substring(0,19));
+                                ret2 = pst.executeQuery();
+                                JSONArray arr = new JSONArray();
+                                double total = 0;
+                                String timeStamp = null;
+                                while (ret2.next()) {
+                                    arr.add(ret2.getString(1));
+                                    total = total + ret2.getDouble(2);
+                                    if(timeStamp == null) {
+                                        timeStamp = ret2.getString(3).substring(0,19);
+                                    }
                                 }
+                                res.setTransactionNo(arr);
+                                res.setTotalC(total);
+                                res.setBiddingTime(timeStamp);
                                 return res;
                             } else {
                                 res.setAuth(-2);
@@ -126,20 +153,30 @@ public class historyDetail {
                                 res.setStartTime(ai.getStartTime());
                                 res.setEndTime(ai.getEndTime());
                                 res.setDescription(ai.getDescription());
+                                res.setPaymentState(1);
                                 res.setHit(response.getBoolean("isWinner") ? 1:0);
 
                                 res.setYourBalls(response.getJSONArray("tickets"));
                                 res.setWinnerBalls(response.getJSONArray("winnerNumbers"));
-                                String searchSql = "SELECT sum(totalAmount), timeStamp FROM ballTransaction WHERE uid=? AND auctionID=? AND certificateNo=?";
+                                String searchSql = "SELECT transactionNo, totalAmount, timeStamp FROM ballTransaction WHERE uid=? AND auctionID=? AND certificateNo=?";
                                 pst = conn.prepareStatement(searchSql);
                                 pst.setInt(1, uid);
                                 pst.setString(2, hd.getAuctionID());
                                 pst.setString(3, hd.getCertificateNo());
-                                ret = pst.executeQuery();
-                                if (ret.next()) {
-                                    res.setTotalB(ret.getDouble(1));
-                                    res.setBiddingTime(ret.getString(2).substring(0,19));
+                                ret2 = pst.executeQuery();
+                                JSONArray arr = new JSONArray();
+                                double total = 0;
+                                String timeStamp = null;
+                                while (ret2.next()) {
+                                    arr.add(ret2.getString(1));
+                                    total = total + ret2.getDouble(2);
+                                    if(timeStamp == null) {
+                                        timeStamp = ret2.getString(3).substring(0,19);
+                                    }
                                 }
+                                res.setTransactionNo(arr);
+                                res.setTotalB(total);
+                                res.setBiddingTime(timeStamp);
                                 return res;
                             } else {
                                 res.setAuth(-2);
@@ -185,6 +222,7 @@ public class historyDetail {
                                 res.setStartTime(ai.getStartTime());
                                 res.setEndTime(ai.getEndTime());
                                 res.setDescription(ai.getDescription());
+                                res.setPaymentState(1);
 
                                 res.setYourCards(response.getJSONArray("cards"));
                                 String searchSql = "SELECT sum(totalAmount), timeStamp FROM cardTransaction WHERE uid=? AND auctionID=? AND certificateNo=?";
@@ -214,6 +252,7 @@ public class historyDetail {
                                 res.setStartTime(ai.getStartTime());
                                 res.setEndTime(ai.getEndTime());
                                 res.setDescription(ai.getDescription());
+                                res.setPaymentState(1);
 
                                 res.setYourBalls(response.getJSONArray("tickets"));
                                 String searchSql = "SELECT sum(totalAmount), timeStamp FROM ballTransaction WHERE uid=? AND auctionID=? AND certificateNo=?";
