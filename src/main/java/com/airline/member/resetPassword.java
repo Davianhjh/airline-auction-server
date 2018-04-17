@@ -1,7 +1,6 @@
 package com.airline.member;
 
 import com.airline.tools.HiKariCPHandler;
-import com.airline.tools.UTCTimeUtil;
 import org.mindrot.jbcrypt.BCrypt;
 
 import javax.ws.rs.Consumes;
@@ -35,16 +34,15 @@ public class resetPassword {
             return res;
         }
         try {
-            String utcTimeStr = UTCTimeUtil.getUTCTimeStr();
             if (verifyResult == 0) {
                 res.setAuth(-1);
                 res.setCode(1000);                               // parameters not correct
                 return res;
             } else if (verifyResult == 1) {
-                String searchSql = "SELECT uid FROM preRegister where verifyCode=? AND expire > ?;";
+                String searchSql = "SELECT id FROM customerAccount where email=? AND password=?;";
                 pst = conn.prepareStatement(searchSql);
-                pst.setString(1, rp.getVerifyCode());
-                pst.setString(2, utcTimeStr);
+                pst.setString(1, rp.getEmail());
+                pst.setString(2, rp.getVerifyCode());
             } else {
                 String searchSql = "SELECT id FROM customerAccount where tel=? AND tel_country=? AND password=?";
                 pst = conn.prepareStatement(searchSql);
@@ -66,13 +64,6 @@ public class resetPassword {
                 pst.setInt(1, uid);
                 pst.executeUpdate();
 
-                if(verifyResult == 1) {
-                    String deleteSql = "DELETE FROM preRegister WHERE verifyCode=? AND expire > ?;";
-                    pst = conn.prepareStatement(deleteSql);
-                    pst.setString(1, rp.getVerifyCode());
-                    pst.setString(2, utcTimeStr);
-                    pst.executeUpdate();
-                }
                 res.setAuth(1);
                 res.setCode(0);
                 res.setReset(1);

@@ -21,6 +21,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @Path("/historyDetail")
 public class historyDetail {
@@ -91,8 +93,10 @@ public class historyDetail {
                                         res.setPaymentState(ret2.getInt(3));
                                         res.setPaymentTime(ret2.getString(4));
                                     } else {
-                                        res.setAuth(-2);
-                                        res.setCode(2000);                         // shouldn't be here
+                                        long paymentDeadline = ai.getEndTime() + 3*60*1000;
+                                        if (System.currentTimeMillis() < paymentDeadline) {
+                                            res.setPaymentState(0);                         // not paid, within payment deadline
+                                        } else res.setPaymentState(-1);                     // not paid, out of payment deadline
                                     }
                                 }
                                 return res;

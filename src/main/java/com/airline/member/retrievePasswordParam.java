@@ -1,11 +1,12 @@
 package com.airline.member;
 
-public class retrievePwdByTelParam {
+public class retrievePasswordParam {
     private String telCountry;
     private String tel;
+    private String email;
     private String platform;
 
-    public retrievePwdByTelParam() {
+    public retrievePasswordParam() {
         super();
     }
 
@@ -23,6 +24,14 @@ public class retrievePwdByTelParam {
 
     public void setTel(String tel) {
         this.tel = tel;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getPlatform() {

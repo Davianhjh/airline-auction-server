@@ -2,10 +2,10 @@ package com.airline.member;
 
 import com.airline.baseRestfulResponse;
 
-public class verifyRetrieveByTelRes extends baseRestfulResponse {
+public class verifyRetrieveRes extends baseRestfulResponse {
     private int verify;
 
-    public verifyRetrieveByTelRes() {
+    public verifyRetrieveRes() {
         super();
     }
 

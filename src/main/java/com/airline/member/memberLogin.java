@@ -90,7 +90,7 @@ public class memberLogin {
                 return res;
             } else {
                 res.setAuth(-1);
-                res.setCode(1020);                              // user not found
+                res.setCode(1018);                              // user not found
                 return res;
             }
         } catch (SQLException e){

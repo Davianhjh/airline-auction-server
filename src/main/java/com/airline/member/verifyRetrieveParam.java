@@ -1,29 +1,11 @@
 package com.airline.member;
 
-public class verifyRetrieveByTelParam {
-    private String tel;
-    private String telCountry;
+public class verifyRetrieveParam {
     private String verifyCode;
     private String platform;
 
-    public verifyRetrieveByTelParam() {
+    public verifyRetrieveParam() {
         super();
-    }
-
-    public String getTel() {
-        return tel;
-    }
-
-    public void setTel(String tel) {
-        this.tel = tel;
-    }
-
-    public String getTelCountry() {
-        return telCountry;
-    }
-
-    public void setTelCountry(String telCountry) {
-        this.telCountry = telCountry;
     }
 
     public String getVerifyCode() {

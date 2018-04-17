@@ -7,9 +7,9 @@ import java.util.Date;
 import java.util.TimeZone;
 
 public class UTCTimeUtil {
-    private static DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public static String getUTCTimeStr(){
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         java.util.Calendar cal = java.util.Calendar.getInstance();
         Date date = new Date(cal.getTimeInMillis());
         format.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -18,6 +18,7 @@ public class UTCTimeUtil {
 
     public static String getLocalTimeFromUTC(String UTCTime){
         String localTimeStr = null ;
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
             Date UTCDate = format.parse(UTCTime);
             format.setTimeZone(TimeZone.getTimeZone("GMT-8")) ;

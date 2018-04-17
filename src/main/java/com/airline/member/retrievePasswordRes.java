@@ -2,11 +2,11 @@ package com.airline.member;
 
 import com.airline.baseRestfulResponse;
 
-public class retrievePwdByTelRes extends baseRestfulResponse {
+public class retrievePasswordRes extends baseRestfulResponse {
     private int retrieve;
     private String verifyCode;
 
-    public retrievePwdByTelRes() {
+    public retrievePasswordRes() {
         super();
     }
 

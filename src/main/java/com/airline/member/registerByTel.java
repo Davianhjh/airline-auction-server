@@ -79,7 +79,6 @@ public class registerByTel {
                 // TODO
                 // sending msg module
                 //
-                conn.close();
                 res.setAuth(1);
                 res.setCode(0);
                 res.setRegister(1);

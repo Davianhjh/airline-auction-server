@@ -13,13 +13,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-@Path("/member/tel/verifyRetrieve")
-public class verifyRetrieveByTel {
+@Path("/member/verifyRetrieve")
+public class verifyRetrieve {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public verifyRetrieveByTelRes verifyRetrieve (verifyRetrieveByTelParam vr) {
-        verifyRetrieveByTelRes res = new verifyRetrieveByTelRes();
+    public verifyRetrieveRes verify (verifyRetrieveParam vr) {
+        verifyRetrieveRes res = new verifyRetrieveRes();
         Connection conn;
         PreparedStatement pst;
         ResultSet ret;
@@ -40,7 +40,7 @@ public class verifyRetrieveByTel {
 
         try {
             String utcTimeStr = UTCTimeUtil.getUTCTimeStr();
-            String searchSql = "SELECT uid, tel, tel_country FROM preRegister WHERE verifyCode=? AND platform=? AND expire > ?;";
+            String searchSql = "SELECT uid FROM preRegister WHERE verifyCode=? AND platform=? AND expire > ?;";
             pst = conn.prepareStatement(searchSql);
             pst.setString(1, vr.getVerifyCode());
             pst.setString(2, vr.getPlatform());
@@ -48,28 +48,22 @@ public class verifyRetrieveByTel {
             ret = pst.executeQuery();
             if (ret.next()) {
                 int uid = ret.getInt(1);
-                if (uid == 0 || !vr.getTel().equals(ret.getString(2)) || !vr.getTelCountry().equals(ret.getString(3))) {
-                    res.setAuth(-1);
-                    res.setCode(1029);                             // verify not correct
-                    return res;
-                } else {
-                    String updateSql = "UPDATE customerAccount set password=? WHERE id=?";
-                    pst = conn.prepareStatement(updateSql);
-                    pst.setString(1, vr.getVerifyCode());
-                    pst.setInt(2, uid);
-                    pst.executeUpdate();
+                String updateSql = "UPDATE customerAccount set password=? WHERE id=?";
+                pst = conn.prepareStatement(updateSql);
+                pst.setString(1, vr.getVerifyCode());
+                pst.setInt(2, uid);
+                pst.executeUpdate();
 
-                    String deleteSql = "DELETE FROM preRegister WHERE verifyCode=? AND platform=?;";
-                    pst = conn.prepareStatement(deleteSql);
-                    pst.setString(1, vr.getVerifyCode());
-                    pst.setString(2, vr.getPlatform());
-                    pst.executeUpdate();
+                String deleteSql = "DELETE FROM preRegister WHERE verifyCode=? AND platform=?;";
+                pst = conn.prepareStatement(deleteSql);
+                pst.setString(1, vr.getVerifyCode());
+                pst.setString(2, vr.getPlatform());
+                pst.executeUpdate();
 
-                    res.setAuth(1);
-                    res.setCode(0);
-                    res.setVerify(1);
-                    return res;
-                }
+                res.setAuth(1);
+                res.setCode(0);
+                res.setVerify(1);
+                return res;
             } else {
                 res.setAuth(-1);
                 res.setCode(1029);                                 // verify not correct
@@ -89,9 +83,9 @@ public class verifyRetrieveByTel {
         }
     }
 
-    private boolean verifyRetrieveParam (verifyRetrieveByTelParam rt) {
+    private boolean verifyRetrieveParam (verifyRetrieveParam rt) {
         try {
-            return rt.getTel() != null && rt.getTelCountry() != null && rt.getVerifyCode() != null && rt.getPlatform() != null;
+            return rt.getVerifyCode() != null && rt.getPlatform() != null;
         } catch (RuntimeException e) {
             return false;
         }
