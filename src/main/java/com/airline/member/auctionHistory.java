@@ -72,9 +72,10 @@ public class auctionHistory {
                         baseUserAuctionData tmp = new baseUserAuctionData();
                         JSONObject tmpData = arr.getJSONObject(i);
                         String flightID = tmpData.getString("flight");
-                        String sql = "SELECT passengerName, mobile, certificateNo, carbinClass, dptAirport, dptAptCode, arvAirport, arvAptCode, depTime, arrTime FROM passengerFlight WHERE addedByUid=? AND flightNo=? AND flightDate=?";
+                        String certificateNo = tmpData.getString("passenger");
+                        String sql = "SELECT passengerName, mobile, certificateNo, carbinClass, dptAirport, dptAptCode, arvAirport, arvAptCode, depTime, arrTime FROM passengerFlight WHERE certificateNo=? AND flightNo=? AND flightDate=?";
                         pst2 = conn.prepareStatement(sql);
-                        pst2.setInt(1, uid);
+                        pst2.setString(1, certificateNo);
                         pst2.setString(2, flightID.substring(11, flightID.length()));
                         pst2.setString(3, flightID.substring(0,10));
                         ret2 = pst2.executeQuery();

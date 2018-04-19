@@ -79,7 +79,8 @@ public class historyDetail {
                                 res.setBiddingPrice(pr.getBiddingPrice());
                                 res.setHit(pr.getHit().equals("Y") ? 1:0);
                                 if (pr.getHit().equals("Y")) {
-                                    String sql = "SELECT transactionNo, totalAmount, paymentState, timeStamp FROM tradeRecord WHERE uid=? AND auctionID=? AND certificateNo=?;";
+                                    res.setTotalA(pr.getPaymentPrice());
+                                    String sql = "SELECT transactionNo, paymentState, timeStamp FROM tradeRecord WHERE uid=? AND auctionID=? AND certificateNo=?;";
                                     pst = conn.prepareStatement(sql);
                                     pst.setInt(1, uid);
                                     pst.setString(2, hd.getAuctionID());
@@ -89,9 +90,8 @@ public class historyDetail {
                                         JSONArray arr = new JSONArray();
                                         arr.add(ret2.getString(1));
                                         res.setTransactionNo(arr);
-                                        res.setTotalA(ret2.getDouble(2));
-                                        res.setPaymentState(ret2.getInt(3));
-                                        res.setPaymentTime(ret2.getString(4));
+                                        res.setPaymentState(ret2.getInt(2));
+                                        res.setPaymentTime(ret2.getString(3));
                                     } else {
                                         long paymentDeadline = ai.getEndTime() + 3*60*1000;
                                         if (System.currentTimeMillis() < paymentDeadline) {
