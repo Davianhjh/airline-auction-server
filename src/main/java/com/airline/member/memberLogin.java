@@ -40,12 +40,12 @@ public class memberLogin {
                 res.setCode(1000);                               // parameters not correct
                 return res;
             } else if (verifyResult == 1) {
-                String searchSql = "SELECT id, password, username, cnid_name FROM customerAccount WHERE email=?;";
+                String searchSql = "SELECT id, password, username, cnid_name, credit FROM customerAccount WHERE email=?;";
                 pst = conn.prepareStatement(searchSql);
                 pst.setString(1, ml.getEmail());
                 ret = pst.executeQuery();
             } else {
-                String searchSql = "SELECT id, password, username, cnid_name FROM customerAccount WHERE tel_country=? AND tel=?;";
+                String searchSql = "SELECT id, password, username, cnid_name, credit FROM customerAccount WHERE tel_country=? AND tel=?;";
                 pst = conn.prepareStatement(searchSql);
                 pst.setString(1, ml.getTelCountry());
                 pst.setString(2, ml.getTel());
@@ -56,6 +56,13 @@ public class memberLogin {
                 String hashedPassword = ret.getString(2);
                 String userName = ret.getString(3);
                 String cnid_name = ret.getString(4);
+                int credit = ret.getInt(5);
+                if (credit >= 2) {
+                    res.setAuth(-2);
+                    res.setCode(1080);                          // you have been banned due to hit without paying
+                    return res;
+                }
+
                 if (hashedPassword == null || !BCrypt.checkpw(ml.getPassword(), hashedPassword)) {
                     res.setAuth(-1);
                     res.setCode(1019);                          // user password not match

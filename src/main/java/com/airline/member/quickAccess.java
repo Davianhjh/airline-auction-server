@@ -40,7 +40,7 @@ public class quickAccess {
             return res;
         }
         try {
-            String searchSql = "SELECT id, password, username, cnid_name FROM customerAccount WHERE tel_country=? AND tel=?;";
+            String searchSql = "SELECT id, password, username, cnid_name, credit FROM customerAccount WHERE tel_country=? AND tel=?;";
             pst = conn.prepareStatement(searchSql);
             pst.setString(1, qa.getTelCountry());
             pst.setString(2, qa.getTel());
@@ -50,6 +50,12 @@ public class quickAccess {
                 String password = ret.getString(2);
                 String userName = ret.getString(3);
                 String cnid_name = ret.getString(4);
+                int credit = ret.getInt(5);
+                if (credit >= 2) {
+                    res.setAuth(-2);
+                    res.setCode(1080);                          // you have been banned due to hit without paying
+                    return res;
+                }
                 StringBuffer verifyCode = new StringBuffer("");
                 for(int i=0; i<6; i++){
                     int tmp = (int)Math.floor(Math.random()*10);

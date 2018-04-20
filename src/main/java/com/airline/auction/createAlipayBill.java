@@ -49,13 +49,14 @@ public class createAlipayBill {
         }
         try {
             String utcTimeStr = UTCTimeUtil.getUTCTimeStr();
-            String verifySql = "SELECT id FROM customerToken INNER JOIN customerAccount ON customerToken.uid = customerAccount.id WHERE token = ? and expire > ?;";
+            String verifySql = "SELECT id, credit FROM customerToken INNER JOIN customerAccount ON customerToken.uid = customerAccount.id WHERE token = ? and expire > ?;";
             pst = conn.prepareStatement(verifySql);
             pst.setString(1, AgiToken);
             pst.setString(2, utcTimeStr);
             ret = pst.executeQuery();
             if (ret.next()) {
                 int uid = ret.getInt(1);
+                int credit = ret.getInt(2);
                 passengerResult result;
                 try {
                     result = getAuctionUtil.getBiddingResult(uid, ca.getAuctionID(), ca.getCertificateNo());
@@ -69,10 +70,6 @@ public class createAlipayBill {
                     res.setCode(1030);                                  // error auctionState
                     return res;
                 }
-                DecimalFormat df = new DecimalFormat("0.00");
-                String biddingPrice = df.format(result.getBiddingPrice());
-                String tranStr = ca.getAuctionID() + System.currentTimeMillis();
-                String transactionID = getTransID(tranStr);
                 Properties property = new Properties();
                 try {
                     InputStream in = createAlipayBill.class.getResourceAsStream("/serverAddress.properties");
@@ -84,6 +81,22 @@ public class createAlipayBill {
                     res.setCode(2000);                                          // properties file not found
                     return res;
                 }
+
+                if (result.getEndCountDown() + Integer.parseInt(property.getProperty("paymentTimeLap")) < 0) {
+                    String updateSql = "UPDATE customerAccount set credit=? WHERE id=?";
+                    pst = conn.prepareStatement(updateSql);
+                    pst.setInt(1, credit == 0 ? 1:2);
+                    pst.setInt(2, uid);
+                    pst.executeUpdate();
+                    res.setAuth(-2);
+                    res.setCode(1070);                                          // payment timeout
+                    return res;
+                }
+
+                DecimalFormat df = new DecimalFormat("0.00");
+                String biddingPrice = df.format(result.getBiddingPrice());
+                String tranStr = ca.getAuctionID() + System.currentTimeMillis();
+                String transactionID = getTransID(tranStr);
                 String notify_url = property.getProperty("localhostServer") + "/auction/alipay_notify";
                 String alipayStr = AlipayUtil.alipayAPPStr(transactionID, "auction", "flight upgrade", biddingPrice, notify_url);
 

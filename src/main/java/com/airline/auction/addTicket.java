@@ -87,7 +87,7 @@ public class addTicket {
                 if (result == 1) {
                     String token,userName;
                     int uid;
-                    String sql1 = "SELECT id, username FROM customerAccount WHERE tel=? AND tel_country=?;";
+                    String sql1 = "SELECT id, username, credit FROM customerAccount WHERE tel=? AND tel_country=?;";
                     pst= conn.prepareStatement(sql1);
                     pst.setString(1, at.getTel());
                     pst.setString(2, at.getTelCountry());
@@ -95,6 +95,13 @@ public class addTicket {
                     if (ret2.next()) {
                         uid = ret2.getInt(1);
                         userName = ret2.getString(2);
+                        int credit = ret2.getInt(3);
+                        if (credit >= 2) {
+                            res.setAuth(-2);
+                            res.setCode(1080);                          // you have been banned due to hit without paying
+                            return res;
+                        }
+
                         token = tokenHandler.createJWT(String.valueOf(uid), userName, "mobile", 7 * 24 * 3600 * 1000);
                         String sql2 = "SELECT tid FROM customerToken WHERE uid=?";
                         pst = conn.prepareStatement(sql2);
