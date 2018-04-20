@@ -49,14 +49,13 @@ public class createAlipayBill {
         }
         try {
             String utcTimeStr = UTCTimeUtil.getUTCTimeStr();
-            String verifySql = "SELECT id, credit FROM customerToken INNER JOIN customerAccount ON customerToken.uid = customerAccount.id WHERE token = ? and expire > ?;";
+            String verifySql = "SELECT id FROM customerToken INNER JOIN customerAccount ON customerToken.uid = customerAccount.id WHERE token = ? and expire > ?;";
             pst = conn.prepareStatement(verifySql);
             pst.setString(1, AgiToken);
             pst.setString(2, utcTimeStr);
             ret = pst.executeQuery();
             if (ret.next()) {
                 int uid = ret.getInt(1);
-                int credit = ret.getInt(2);
                 passengerResult result;
                 try {
                     result = getAuctionUtil.getBiddingResult(uid, ca.getAuctionID(), ca.getCertificateNo());
@@ -83,11 +82,6 @@ public class createAlipayBill {
                 }
 
                 if (result.getEndCountDown() + Integer.parseInt(property.getProperty("paymentTimeLap")) < 0) {
-                    String updateSql = "UPDATE customerAccount set credit=? WHERE id=?";
-                    pst = conn.prepareStatement(updateSql);
-                    pst.setInt(1, credit == 0 ? 1:2);
-                    pst.setInt(2, uid);
-                    pst.executeUpdate();
                     res.setAuth(-2);
                     res.setCode(1070);                                          // payment timeout
                     return res;

@@ -49,14 +49,13 @@ public class passengerState {
         }
         try {
             String utcTimeStr = UTCTimeUtil.getUTCTimeStr();
-            String verifySql = "SELECT id, credit FROM customerToken INNER JOIN customerAccount ON customerToken.uid = customerAccount.id WHERE token = ? and expire > ?;";
+            String verifySql = "SELECT id FROM customerToken INNER JOIN customerAccount ON customerToken.uid = customerAccount.id WHERE token = ? and expire > ?;";
             pst = conn.prepareStatement(verifySql);
             pst.setString(1, AgiToken);
             pst.setString(2, utcTimeStr);
             ret = pst.executeQuery();
             if (ret.next()) {
                 int uid = ret.getInt(1);
-                int credit = ret.getInt(2);
                 String paymentVerifySql = "SELECT paymentState FROM tradeRecord WHERE uid=? AND auctionID=? AND certificateNo=?;";
                 pst = conn.prepareStatement(paymentVerifySql);
                 pst.setInt(1, uid);
@@ -94,11 +93,6 @@ public class passengerState {
                         return res;
                     }
                     if (res.getHit().equals("Y") && (res.getEndCountDown() + Integer.parseInt(property.getProperty("paymentTimeLap")) < 0)) {
-                        String sql2 = "UPDATE customerAccount set credit=? WHERE id=?";
-                        pst = conn.prepareStatement(sql2);
-                        pst.setInt(1, credit == 0 ? 1:2);
-                        pst.setInt(2, uid);
-                        pst.executeUpdate();
                         res.setAuth(-2);
                         res.setCode(1070);                                          // payment timeout
                         return res;
