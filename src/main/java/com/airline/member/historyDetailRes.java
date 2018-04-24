@@ -17,15 +17,15 @@ public class historyDetailRes extends baseRestfulResponse {
     private double biddingPrice;
     private int paymentState;
     private String paymentTime;
-    private double totalA;
+    private String totalA;
 
     private JSONArray yourCards;
     private JSONArray winnerCards;
-    private double totalC;
+    private String totalC;
 
     private JSONArray yourBalls;
     private JSONArray winnerBalls;
-    private double totalB;
+    private String totalB;
 
     public historyDetailRes() {
         super();
@@ -111,11 +111,11 @@ public class historyDetailRes extends baseRestfulResponse {
         this.biddingPrice = biddingPrice;
     }
 
-    public double getTotalA() {
+    public String getTotalA() {
         return totalA;
     }
 
-    public void setTotalA(double totalA) {
+    public void setTotalA(String totalA) {
         this.totalA = totalA;
     }
 
@@ -151,11 +151,11 @@ public class historyDetailRes extends baseRestfulResponse {
         this.winnerCards = new JSONArray(winnerCards);
     }
 
-    public double getTotalC() {
+    public String getTotalC() {
         return totalC;
     }
 
-    public void setTotalC(double totalC) {
+    public void setTotalC(String totalC) {
         this.totalC = totalC;
     }
 
@@ -175,11 +175,11 @@ public class historyDetailRes extends baseRestfulResponse {
         this.winnerBalls = new JSONArray(winnerBalls);
     }
 
-    public double getTotalB() {
+    public String getTotalB() {
         return totalB;
     }
 
-    public void setTotalB(double totalB) {
+    public void setTotalB(String totalB) {
         this.totalB = totalB;
     }
 }

@@ -92,7 +92,7 @@ public class passengerState {
                         res.setCode(2000);                                          // properties file not found
                         return res;
                     }
-                    if (res.getHit().equals("Y") && (res.getEndCountDown() + Integer.parseInt(property.getProperty("paymentTimeLap")) < 0)) {
+                    if (res.getHit().equals("Y") && !paymentState && (res.getEndCountDown() + Integer.parseInt(property.getProperty("paymentTimeLap")) < 0)) {
                         res.setAuth(-2);
                         res.setCode(1070);                                          // payment timeout
                         return res;

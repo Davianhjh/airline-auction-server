@@ -6,7 +6,7 @@ public class baseUserAuctionData {
     private String passengerName;
     private String mobile;
     private String certificateNo;
-    private String carbinClass;
+    private String cabinClass;
     private String dptAirport;
     private String dptAptCode;
     private String arvAirport;
@@ -61,12 +61,12 @@ public class baseUserAuctionData {
         this.certificateNo = certificateNo;
     }
 
-    public String getCarbinClass() {
-        return carbinClass;
+    public String getCabinClass() {
+        return cabinClass;
     }
 
-    public void setCarbinClass(String carbinClass) {
-        this.carbinClass = carbinClass;
+    public void setCabinClass(String cabinClass) {
+        this.cabinClass = cabinClass;
     }
 
     public String getDptAirport() {

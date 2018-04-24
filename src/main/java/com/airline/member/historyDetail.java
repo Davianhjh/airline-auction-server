@@ -21,6 +21,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -52,6 +53,7 @@ public class historyDetail {
             return res;
         }
         try {
+            DecimalFormat df = new DecimalFormat("0.00");
             String utcTimeStr = UTCTimeUtil.getUTCTimeStr();
             String verifySql = "SELECT id FROM customerToken INNER JOIN customerAccount ON customerToken.uid = customerAccount.id WHERE token = ? and expire > ?;";
             pst = conn.prepareStatement(verifySql);
@@ -79,7 +81,7 @@ public class historyDetail {
                                 res.setBiddingPrice(pr.getBiddingPrice());
                                 res.setHit(pr.getHit().equals("Y") ? 1:0);
                                 if (pr.getHit().equals("Y")) {
-                                    res.setTotalA(pr.getPaymentPrice());
+                                    res.setTotalA(df.format(pr.getPaymentPrice()));
                                     String sql = "SELECT transactionNo, paymentState, timeStamp FROM tradeRecord WHERE uid=? AND auctionID=? AND certificateNo=?;";
                                     pst = conn.prepareStatement(sql);
                                     pst.setInt(1, uid);
@@ -128,7 +130,7 @@ public class historyDetail {
                                 pst.setString(3, hd.getCertificateNo());
                                 ret2 = pst.executeQuery();
                                 JSONArray arr = new JSONArray();
-                                double total = 0;
+                                double total = 0.00;
                                 String timeStamp = null;
                                 while (ret2.next()) {
                                     arr.add(ret2.getString(1));
@@ -138,7 +140,7 @@ public class historyDetail {
                                     }
                                 }
                                 res.setTransactionNo(arr);
-                                res.setTotalC(total);
+                                res.setTotalC(df.format(total));
                                 res.setBiddingTime(timeStamp);
                                 return res;
                             } else {
@@ -169,7 +171,7 @@ public class historyDetail {
                                 pst.setString(3, hd.getCertificateNo());
                                 ret2 = pst.executeQuery();
                                 JSONArray arr = new JSONArray();
-                                double total = 0;
+                                double total = 0.00;
                                 String timeStamp = null;
                                 while (ret2.next()) {
                                     arr.add(ret2.getString(1));
@@ -179,7 +181,7 @@ public class historyDetail {
                                     }
                                 }
                                 res.setTransactionNo(arr);
-                                res.setTotalB(total);
+                                res.setTotalB(df.format(total));
                                 res.setBiddingTime(timeStamp);
                                 return res;
                             } else {
@@ -236,7 +238,7 @@ public class historyDetail {
                                 pst.setString(3, hd.getCertificateNo());
                                 ret = pst.executeQuery();
                                 if (ret.next()) {
-                                    res.setTotalC(ret.getDouble(1));
+                                    res.setTotalC(df.format(ret.getDouble(1)));
                                     res.setBiddingTime(ret.getString(2).substring(0,19));
                                 }
                                 return res;
@@ -266,7 +268,7 @@ public class historyDetail {
                                 pst.setString(3, hd.getCertificateNo());
                                 ret = pst.executeQuery();
                                 if (ret.next()) {
-                                    res.setTotalB(ret.getDouble(1));
+                                    res.setTotalB(df.format(ret.getDouble(1)));
                                     res.setBiddingTime(ret.getString(2).substring(0,19));
                                 }
                                 return res;

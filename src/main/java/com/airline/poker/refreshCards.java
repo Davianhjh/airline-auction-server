@@ -1,7 +1,6 @@
 package com.airline.poker;
 
 import com.airline.tools.*;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 import javax.ws.rs.Consumes;
@@ -17,7 +16,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Properties;
 
 @Path("/refreshCards")
@@ -79,6 +77,9 @@ public class refreshCards {
                         return res;
                     }
                 } else {
+                    System.out.println(UTCTimeUtil.getUTCTimeStr());
+                    System.out.println(ai.getAuctionState());
+                    System.out.println(ai.getAuctionType());
                     res.setAuth(-1);
                     res.setCode(1030);                       // error auctionState
                     return res;

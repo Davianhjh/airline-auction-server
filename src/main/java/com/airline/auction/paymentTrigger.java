@@ -1,6 +1,7 @@
 package com.airline.auction;
 
 import com.airline.tools.HiKariCPHandler;
+import com.airline.tools.UTCTimeUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
@@ -49,6 +50,13 @@ public class paymentTrigger {
                     pst = conn.prepareStatement(updateSql);
                     pst.setInt(1, tmp.getIntValue("uid"));
                     pst.executeUpdate();
+
+                    // for banned output
+                    String utcStr = UTCTimeUtil.getUTCTimeStr();
+                    System.out.println("Banned ID: " + tmp.getIntValue("uid"));
+                    System.out.println("Banned Time: " + utcStr);
+                    System.out.println("Unpaid auction: " + pt.getAuction());
+                    System.out.println("certificate: " + tmp.getString("passenger"));
                 }
             }
             return "success";

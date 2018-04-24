@@ -85,7 +85,7 @@ public class auctionHistory {
                             tmp.setCertificateNo(ret2.getString(3));
                             tmp.setFlightNo(flightID.substring(11, flightID.length()));
                             tmp.setFlightDate(flightID.substring(0, 10));
-                            tmp.setCarbinClass(ret2.getString(4));
+                            tmp.setCabinClass(ret2.getString(4));
                             tmp.setDptAirport(ret2.getString(5));
                             tmp.setDptAptCode(ret2.getString(6));
                             tmp.setArvAirport(ret2.getString(7));
