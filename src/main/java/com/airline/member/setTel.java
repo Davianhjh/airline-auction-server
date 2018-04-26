@@ -2,6 +2,7 @@ package com.airline.member;
 
 import com.airline.tools.HiKariCPHandler;
 import com.airline.tools.UTCTimeUtil;
+import com.airline.tools.msgSendUtil;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -76,7 +77,7 @@ public class setTel {
                         int tmp = (int)Math.floor(Math.random()*10);
                         verifyCode.append(tmp);
                     }
-                    String sql = "INSERT INTO preRegister (uid, tel_country, tel, platform, verifyCode, expire) VALUES (?,?,?,?,?,ADDTIME(utc_timestamp(), '0 00:02:00'));";
+                    String sql = "INSERT INTO preRegister (uid, tel_country, tel, platform, verifyCode, expire) VALUES (?,?,?,?,?,ADDTIME(utc_timestamp(), '0 00:10:00'));";
                     pst = conn.prepareStatement(sql);
                     pst.setInt(1, uid);
                     pst.setString(2, st.getTelCountry());
@@ -86,15 +87,20 @@ public class setTel {
                     pst.executeUpdate();
                     // TODO
                     // sending msg module
-                    //
-                    conn.close();
+                    String smsText="【Agiview竞拍平台】您的验证码是" + verifyCode.toString() + "，10分钟内有效，请勿向任何人泄露。";
                     res.setAuth(1);
                     res.setCode(0);
                     res.setBind(1);
                     if (TEXTSWITCH) {
                         res.setVerifyCode(verifyCode.toString());
+                        return res;
+                    } else if (msgSendUtil.sendMsg(st.getTel(), smsText) == 0){
+                        return res;
+                    } else {
+                        res.setAuth(-2);
+                        res.setCode(1070);
+                        return res;
                     }
-                    return res;
                 }
             } else {
                 res.setAuth(-1);

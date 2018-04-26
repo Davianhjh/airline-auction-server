@@ -3,6 +3,7 @@ package com.airline.auction;
 import com.airline.tools.HiKariCPHandler;
 import com.airline.tools.UTCTimeUtil;
 import com.airline.tools.getIpAddressUtil;
+import com.airline.tools.msgSendUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -20,6 +21,8 @@ import java.sql.SQLException;
 
 @Path("/searchTicket")
 public class searchTicket {
+    private static final boolean TEXTSWITCH = true;
+
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -62,7 +65,7 @@ public class searchTicket {
                 ret = pst.executeQuery();
                 if (ret.next()) {
                     int uid = ret.getInt(1);
-                    String insertSql = "INSERT INTO searchRecord (uid, ipAddr, tel, tel_country, platform, verifyCode, expire) VALUES (?,?,?,?,?,?,ADDTIME(utc_timestamp(), '0 00:02:00'))";
+                    String insertSql = "INSERT INTO searchRecord (uid, ipAddr, tel, tel_country, platform, verifyCode, expire) VALUES (?,?,?,?,?,?,ADDTIME(utc_timestamp(), '0 00:10:00'))";
                     pst = conn.prepareStatement(insertSql);
                     pst.setInt(1, uid);
                     pst.setString(2, ipAddress);
@@ -71,12 +74,22 @@ public class searchTicket {
                     pst.setString(5, st.getPlatform());
                     pst.setString(6, verifyCode.toString());
                     pst.executeUpdate();
-
+                    // TODO
+                    // sending msg module
+                    String smsText="【Agiview竞拍平台】您的验证码是" + verifyCode.toString() + "，10分钟内有效，请勿向任何人泄露。";
                     res.setAuth(1);
                     res.setCode(0);
                     res.setSearch(1);
-                    res.setVerifyCode(verifyCode.toString());
-                    return res;
+                    if (TEXTSWITCH) {
+                        res.setVerifyCode(verifyCode.toString());
+                        return res;
+                    } else if (msgSendUtil.sendMsg(st.getTel(), smsText) == 0){
+                        return res;
+                    } else {
+                        res.setAuth(-2);
+                        res.setCode(1070);
+                        return res;
+                    }
                 } else {
                     res.setAuth(-1);
                     res.setCode(1020);                           // user not found
@@ -93,12 +106,22 @@ public class searchTicket {
                 pst.setString(4, st.getPlatform());
                 pst.setString(5, verifyCode.toString());
                 pst.executeUpdate();
-
+                // TODO
+                // sending msg module
+                String smsText="【Agiview竞拍平台】您的验证码是" + verifyCode.toString() + "，10分钟内有效，请勿向任何人泄露。";
                 res.setAuth(1);
                 res.setCode(0);
                 res.setSearch(1);
-                res.setVerifyCode(verifyCode.toString());
-                return res;
+                if (TEXTSWITCH) {
+                    res.setVerifyCode(verifyCode.toString());
+                    return res;
+                } else if (msgSendUtil.sendMsg(st.getTel(), smsText) == 0){
+                    return res;
+                } else {
+                    res.setAuth(-2);
+                    res.setCode(1070);
+                    return res;
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();

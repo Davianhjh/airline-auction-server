@@ -2,6 +2,7 @@ package com.airline.member;
 
 import com.airline.tools.HiKariCPHandler;
 import com.airline.tools.mailSendUtil;
+import com.airline.tools.msgSendUtil;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -121,7 +122,7 @@ public class retrievePassword {
                         int tmp = (int)Math.floor(Math.random()*10);
                         verifyCode.append(tmp);
                     }
-                    String insertSql = "INSERT INTO preRegister (uid, tel, tel_country, platform, verifyCode, expire) VALUES (?,?,?,?,?,ADDTIME(utc_timestamp(), '0 00:30:00'));";
+                    String insertSql = "INSERT INTO preRegister (uid, tel, tel_country, platform, verifyCode, expire) VALUES (?,?,?,?,?,ADDTIME(utc_timestamp(), '0 00:10:00'));";
                     pst = conn.prepareStatement(insertSql);
                     pst.setInt(1, uid);
                     pst.setString(2, rp.getTel());
@@ -131,14 +132,20 @@ public class retrievePassword {
                     pst.executeUpdate();
                     // TODO
                     // sending msg module
-                    //
+                    String smsText="【Agiview竞拍平台】您的验证码是" + verifyCode.toString() + "，10分钟内有效，请勿向任何人泄露。";
                     res.setAuth(1);
                     res.setCode(0);
                     res.setRetrieve(1);
                     if (TEXTSWITCH) {
                         res.setVerifyCode(verifyCode.toString());
+                        return res;
+                    } else if (msgSendUtil.sendMsg(rp.getTel(), smsText) == 0){
+                        return res;
+                    } else {
+                        res.setAuth(-2);
+                        res.setCode(1070);
+                        return res;
                     }
-                    return res;
                 } else {
                     res.setAuth(-1);
                     res.setCode(1028);                           // not registered

@@ -1,6 +1,7 @@
 package com.airline.member;
 
 import com.airline.tools.HiKariCPHandler;
+import com.airline.tools.msgSendUtil;
 import org.mindrot.jbcrypt.BCrypt;
 
 import javax.ws.rs.Consumes;
@@ -68,7 +69,7 @@ public class registerByTel {
                 } catch (RuntimeException e) {
                     password = null;
                 }
-                String sql = "INSERT INTO preRegister (tel_country, tel, password, platform, verifyCode, expire) VALUES (?,?,?,?,?,ADDTIME(utc_timestamp(), '0 00:02:00'));";
+                String sql = "INSERT INTO preRegister (tel_country, tel, password, platform, verifyCode, expire) VALUES (?,?,?,?,?,ADDTIME(utc_timestamp(), '0 00:10:00'));";
                 pst = conn.prepareStatement(sql);
                 pst.setString(1, rt.getTelCountry());
                 pst.setString(2, rt.getTel());
@@ -78,14 +79,20 @@ public class registerByTel {
                 pst.executeUpdate();
                 // TODO
                 // sending msg module
-                //
+                String smsText="【Agiview竞拍平台】您的验证码是" + verifyCode.toString() + "，10分钟内有效，请勿向任何人泄露。";
                 res.setAuth(1);
                 res.setCode(0);
                 res.setRegister(1);
                 if (TEXTSWITCH) {
                     res.setVerifyCode(verifyCode.toString());
+                    return res;
+                } else if (msgSendUtil.sendMsg(rt.getTel(), smsText) == 0){
+                    return res;
+                } else {
+                    res.setAuth(-2);
+                    res.setCode(1070);
+                    return res;
                 }
-                return res;
             }
         } catch (SQLException e){
             e.printStackTrace();
