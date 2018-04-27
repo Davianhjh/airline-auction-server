@@ -12,8 +12,8 @@ public class msgSendUtil {
 
     public static int sendMsg (String tel, String body) {
         try {
-            String UserName="ytwl";
-            String Password="355043";
+            String UserName="wbsp";
+            String Password="542010";
             String Timestamp=msgSDKUtil.getTimestamp();
             String Key=msgSDKUtil.getKey(UserName, Password, Timestamp);
             String serverAddress = "http://www.youxinyun.com:3070/Platform_Http_Service/servlet/SendSms";

@@ -22,8 +22,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
 @Path("/historyDetail")
 public class historyDetail {
@@ -34,6 +36,8 @@ public class historyDetail {
         MultivaluedMap<String, String> header = hh.getRequestHeaders();
         String AgiToken = header.getFirst("token");
         historyDetailRes res = new historyDetailRes();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        sdf.setTimeZone(TimeZone.getTimeZone("GMT+0:00"));
         Connection conn;
         PreparedStatement pst;
         ResultSet ret, ret2;
@@ -141,7 +145,12 @@ public class historyDetail {
                                 }
                                 res.setTransactionNo(arr);
                                 res.setTotalC(df.format(total));
-                                res.setBiddingTime(timeStamp);
+                                try {
+                                    res.setBiddingTime(Long.toString(sdf.parse(timeStamp).getTime()));
+                                } catch (ParseException e) {
+                                    res.setAuth(-2);
+                                    res.setCode(2000);
+                                }
                                 return res;
                             } else {
                                 res.setAuth(-2);
@@ -182,7 +191,12 @@ public class historyDetail {
                                 }
                                 res.setTransactionNo(arr);
                                 res.setTotalB(df.format(total));
-                                res.setBiddingTime(timeStamp);
+                                try {
+                                    res.setBiddingTime(Long.toString(sdf.parse(timeStamp).getTime()));
+                                } catch (ParseException e) {
+                                    res.setAuth(-2);
+                                    res.setCode(2000);
+                                }
                                 return res;
                             } else {
                                 res.setAuth(-2);
