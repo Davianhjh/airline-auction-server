@@ -16,6 +16,7 @@ public class baseUserAuctionData {
     private String auctionID;
     private String auctionType;
     private String auctionState;
+    private String description;
 
     public baseUserAuctionData() {
         super();
@@ -139,5 +140,13 @@ public class baseUserAuctionData {
 
     public void setAuctionState(String auctionState) {
         this.auctionState = auctionState;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

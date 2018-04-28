@@ -127,7 +127,7 @@ public class historyDetail {
 
                                 res.setYourCards(response.getJSONArray("cards"));
                                 res.setWinnerCards(response.getJSONArray("winner"));
-                                String searchSql = "SELECT transactionNo, totalAmount, timeStamp FROM cardTransaction WHERE uid=? AND auctionID=? AND certificateNo=?";
+                                String searchSql = "SELECT transactionNo, totalAmount, timeStamp FROM cardTransaction WHERE uid=? AND auctionID=? AND certificateNo=? AND paymentState=1";
                                 pst = conn.prepareStatement(searchSql);
                                 pst.setInt(1, uid);
                                 pst.setString(2, hd.getAuctionID());
@@ -173,7 +173,7 @@ public class historyDetail {
 
                                 res.setYourBalls(response.getJSONArray("tickets"));
                                 res.setWinnerBalls(response.getJSONArray("winnerNumbers"));
-                                String searchSql = "SELECT transactionNo, totalAmount, timeStamp FROM ballTransaction WHERE uid=? AND auctionID=? AND certificateNo=?";
+                                String searchSql = "SELECT transactionNo, totalAmount, timeStamp FROM ballTransaction WHERE uid=? AND auctionID=? AND certificateNo=? AND paymentState=1";
                                 pst = conn.prepareStatement(searchSql);
                                 pst.setInt(1, uid);
                                 pst.setString(2, hd.getAuctionID());
@@ -245,7 +245,7 @@ public class historyDetail {
                                 res.setPaymentState(1);
 
                                 res.setYourCards(response.getJSONArray("cards"));
-                                String searchSql = "SELECT sum(totalAmount), timeStamp FROM cardTransaction WHERE uid=? AND auctionID=? AND certificateNo=?";
+                                String searchSql = "SELECT sum(totalAmount), timeStamp FROM cardTransaction WHERE uid=? AND auctionID=? AND certificateNo=? AND paymentState=1";
                                 pst = conn.prepareStatement(searchSql);
                                 pst.setInt(1, uid);
                                 pst.setString(2, hd.getAuctionID());
@@ -275,7 +275,7 @@ public class historyDetail {
                                 res.setPaymentState(1);
 
                                 res.setYourBalls(response.getJSONArray("tickets"));
-                                String searchSql = "SELECT sum(totalAmount), timeStamp FROM ballTransaction WHERE uid=? AND auctionID=? AND certificateNo=?";
+                                String searchSql = "SELECT sum(totalAmount), timeStamp FROM ballTransaction WHERE uid=? AND auctionID=? AND certificateNo=? AND paymentState=1";
                                 pst = conn.prepareStatement(searchSql);
                                 pst.setInt(1, uid);
                                 pst.setString(2, hd.getAuctionID());

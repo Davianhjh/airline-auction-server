@@ -95,6 +95,7 @@ public class auctionHistory {
                             tmp.setAuctionID(tmpData.getString("auction"));
                             tmp.setAuctionState(tmpData.getString("status"));
                             tmp.setAuctionType(tmpData.getString("type"));
+                            tmp.setDescription(tmpData.getString("description"));
                             history.add(tmp);
                         }
                         ret2.close();
