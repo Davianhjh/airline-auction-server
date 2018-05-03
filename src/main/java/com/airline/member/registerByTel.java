@@ -17,7 +17,7 @@ import java.util.Random;
 
 @Path("/member/registerByTel")
 public class registerByTel {
-    private static final boolean TEXTSWITCH = true;
+    private static final boolean TEXTSWITCH = false;
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -43,13 +43,13 @@ public class registerByTel {
             return res;
         }
         try {
-            String searchSql = "SELECT id FROM customerAccount WHERE tel_country=? AND tel=?;";
+            String searchSql = "SELECT password FROM customerAccount WHERE tel_country=? AND tel=?;";
             pst = conn.prepareStatement(searchSql);
             pst.setString(1, rt.getTelCountry());
             pst.setString(2, rt.getTel());
             ret = pst.executeQuery();
             if (ret.next()) {
-                if (ret.getString(1) != null) {
+                if (ret.getString(1) == null) {
                     res.setAuth(-1);
                     res.setCode(1011);                           // tel has been registered, use quick access
                 } else {

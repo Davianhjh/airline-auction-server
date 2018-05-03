@@ -15,7 +15,7 @@ import java.sql.SQLException;
 
 @Path("/member/quickAccess")
 public class quickAccess {
-    private static final boolean TEXTSWITCH = true;
+    private static final boolean TEXTSWITCH = false;
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)

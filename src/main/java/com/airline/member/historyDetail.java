@@ -99,7 +99,7 @@ public class historyDetail {
                                         res.setPaymentState(ret2.getInt(2));
                                         res.setPaymentTime(ret2.getString(3));
                                     } else {
-                                        long paymentDeadline = ai.getEndTime() + 3*60*1000;
+                                        long paymentDeadline = ai.getEndTime() + 10*60*1000;
                                         if (System.currentTimeMillis() < paymentDeadline) {
                                             res.setPaymentState(0);                         // not paid, within payment deadline
                                         } else res.setPaymentState(-1);                     // not paid, out of payment deadline

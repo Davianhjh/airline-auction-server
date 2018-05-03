@@ -19,7 +19,7 @@ import java.sql.SQLException;
 
 @Path("/member/setTel")
 public class setTel {
-    private static final boolean TEXTSWITCH = true;
+    private static final boolean TEXTSWITCH = false;
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)

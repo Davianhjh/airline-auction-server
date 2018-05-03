@@ -21,7 +21,7 @@ import java.util.UUID;
 
 @Path("/member/retrievePassword")
 public class retrievePassword {
-    private static final boolean TEXTSWITCH = true;
+    private static final boolean TEXTSWITCH = false;
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)

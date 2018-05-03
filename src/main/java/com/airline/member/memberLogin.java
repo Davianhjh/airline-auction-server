@@ -62,8 +62,14 @@ public class memberLogin {
                     res.setCode(1080);                          // you have been banned due to hit without paying
                     return res;
                 }
-
-                if (hashedPassword == null || !BCrypt.checkpw(ml.getPassword(), hashedPassword)) {
+                try {
+                    if (hashedPassword == null || !BCrypt.checkpw(ml.getPassword(), hashedPassword)) {
+                        res.setAuth(-1);
+                        res.setCode(1019);                          // user password not match
+                        return res;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                     res.setAuth(-1);
                     res.setCode(1019);                          // user password not match
                     return res;
