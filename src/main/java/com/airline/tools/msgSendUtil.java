@@ -28,7 +28,10 @@ public class msgSendUtil {
             _StringBuffer.append("SMSID=" + SMSID);
             Hashtable _Header = new Hashtable();
             _Header.put("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
+            long start = System.currentTimeMillis();
             InputStream _InputStream = msgSDKUtil.SendMessage(_StringBuffer.toString().getBytes("utf-8"), _Header, serverAddress);
+            if (System.currentTimeMillis() - start > 10000)
+                return -1;
             String response = msgSDKUtil.getResponseCode(_InputStream, "utf-8");
             if (response.equals("error"))
                 return -1;

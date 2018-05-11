@@ -18,10 +18,10 @@ public class mailSendUtil {
     private int port;
     private String userName;
     private String password;
-    private String auth;
-    private Properties mailConfig = new Properties();
+    private boolean auth;
 
     public mailSendUtil() {
+        Properties mailConfig = new Properties();
         try {
             InputStream in = mailSendUtil.class.getResourceAsStream("/mailConfig.properties");
             mailConfig.load(in);
@@ -29,14 +29,13 @@ public class mailSendUtil {
             this.port = Integer.parseInt(mailConfig.getProperty("mail.smtp.port"));
             this.userName = mailConfig.getProperty("mail.smtp.username");
             this.password = mailConfig.getProperty("mail.smtp.password");
-            this.auth = mailConfig.getProperty("mail.smtp.auth");
+            this.auth = mailConfig.getProperty("mail.smtp.auth").equals("true");
         } catch (IOException e) {
             e.printStackTrace();
         }
         sendMailSession = Session.getDefaultInstance(mailConfig, new Authenticator() {
             @Override
-            protected PasswordAuthentication getPasswordAuthentication()
-            {
+            protected PasswordAuthentication getPasswordAuthentication() {
                 return new PasswordAuthentication(userName, password);
             }
         });
@@ -59,8 +58,9 @@ public class mailSendUtil {
             transport = sendMailSession.getTransport("smtp");
             transport.connect(host, port, userName, password);
             transport.sendMessage(mailmessage, mailmessage.getAllRecipients());
+            transport.close();
             return true;
-        } catch (Exception e) {
+        } catch (MessagingException e) {
             e.printStackTrace();
             return false;
         }

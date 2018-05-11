@@ -88,7 +88,7 @@ public class createAlipayBill {
                 }
 
                 DecimalFormat df = new DecimalFormat("0.00");
-                String biddingPrice = df.format(result.getBiddingPrice());
+                String biddingPrice = df.format(result.getPaymentPrice());
                 String tranStr = ca.getAuctionID() + System.currentTimeMillis();
                 String transactionID = getTransID(tranStr);
                 String notify_url = property.getProperty("localhostServer") + "/auction/alipay_notify";

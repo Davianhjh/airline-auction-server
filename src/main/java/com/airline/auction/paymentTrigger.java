@@ -38,7 +38,7 @@ public class paymentTrigger {
             JSONArray winner = pt.getWinner();
             for (Object item: winner) {
                 JSONObject tmp = (JSONObject) item;
-                String searchSql = "SELECT paymentState FROM tradeRecord WHERE auctionID=? AND uid=? AND certificateNo=?";
+                String searchSql = "SELECT paymentState FROM tradeRecord WHERE auctionID=? AND uid=? AND certificateNo=? ORDER BY `timeStamp` DESC";
                 pst = conn.prepareStatement(searchSql);
                 pst.setString(1, pt.getAuction());
                 pst.setInt(2, tmp.getIntValue("uid"));
