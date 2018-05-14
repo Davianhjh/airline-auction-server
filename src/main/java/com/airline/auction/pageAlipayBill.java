@@ -58,7 +58,7 @@ public class pageAlipayBill {
                     return "1030";                                      // error auctionState
                 }
                 DecimalFormat df = new DecimalFormat("0.00");
-                String biddingPrice = df.format(result.getBiddingPrice());
+                String biddingPrice = df.format(result.getPaymentPrice());
                 String tranStr = auctionID + System.currentTimeMillis();
                 String transactionID = getTransID(tranStr);
                 Properties property = new Properties();
