@@ -86,7 +86,7 @@ public class historyDetail {
                                 res.setHit(pr.getHit().equals("Y") ? 1:0);
                                 if (pr.getHit().equals("Y")) {
                                     res.setTotalA(df.format(pr.getPaymentPrice()));
-                                    String sql = "SELECT transactionNo, paymentState, timeStamp FROM tradeRecord WHERE uid=? AND auctionID=? AND certificateNo=?;";
+                                    String sql = "SELECT transactionNo, `timeStamp` FROM tradeRecord WHERE uid=? AND auctionID=? AND certificateNo=? AND paymentState=1;";
                                     pst = conn.prepareStatement(sql);
                                     pst.setInt(1, uid);
                                     pst.setString(2, hd.getAuctionID());

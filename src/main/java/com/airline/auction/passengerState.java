@@ -56,7 +56,7 @@ public class passengerState {
             ret = pst.executeQuery();
             if (ret.next()) {
                 int uid = ret.getInt(1);
-                String paymentVerifySql = "SELECT paymentState FROM tradeRecord WHERE uid=? AND auctionID=? AND certificateNo=?;";
+                String paymentVerifySql = "SELECT paymentState FROM tradeRecord WHERE uid=? AND auctionID=? AND certificateNo=? ORDER BY `timeStamp` DESC;";
                 pst = conn.prepareStatement(paymentVerifySql);
                 pst.setInt(1, uid);
                 pst.setString(2, ps.getAuctionID());

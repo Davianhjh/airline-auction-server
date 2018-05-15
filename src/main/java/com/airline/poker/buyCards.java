@@ -65,7 +65,7 @@ public class buyCards {
                 if (ret.next()) {
                     int userStatus = ret.getInt(1);
                     if (userStatus == 1 || userStatus == 2) {
-                        String searchSql = "SELECT card FROM cardTransaction WHERE uid=? AND auctionID=? AND certificateNo=? AND paymentState=1 ORDER BY timeStamp DESC;";
+                        String searchSql = "SELECT card FROM cardTransaction WHERE uid=? AND auctionID=? AND certificateNo=? AND paymentState=1 ORDER BY `timeStamp` DESC;";
                         pst = conn.prepareStatement(searchSql);
                         pst.setInt(1, uid);
                         pst.setString(2, bc.getAuctionID());
