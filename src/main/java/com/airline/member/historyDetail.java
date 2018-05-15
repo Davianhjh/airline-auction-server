@@ -96,8 +96,8 @@ public class historyDetail {
                                         JSONArray arr = new JSONArray();
                                         arr.add(ret2.getString(1));
                                         res.setTransactionNo(arr);
-                                        res.setPaymentState(ret2.getInt(2));
-                                        res.setPaymentTime(ret2.getString(3));
+                                        res.setPaymentTime(ret2.getString(2));
+                                        res.setPaymentState(1);
                                     } else {
                                         long paymentDeadline = ai.getEndTime() + 10*60*1000;
                                         if (System.currentTimeMillis() < paymentDeadline) {
